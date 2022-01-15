@@ -8,21 +8,21 @@ import { parse } from 'json5'
 import objectToArray from '../utils/object-to-array'
 
 export default (gradeid: number, classid: number) => {
-    if (gradeid in [1, 2, 3]) {
-        gradeid = transformDate(gradeid)
+  if (gradeid in [1, 2, 3]) {
+    gradeid = transformDate(gradeid)
+  }
+  const dirpth = resolve(tmpdir(), `../magnifique/${gradeid}/${classid}/members/`)
+  const membersMap = readdirSync(dirpth)
+  let base: object = {}
+  for (let i in membersMap) {
+    if (membersMap[i] !== 'pre') {
+      const ctdir = resolve(dirpth, membersMap[i])
+      const ctn = parse(decodeBase64(readFileSync(ctdir).toString()))
+      base[membersMap[i].replace('.sdbdata', '')] = ctn
     }
-    const dirpth = resolve(tmpdir(), `../magnifique/${gradeid}/${classid}/members/`)
-    const membersMap = readdirSync(dirpth)
-    let base: object = {}
-    for (let i in membersMap) {
-        if (membersMap[i] !== 'pre') {
-            const ctdir = resolve(dirpth, membersMap[i])
-            const ctn = parse(decodeBase64(readFileSync(ctdir).toString()))
-            base[membersMap[i].replace('.sdbdata', '')] = ctn
-        }
-    }
-    return {
-        status: 'ok',
-        details: objectToArray('number', base),
-    }
+  }
+  return {
+    status: 'ok',
+    details: objectToArray('number', base),
+  }
 }

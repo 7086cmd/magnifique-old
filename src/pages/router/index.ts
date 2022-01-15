@@ -30,209 +30,209 @@ import AdminMember from '../views/Admin/Member.vue'
 import Server from '../views/Server.vue'
 
 const routes: Array<RouteRecordRaw> = [
-    {
-        path: '/',
-        name: 'Home',
-        component: Home,
+  {
+    path: '/',
+    name: 'Home',
+    component: Home,
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: About,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: '404 - Page Not Found',
+    component: NotFound,
+  },
+  {
+    path: '/class/login',
+    component: ClassLogin,
+    meta: {
+      transition: 'fade',
     },
-    {
-        path: '/about',
-        name: 'About',
-        component: About,
+  },
+  {
+    path: '/member/login',
+    component: MemberLogin,
+    meta: {
+      transition: 'fade',
     },
-    {
-        path: '/:pathMatch(.*)*',
-        name: '404 - Page Not Found',
-        component: NotFound,
+  },
+  {
+    path: '/member',
+    component: MemberHome,
+    meta: {
+      transition: 'fade',
     },
-    {
-        path: '/class/login',
-        component: ClassLogin,
+    children: [
+      {
+        path: '',
+        component: MemberDashboard,
         meta: {
-            transition: 'fade',
+          transition: 'fade',
         },
-    },
-    {
-        path: '/member/login',
-        component: MemberLogin,
+      },
+      {
+        path: 'information',
+        component: MemberInformation,
         meta: {
-            transition: 'fade',
+          transition: 'fade',
         },
-    },
-    {
-        path: '/member',
-        component: MemberHome,
+      },
+      {
+        path: 'workflow',
+        component: MemberWorkFlow,
         meta: {
-            transition: 'fade',
+          transition: 'fade',
         },
-        children: [
-            {
-                path: '',
-                component: MemberDashboard,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'information',
-                component: MemberInformation,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'workflow',
-                component: MemberWorkFlow,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'message',
-                component: MemberMessage,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'qzb/',
-                component: MemberQzbHome,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'zzb/',
-                component: MemberZzbHome,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'wtb/',
-                component: MemberWtbHome,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'Xcb/',
-                component: MemberXcbHome,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'jjb/',
-                component: MemberJjbHome,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'zxt/',
-                component: MemberZxtHome,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'admin/',
-                component: MemberAdminHome,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'xxb/',
-                component: MemberXxbHome,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-        ],
-    },
-    {
-        path: '/class',
-        name: 'Class',
-        component: Class,
-        children: [
-            {
-                path: 'home',
-                component: ClassHome,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: '',
-                component: ClassHome,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'chart',
-                component: ClassChart,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'list',
-                component: ClassList,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'member',
-                component: ClassMember,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-            {
-                path: 'message',
-                component: ClassMessage,
-                meta: {
-                    transition: 'fade',
-                },
-            },
-        ],
-    },
-    {
-        path: '/server',
-        name: 'Server',
-        component: () => import('../views/Server.vue'),
-    },
-    {
-        path: '/admin/login',
-        component: AdminLogin,
-    },
-    {
-        path: '/server',
-        component: Server,
-    },
-    {
-        path: '/admin',
-        component: AdminHome,
-        children: [
-            {
-                path: '/admin/data',
-                component: AdminData,
-            },
-            {
-                path: '/admin/member',
-                component: AdminMember,
-            },
-        ],
-    },
+      },
+      {
+        path: 'message',
+        component: MemberMessage,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: 'qzb/',
+        component: MemberQzbHome,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: 'zzb/',
+        component: MemberZzbHome,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: 'wtb/',
+        component: MemberWtbHome,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: 'Xcb/',
+        component: MemberXcbHome,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: 'jjb/',
+        component: MemberJjbHome,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: 'zxt/',
+        component: MemberZxtHome,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: 'admin/',
+        component: MemberAdminHome,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: 'xxb/',
+        component: MemberXxbHome,
+        meta: {
+          transition: 'fade',
+        },
+      },
+    ],
+  },
+  {
+    path: '/class',
+    name: 'Class',
+    component: Class,
+    children: [
+      {
+        path: 'home',
+        component: ClassHome,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: '',
+        component: ClassHome,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: 'chart',
+        component: ClassChart,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: 'list',
+        component: ClassList,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: 'member',
+        component: ClassMember,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: 'message',
+        component: ClassMessage,
+        meta: {
+          transition: 'fade',
+        },
+      },
+    ],
+  },
+  {
+    path: '/server',
+    name: 'Server',
+    component: () => import('../views/Server.vue'),
+  },
+  {
+    path: '/admin/login',
+    component: AdminLogin,
+  },
+  {
+    path: '/server',
+    component: Server,
+  },
+  {
+    path: '/admin',
+    component: AdminHome,
+    children: [
+      {
+        path: '/admin/data',
+        component: AdminData,
+      },
+      {
+        path: '/admin/member',
+        component: AdminMember,
+      },
+    ],
+  },
 ]
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes,
+  history: createWebHistory(),
+  routes,
 })
 
 export default router

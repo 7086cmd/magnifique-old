@@ -16,14 +16,14 @@ import i18n from './i18n'
 const myApp = createApp(App)
 
 myApp.use(ElementPlus, {
-    locale: elementPlusLang,
+  locale: elementPlusLang,
 })
 myApp.component('ElIcon', ElIcon)
 for (const iconName in ElIconModules) {
-    if (Reflect.has(ElIconModules, iconName)) {
-        const item = ElIconModules[iconName]
-        myApp.component(iconName, item)
-    }
+  if (Reflect.has(ElIconModules, iconName)) {
+    const item = ElIconModules[iconName]
+    myApp.component(iconName, item)
+  }
 }
 Locale.use('zh-CN', vantLang)
 myApp.use(Vant)
