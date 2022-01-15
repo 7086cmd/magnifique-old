@@ -22,20 +22,18 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+ssh://git@github.com/7086cmd/magnifique-new.git"
+        "url": "git+ssh://git@github.com/7086cmd/magnifique.git"
     },
     "bugs": {
-        "url": "https://github.com/7086cmd/magnifique-new/issues"
+        "url": "https://github.com/7086cmd/magnifique/issues"
     },
-    "homepage": "https://github.com/7086cmd/magnifique-new#readme",
+    "homepage": "https://github.com/7086cmd/magnifique#readme",
     "author": "7086cmd",
     "license": "GPL-3.0",
     "dependencies": {
         "@koa/cors": "^3.1.0",
         "@koa/multer": "^3.0.0",
         "@koa/router": "^10.1.1",
-        "@slidev/theme-default": "^0.21.1",
-        "@slidev/theme-seriph": "^0.21.1",
         "chalk": "^5.0.0",
         "iconv-lite": "^0.6.3",
         "js-sha512": "^0.8.0",
