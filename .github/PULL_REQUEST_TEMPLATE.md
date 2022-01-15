@@ -1,0 +1,2 @@
+- [ ] Are you sure to do this fix?
+- [ ] Run `prebuild` script successfully.

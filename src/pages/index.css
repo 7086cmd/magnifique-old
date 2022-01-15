@@ -1,0 +1,33 @@
+#app {
+    /* -webkit-font-smoothing: antialiased; */
+    /* -moz-osx-font-smoothing: grayscale; */
+    text-align: center;
+    color: #2c3e50;
+}
+/* ::-webkit-scrollbar {
+    display: none;
+} */
+body {
+    font-family: 'Ubuntu', '苹方-简', '.萍方-简', '等线', '微软雅黑', Avenir, Helvetica, Arial, sans-serif;
+    /* scrollbar-width: none; */
+    /* -ms-overflow-style: none; */
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+h2 {
+    font-size: 64px;
+    font-weight: lighter;
+}
+h3 {
+    font-size: 56px;
+    font-weight: lighter;
+}
+h4 {
+    font-size: 48px;
+    font-weight: lighter;
+}
+.full-width {
+    width: 100%;
+    padding-left: 5%;
+    padding-right: 5%;
+}
