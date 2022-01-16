@@ -19,6 +19,7 @@ import { Server } from 'socket.io'
 import { parse } from 'json5'
 // import self-defingning database tool
 import dbCreate from './modules/database/db-create'
+import { writeData, readData } from './modules/database/config'
 // import class productions
 import loginClass from './modules/class/login-class'
 import getContentClass from './modules/class/get-content-class'
@@ -44,6 +45,7 @@ import addMemberPre from './modules/admin/add-member-pre'
 import getAllMembers from './modules/admin/get-all-members'
 import moveToRelMember from './modules/admin/move-to-rel-member'
 import getDepartmentMember from './modules/admin/get-department-member'
+import resetPassword from './modules/admin/reset-password'
 // import utils
 import objectToArray from './modules/utils/object-to-array'
 import decodeBase64 from './modules/utils/decode-base64'
@@ -67,6 +69,7 @@ import getMyDeduction from './modules/member/get-my-deduction'
 import turnDown from './modules/member/turn-down'
 import getMyDocument from './modules/member/get-my-document'
 import downloadDocument from './modules/admin/download-document'
+import networks from './modules/database/networks'
 
 // Generate Chart Base File
 const chartBase = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="shortcut icon" href="https://v-charts.js.org/favicon.ico" type="image/x-icon" /><title>Chart (type: <%=tit=>)</title><script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script><script src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css" /></head><body><div id="app"><ve-<%=tpe=> :data="cdata"></ve-<%=tpe=>></div><script>var vm=new Vue({el:'#app',data(){const data=JSON.parse('<%=dat=>');return {cdata:data}}})</script></body></html>`
@@ -145,6 +148,7 @@ const getPassword = (ctx: any) => {
 
 // Create Database(if not exists)
 dbCreate()
+writeData(app.getVersion(), networks())
 
 // Serve Static File(Front End)
 if (process.env.NODE_ENV == 'production') {
@@ -930,6 +934,27 @@ router.get('/api/admin/export/download/:token', async (ctx) => {
   ctx.response.body = encodeGBK(csvTokens[ctx.params.token], 'gbk')
   delete csvTokens[ctx.params.token]
 })
+
+router.post('/api/admin/edit/password', async (ctx) => {
+  try {
+    const password = ctx.request.body.password
+    const { newp } = ctx.request.body
+    if (loginAdmin(String(password)).status == 'ok') {
+      ctx.response.body = resetPassword(decodeBase64(newp))
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: <string>e,
+    }
+  }
+})
 router.post('/api/admin/export/deduction/class', async (ctx) => {
   try {
     const { password, start, end } = ctx.request.body
@@ -1112,6 +1137,9 @@ router.get('/api/analyzePerson/:person', async (ctx) => {
     details: analyzePerson(parseInt(ctx.params.person)),
   }
 })
+router.get('/config', async (ctx) => {
+  ctx.response.body = readData()
+})
 
 // Use routes to register APIs.
 server.use(router.routes())
@@ -1180,7 +1208,7 @@ app.whenReady().then(() => {
     ])
   )
   tray.on('double-click', () => mainWindow.show())
-  mainWindow.loadURL(process.env.NODE_ENV == 'development' ? 'http://localhost:3000/server' : 'http://10.49.8.4/server')
+  mainWindow.loadURL(process.env.NODE_ENV == 'development' ? 'http://localhost:3000/server' : 'http://localhost/server')
   ipcMain.on('close-main-window', () => mainWindow.hide())
   ipcMain.on('minimize-main-window', () => mainWindow.minimize())
   ipcMain.on('maximize-main-window', () => (mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize()))

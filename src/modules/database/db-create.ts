@@ -1,9 +1,9 @@
 import { tmpdir } from 'os'
-import { writeFileSync, mkdirSync, existsSync } from 'fs'
+import { mkdirSync, existsSync } from 'fs'
 import { resolve } from 'path'
 import { sha512 } from 'js-sha512'
-import * as JSON5 from 'json5'
 import transformDate from '../utils/transform-date'
+import dataSave from '../utils/data-save'
 
 const generateRoot = () => {
   const tpth = resolve(tmpdir(), '../magnifique/')
@@ -15,16 +15,11 @@ const generateRoot = () => {
 
 const generateAdminPassword = (basep: string) => {
   if (!existsSync(resolve(basep, './password.sdbdata'))) {
-    writeFileSync(
-      resolve(basep, './password.sdbdata'),
-      Buffer.from(
-        JSON5.stringify({
-          secret: {
-            password: sha512('secret'),
-          },
-        })
-      ).toString('base64')
-    )
+    dataSave(resolve(basep, './password.sdbdata'), {
+      secret: {
+        password: sha512('secret'),
+      },
+    })
   }
 }
 
@@ -70,27 +65,17 @@ const generateClassMemberFolder = (basep: string) => {
 
 const generateClassDetail = (basep: string, file: string) => {
   if (!existsSync(resolve(basep, `./${file}.sdbdata`))) {
-    writeFileSync(
-      resolve(basep, `./${file}.sdbdata`),
-      Buffer.from(
-        JSON5.stringify({
-          details: {},
-        })
-      ).toString('base64')
-    )
+    dataSave(resolve(basep, `./${file}.sdbdata`), {
+      details: {},
+    })
   }
 }
 
 const generateClassPassword = (basep: string, gradeid: number, classid: number) => {
   if (!existsSync(resolve(basep, './password.sdbdata'))) {
-    writeFileSync(
-      resolve(basep, './password.sdbdata'),
-      Buffer.from(
-        JSON5.stringify({
-          password: sha512(String(transformDate(gradeid) * 100 + classid)),
-        })
-      ).toString('base64')
-    )
+    dataSave(resolve(basep, './password.sdbdata'), {
+      password: sha512(String(transformDate(gradeid) * 100 + classid)),
+    })
   }
 }
 
