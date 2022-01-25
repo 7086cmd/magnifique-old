@@ -15,13 +15,7 @@ import MemberDashboard from '../views/Member/Dashboard.vue'
 import MemberInformation from '../views/Member/Information.vue'
 import MemberWorkFlow from '../views/Member/WorkFlow.vue'
 import MemberMessage from '../views/Member/Message.vue'
-import MemberXxbHome from '../views/Member/xxb/Home.vue'
-import MemberQzbHome from '../views/Member/qzb/Home.vue'
-import MemberZzbHome from '../views/Member/zzb/Home.vue'
-import MemberXcbHome from '../views/Member/xcb/Home.vue'
-import MemberWtbHome from '../views/Member/wtb/Home.vue'
-import MemberJjbHome from '../views/Member/jjb/Home.vue'
-import MemberZxtHome from '../views/Member/zxt/Home.vue'
+import MemberDepartment from '../views/Member/Department.vue'
 import MemberAdminHome from '../views/Member/admin/Home.vue'
 import AdminLogin from '../views/Admin/Login.vue'
 import AdminHome from '../views/Admin/Home.vue'
@@ -81,6 +75,13 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: 'department',
+        component: MemberDepartment,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
         path: 'workflow',
         component: MemberWorkFlow,
         meta: {
@@ -95,57 +96,8 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'qzb/',
-        component: MemberQzbHome,
-        meta: {
-          transition: 'fade',
-        },
-      },
-      {
-        path: 'zzb/',
-        component: MemberZzbHome,
-        meta: {
-          transition: 'fade',
-        },
-      },
-      {
-        path: 'wtb/',
-        component: MemberWtbHome,
-        meta: {
-          transition: 'fade',
-        },
-      },
-      {
-        path: 'Xcb/',
-        component: MemberXcbHome,
-        meta: {
-          transition: 'fade',
-        },
-      },
-      {
-        path: 'jjb/',
-        component: MemberJjbHome,
-        meta: {
-          transition: 'fade',
-        },
-      },
-      {
-        path: 'zxt/',
-        component: MemberZxtHome,
-        meta: {
-          transition: 'fade',
-        },
-      },
-      {
         path: 'admin/',
         component: MemberAdminHome,
-        meta: {
-          transition: 'fade',
-        },
-      },
-      {
-        path: 'xxb/',
-        component: MemberXxbHome,
         meta: {
           transition: 'fade',
         },

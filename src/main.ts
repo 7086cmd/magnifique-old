@@ -148,7 +148,7 @@ const getPassword = (ctx: any) => {
 
 // Create Database(if not exists)
 dbCreate()
-writeData(app.getVersion(), networks())
+writeData(networks())
 
 // Serve Static File(Front End)
 if (process.env.NODE_ENV == 'production') {
@@ -1109,8 +1109,6 @@ router.post('/api/feed/back', async (ctx) => {
       reason: 'type-error',
       text: new Error(<string>e).message,
     }
-    // eslint-disable-next-line no-console
-    console.log(ctx.response.body)
   }
 })
 router.get('/api/types', async (ctx) => {

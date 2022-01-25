@@ -9,8 +9,6 @@ const login = async (gradeid: number, classid: number, passwordEncoded: string) 
     },
     method: 'get',
   }).then((response) => {
-    // eslint-disable-next-line no-console
-    console.log(response.data)
     return response.data
   })
 }

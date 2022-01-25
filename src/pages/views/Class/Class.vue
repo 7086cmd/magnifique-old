@@ -28,14 +28,14 @@ try {
 
 if (localStorage.getItem('classLoginInfo') == undefined || localStorage.getItem('classLoginInfo') == null) {
   if (inject('classLoginInfo') == undefined) {
-    router.push('/class/login/')
+    router.push('/')
   }
 }
 
 try {
   window.atob(String(localStorage.getItem('classLoginInfo')))
 } catch (e) {
-  router.push('/class/login/')
+  router.push('/')
   localStorage.removeItem('classLoginInfo')
 }
 

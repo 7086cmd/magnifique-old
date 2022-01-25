@@ -1,26 +1,15 @@
 <script lang="ts" setup>
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
+import { ref } from 'vue'
 import controls from '../components/controls.vue'
-const router = useRouter()
-const { t } = useI18n()
+import ClassLogin from './Class/ClassLogin.vue'
+import { useRouter } from 'vue-router'
+import AdminLogin from './Admin/Login.vue'
 
-const list = [
-  {
-    param: 'class',
-    name: t('home.class'),
-  },
-  {
-    param: 'member',
-    name: t('home.member'),
-  },
-  {
-    param: 'admin',
-    name: t('home.admin'),
-  },
-]
-const toTag = (param: string) => {
-  router.push('/' + param + '/')
+const router = useRouter()
+const choice = ref('class')
+
+const toTag = (tag: string) => {
+  router.push('/' + tag + '/')
 }
 </script>
 
@@ -33,14 +22,17 @@ const toTag = (param: string) => {
       <el-container>
         <el-aside width="5%"></el-aside>
         <el-main>
-          <div class="row">
-            <div class="col-2"></div>
-            <div class="col">
-              <h2>{{ t('home.login') }}</h2>
-              <div v-for="i in list" :key="i.param"><br /><br /><el-button style="width: 100%" @click="toTag(i.param)" v-text="i.name"></el-button></div>
-            </div>
-            <div class="col-2"></div>
-          </div>
+          <h2>登录</h2>
+          <el-tabs v-model="choice">
+            <el-tab-pane name="class" label="班级登录">
+              <class-login></class-login>
+              <el-button style="width: 100%" plain @click="toTag('class')">直接进</el-button>
+            </el-tab-pane>
+            <el-tab-pane name="admin" label="管理员登录">
+              <admin-login></admin-login>
+              <el-button style="width: 100%" plain @click="toTag('admin')">直接进</el-button>
+            </el-tab-pane>
+          </el-tabs>
         </el-main>
         <el-aside width="5%"> </el-aside>
       </el-container>

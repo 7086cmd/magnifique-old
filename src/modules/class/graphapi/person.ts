@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable prefer-const */
 import getContentClass from '../get-content-class'
 import objectToArray from '../../utils/object-to-array'
 import { parse } from 'json5'
@@ -10,6 +8,7 @@ dayjs.extend(isBetween)
 
 export default (gradeid: number, classid: number, start: string, end: string) => {
   const objList = getContentClass('deduction', gradeid, classid)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const arrList: any[] = objectToArray('id', parse(objList).details)
   const base: {
     columns: string[]

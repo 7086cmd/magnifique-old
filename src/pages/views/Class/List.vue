@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable vue/html-indent */
-import { ref, Ref } from 'vue'
+import { ref, Ref, reactive } from 'vue'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { ElMessageBox } from 'element-plus'
@@ -12,7 +12,11 @@ const { t } = useI18n()
 const { gradeid, classid, password } = JSON.parse(window.atob(String(localStorage.getItem('classLoginInfo'))))
 let loading = ref(true)
 let nativeName = ref('deduction')
-let decData: Ref<any> = ref([])
+let data: {
+  deduction: any[]
+} = reactive({
+  deduction: [],
+})
 let search = ref('')
 let sumT = ref('')
 const fbstatus = {
@@ -36,12 +40,12 @@ const refresh = () => {
   }).then((response) => {
     if (response.data.status == 'ok') {
       loading.value = false
-      decData.value = response.data.details
-      for (let i = 0; i in decData.value; i++) {
-        decData.value[i].time = dayjs(decData.value[i].time).format('YYYY/MM/DD HH:mm:ss')
-        decData.value[i].person = String(decData.value[i].person % 100) + '号'
+      data.deduction = response.data.details
+      for (let i = 0; i in data.deduction; i++) {
+        data.deduction[i].time = dayjs(data.deduction[i].time).format('YYYY/MM/DD HH:mm:ss')
+        data.deduction[i].person = String(data.deduction[i].person % 100) + '号'
       }
-      sumT.value = String(decData.value.length)
+      sumT.value = String(data.deduction.length)
     }
   })
 }
@@ -100,47 +104,12 @@ const callbackDeductions = (inf: any) => {
             <el-skeleton :loading="loading" animated :rows="10" :throttle="500">
               <template #default>
                 <el-card shadow="never">
-                  <el-table
-                    :data="
-                                        decData.filter(
-                                            (data: any) =>
-                                                !search ||
-                                                data.reason
-                                                    .toLowerCase()
-                                                    .includes(
-                                                        search.toLowerCase()
-                                                    ) ||
-                                                String(data.person)
-                                                    .toLowerCase()
-                                                    .includes(
-                                                        search.toLowerCase()
-                                                    ) ||
-                                                String(data.deduction)
-                                                    .toLowerCase()
-                                                    .includes(
-                                                        search.toLowerCase()
-                                                    ) ||
-                                                String(data.time)
-                                                    .toLowerCase()
-                                                    .includes(search.toLowerCase())
-                                        )
-                                    "
-                    highlight-current-row
-                    max-height="480px"
-                    show-summary
-                    :sum-text="sumT"
-                    :default-sort="{
-                      prop: 'deduction',
-                      order: 'descending',
-                    }"
-                    :row-class-name="tableRowClassName"
-                  >
+                  <el-table :data="data.deduction" highlight-current-row max-height="480px" show-summary :sum-text="sumT" :row-class-name="tableRowClassName">
                     <el-table-column type="expand">
                       <template #header>
                         <el-button type="text" :icon="Refresh" @click="refresh()"></el-button>
                       </template>
                       <template #default="props">
-                        <el-alert title="提醒：这不是Bug哦，这个真的是扣分编号" type="info" center :closable="false" />
                         <el-descriptions :title="`扣分${props.row.id}信息`" border>
                           <el-descriptions-item label="违纪者">
                             {{ props.row.person }}

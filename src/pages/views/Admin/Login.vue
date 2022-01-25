@@ -7,7 +7,7 @@ import { ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import baseurl from '../../modules/baseurl'
-import { Close, Minus, Plus, ArrowLeft } from '@element-plus/icons-vue'
+import controlsWithBack from '../../components/controls-with-back.vue'
 
 let isClient = ref(false)
 
@@ -17,18 +17,6 @@ try {
   }
   // eslint-disable-next-line no-empty
 } catch (_e) {}
-const closeServer = () => {
-  window.magnifique.closeServer()
-}
-const minServerWindow = () => {
-  window.magnifique.minServerWindow()
-}
-const maxServerWindow = () => {
-  window.magnifique.maxServerWindow()
-}
-const toHome = () => {
-  router.push('/')
-}
 
 const { t } = useI18n()
 const router = useRouter()
@@ -84,35 +72,12 @@ const login = () => {
 </script>
 
 <template>
-  <el-container>
-    <el-header>
-      <div style="text-align: right">
-        <el-button v-if="isClient" style="text-align: right" :icon="ArrowLeft" type="primary" circle plain size="small" @click="toHome()" />
-        <el-button v-if="isClient" style="text-align: right" :icon="Minus" type="warning" circle plain size="small" @click="minServerWindow()" />
-        <el-button v-if="isClient" style="text-align: right" :icon="Plus" type="success" circle plain size="small" @click="maxServerWindow()" />
-        <el-button v-if="isClient" style="text-align: right" :icon="Close" type="danger" circle plain size="small" @click="closeServer()" />
-      </div>
-    </el-header>
-    <el-container>
-      <el-aside width="5%" />
-      <el-main>
-        <div class="row">
-          <div class="col-2" />
-          <div class="col">
-            <h3>管理员登陆</h3>
-            <el-form>
-              <el-form-item label="密码">
-                <el-input v-model="password" type="password" />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" plain style="width: 100%" @click="login"> 确定 </el-button>
-              </el-form-item>
-            </el-form>
-          </div>
-          <div class="col-2" />
-        </div>
-      </el-main>
-      <el-aside width="5%" />
-    </el-container>
-  </el-container>
+  <el-form>
+    <el-form-item label="密码">
+      <el-input v-model="password" type="password" />
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" plain style="width: 100%" @click="login"> 确定 </el-button>
+    </el-form-item>
+  </el-form>
 </template>

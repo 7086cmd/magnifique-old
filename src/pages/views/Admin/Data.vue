@@ -167,8 +167,7 @@ for ([key, _val] of Object.entries(data)) {
                                                     String(data.time)
                                                         .toLowerCase()
                                                         .includes(search.toLowerCase())
-                                            )
-                                        "
+                                            )"
                     highlight-current-row
                     max-height="480px"
                     :default-sort="{

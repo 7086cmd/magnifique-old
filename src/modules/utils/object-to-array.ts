@@ -1,4 +1,3 @@
-/* eslint-disable prefer-const */
 const objectToArray = (insert: string, content: object) => {
   let key, val
   let base = []

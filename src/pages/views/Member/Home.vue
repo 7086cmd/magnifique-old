@@ -33,13 +33,13 @@ try {
 
 if (sessionStorage.getItem('memberLoginInfo') == undefined) {
   if (inject('memberLoginInfo') == undefined) {
-    router.push('/member/login/')
+    router.push('/class/member/')
   }
 }
 try {
   window.atob(String(sessionStorage.getItem('memberLoginInfo')))
 } catch (e) {
-  router.push('/member/login/')
+  router.push('/class/member/')
   sessionStorage.removeItem('memberLoginInfo')
 }
 
@@ -70,7 +70,7 @@ axios({
   <el-container>
     <el-aside width="12%">
       <el-menu v-model="pageSelected" default-active="/member/" :collapse="leftDrawerOpen" style="min-height: 1024px; padding-top: 2em" collapse-transition router>
-        <el-menu-item index="/">
+        <el-menu-item index="/class/">
           <el-icon>
             <Back />
           </el-icon>
@@ -94,7 +94,7 @@ axios({
           </el-icon>
           <template #title> 个人信息 </template>
         </el-menu-item>
-        <el-menu-item v-if="inGroup !== '主席团'" :index="`/member/${list[inGroup]}/`">
+        <el-menu-item v-if="inGroup !== '主席团'" :index="`/member/department/`">
           <el-icon>
             <Tools />
           </el-icon>

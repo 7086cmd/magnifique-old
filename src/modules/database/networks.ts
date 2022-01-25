@@ -2,7 +2,6 @@ import { networkInterfaces } from 'os'
 import type { NetworkInterfaceInfo } from 'os'
 
 export default () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let networks: NetworkInterfaceInfo[] = []
   const nwif = networkInterfaces()
 

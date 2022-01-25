@@ -5,7 +5,9 @@ import { Refresh } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import baseurl from '../../modules/baseurl'
+import MemberLogin from '../Member/Login.vue'
 
+let isLoginingMember = ref(false)
 const { t } = useI18n()
 const { gradeid, classid, password } = JSON.parse(window.atob(String(localStorage.getItem('classLoginInfo'))))
 let basicnum = ref(0)
@@ -218,6 +220,11 @@ const createRegistry = async () => {
               <el-table-column prop="name" label="姓名" />
               <el-table-column prop="number" label="学号" />
               <el-table-column prop="in" label="所属部门" />
+              <el-table-column>
+                <template #header>
+                  <el-button type="text" @click="isLoginingMember = true">成员登录</el-button>
+                </template>
+              </el-table-column>
             </el-table>
           </el-card>
         </template>
@@ -304,6 +311,9 @@ const createRegistry = async () => {
             <el-button type="primary" :loading="isSubmiting" @click="createRegistry"> 确定 </el-button>
           </span>
         </template>
+      </el-dialog>
+      <el-dialog v-model="isLoginingMember" title="成员登录" center>
+        <member-login></member-login>
       </el-dialog>
     </div>
   </transition>
