@@ -1,7 +1,8 @@
 name: Build App
 
 on:
-  push:
+  release:
+    types: [created, edited]
     branches: [main]
 
 jobs:

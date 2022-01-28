@@ -1,6 +1,9 @@
 import transformDate from '../../src/modules/utils/transform-date'
 import loginClass from '../../src/modules/class/login-class'
+import dbCreate from '../../src/modules/database/db-create'
 import { expect, test, describe } from '@jest/globals'
+
+dbCreate()
 
 describe('Login tests', () => {
   for (let i = 1; i <= 10; i++) {
