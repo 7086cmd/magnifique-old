@@ -11,7 +11,7 @@ dayjs.extend(isBetween)
 export default (config?: { start: string; end: string }) => {
   let base = []
   const classes = [15, 15, 15]
-  for (let i = 1; i in [1, 2, 3]; i++) {
+  for (let i = 1; i <= 3; i++) {
     for (let j = 1; j <= classes[i - 1]; j++) {
       base.push(...objectToArray('id', parse(getContentClass('deduction', i, j)).details))
     }

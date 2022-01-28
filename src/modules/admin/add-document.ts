@@ -29,7 +29,7 @@ export default (
       uploader: numb,
       time: dayjs().toJSON(),
       path: resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}`, `documents`, id + '.docx'),
-    }
+    } as post
     dataSave(temppath, list)
     return {
       status: 'ok',

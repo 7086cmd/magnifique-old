@@ -22,13 +22,13 @@ let pageSelected = ref('1')
 
 if (localStorage.getItem('adminLoginInfo') == undefined) {
   if (inject('adminLoginInfo') == undefined) {
-    router.push('/admin/login/')
+    router.push('/')
   }
 }
 try {
   window.atob(String(localStorage.getItem('adminLoginInfo')))
 } catch (e) {
-  router.push('/admin/login/')
+  router.push('/')
   localStorage.removeItem('adminLoginInfo')
 }
 

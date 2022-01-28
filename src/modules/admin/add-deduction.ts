@@ -7,19 +7,7 @@ import { v4 } from 'uuid'
 import decoder from '../utils/decode-base64'
 import encoder from '../utils/encode-base64'
 
-export default (configuration: {
-  person: number
-  reason: string
-  description?: string
-  deduction: number
-  deductor: {
-    name: string
-    number: number
-  }
-  time: string
-  place: string
-  status: 'normal' | 'processing' | 'failed'
-}) => {
+export default (configuration: deduction) => {
   let uuid = v4()
   const ana = analyzePerson(configuration.person)
   const temppath = resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}/deduction.sdbdata`)

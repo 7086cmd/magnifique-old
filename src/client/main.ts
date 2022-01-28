@@ -20,7 +20,7 @@ app.setLoginItemSettings({
 })
 
 app.whenReady().then(() => {
-  tray = new Tray(process.env.NODE_ENV === 'development' ? resolve(__dirname, '../../icon.ico') : resolve(__dirname, '../icon.ico'))
+  tray = new Tray(process.env.NODE_ENV === 'development' ? resolve(__dirname, '../../icons/client.ico') : resolve(__dirname, '../icons/client.ico'))
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   const calc = (num: number) => {
     return Math.floor((num * 5) / 6)

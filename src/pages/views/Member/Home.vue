@@ -5,17 +5,10 @@ import axios from 'axios'
 import baseurl from '../../modules/baseurl'
 import { UserFilled as User, List, Back, Box, Odometer, Magnet, Tools } from '@element-plus/icons-vue'
 import ControlsPage from '../../components/controls-page.vue'
+import { ElMessageBox } from 'element-plus'
 
 let heightClient = ref(window.innerHeight)
 
-const list = {
-  主席团: 'zxt',
-  纪检部: 'jjb',
-  文体部: 'wtb',
-  宣传部: 'xcb',
-  青志部: 'qzb',
-  学习部: 'xxb',
-}
 let isClient = ref(false)
 const router = useRouter()
 const leftDrawerOpen = ref(true)
@@ -62,7 +55,11 @@ axios({
 }).then((response) => {
   if (response.data.status !== 'ok') {
     sessionStorage.removeItem('memberLoginInfo')
-    router.push('/member/login')
+    ElMessageBox.alert('您的密码有误，已为您引导到班级界面，点击“成员登录”即可再次登录。', '密码错误', {
+      type: 'error',
+      center: true,
+    })
+    router.push('/class/member')
   }
 })
 </script>

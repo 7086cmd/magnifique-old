@@ -3,19 +3,6 @@ import analyzePerson from '../utils/analyze-person'
 import transformDate from '../utils/transform-date'
 import getAllDeductions from './get-all-deductions'
 const items = ['班级', '违纪者', '扣分数', '扣分原因', '解释说明', '扣分日期', '扣分者', '申斥状况']
-type deduction = {
-  person: number
-  reason: string
-  description?: string
-  deduction: number
-  deductor: {
-    name: string
-    number: number
-  }
-  time: string
-  place: string
-  status: 'normal' | 'processing' | 'failed'
-}
 const statuses = {
   normal: '正常扣分',
   processing: '正在处理',

@@ -20,6 +20,7 @@ import { parse } from 'json5'
 // import self-defingning database tool
 import dbCreate from './modules/database/db-create'
 import { writeData, readData } from './modules/database/config'
+import getDepartmentData from './modules/database/get-department-data'
 // import class productions
 import loginClass from './modules/class/login-class'
 import getContentClass from './modules/class/get-content-class'
@@ -70,6 +71,8 @@ import turnDown from './modules/member/turn-down'
 import getMyDocument from './modules/member/get-my-document'
 import downloadDocument from './modules/admin/download-document'
 import networks from './modules/database/networks'
+import allowPowers from './modules/database/allow-powers'
+import getPublicPower from './modules/database/get-public-power'
 
 // Generate Chart Base File
 const chartBase = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="shortcut icon" href="https://v-charts.js.org/favicon.ico" type="image/x-icon" /><title>Chart (type: <%=tit=>)</title><script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script><script src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css" /></head><body><div id="app"><ve-<%=tpe=> :data="cdata"></ve-<%=tpe=>></div><script>var vm=new Vue({el:'#app',data(){const data=JSON.parse('<%=dat=>');return {cdata:data}}})</script></body></html>`
@@ -906,7 +909,7 @@ router.get('/api/admin/get/all/member', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -1019,7 +1022,7 @@ router.get('/api/admin/get/:department/member', async (ctx) => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = processAllMemberInfo(getDepartmentMember(departments[ctx.params.department]))
+      ctx.response.body = processAllMemberInfo(getDepartmentMember(ctx.params.department))
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1123,6 +1126,34 @@ router.get('/api/decdetails', async (ctx) => {
     details: deducs,
   }
 })
+router.get('/api/department/', async (ctx) => {
+  ctx.response.body = getDepartmentData() as status
+})
+router.get('/api/department/list', async (ctx) => {
+  const data = getDepartmentData()
+  ctx.response.body = {
+    status: 'ok',
+    details: objectToArray('value', data.details.departments),
+  }
+})
+router.get('/api/department/:department/duty', async (ctx) => {
+  ctx.response.body = {
+    status: 'ok',
+    details: allowPowers(ctx.params.department),
+  }
+})
+router.get('/api/power/list', async (ctx) => {
+  ctx.response.body = {
+    status: 'ok',
+    details: objectToArray('value', getPublicPower().details.power),
+  }
+})
+router.get('/api/power', async (ctx) => {
+  ctx.response.body = {
+    status: 'ok',
+    details: getPublicPower(),
+  }
+})
 router.get('/api/transformDate/:year', async (ctx) => {
   ctx.response.body = {
     status: 'ok',
@@ -1175,7 +1206,7 @@ app.setLoginItemSettings({
 })
 
 app.whenReady().then(() => {
-  tray = new Tray(process.env.NODE_ENV === 'development' ? resolve(__dirname, '../icon.ico') : resolve(__dirname, '../icon.ico'))
+  tray = new Tray(process.env.NODE_ENV === 'development' ? resolve(__dirname, '../icons/server.ico') : resolve(__dirname, '../icons/server.ico'))
   const generateTwoThirds = (val: number) => Math.floor((val * 2) / 3)
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   const mainWindow = new BrowserWindow({
@@ -1219,8 +1250,8 @@ app.whenReady().then(() => {
 // Listen the Server(Let it run.)
 httpServer.listen(80)
 
-// try {
-//     // eslint-disable-next-line @typescript-eslint/no-var-requires
-//     require('electron-reloader')(module)
-//     // eslint-disable-next-line no-empty
-// } catch (_e) {}
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('electron-reloader')(module)
+  // eslint-disable-next-line no-empty
+} catch (_e) {}

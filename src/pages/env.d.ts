@@ -15,6 +15,8 @@ interface ImportMeta {
   readonly env: ImportMetaEnv
 }
 
+declare module 'particles.vue3'
+
 // declare module 'vue' {
 //     import { CompatVue } from '@vue/runtime-dom'
 //     const Vue: CompatVue

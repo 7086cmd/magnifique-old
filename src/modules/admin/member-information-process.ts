@@ -1,60 +1,50 @@
-export default (configuration: {
-  name: string
-  number: number
-  in: 'xue-xi' | 'qing-zhi' | 'zu-zhi' | 'xuan-chuan' | 'wen-ti' | 'ji-jian' | 'chair-man'
-  type: 'zhu-xi' | 'fu-zhu-xi' | 'bu-zhang' | 'fu-bu-zhang' | 'gan-shi'
-  vadmin: 'qing-ti' | 'xue-jian' | 'tuan-zong-zhi' | 'bu-zhang' | 'other'
-  record: {
-    actions: number
-    score: number
-    violation: number
-  }
-  workflows: object
-  password: string
-}) => {
-  const groups = {
-    'xue-xi': '学习部',
-    'qing-zhi': '青志部',
-    'zu-zhi': '组织部',
-    'xuan-chuan': '宣传部',
-    'wen-ti': '文体部',
-    'ji-jian': '纪检部',
-    'chair-man': '主席团',
-  }
-  const admins = {
-    'qing-ti': '副主席（青体）',
-    'xue-jian': '副主席（学检）',
-    'tuan-zong-zhi': '团总支副秘书',
-  }
+import getDepartmentData from '../database/get-department-data'
+
+export default (configuration: member) => {
+  const groups = getDepartmentData()
   const types = {
-    'zhu-xi': '主席',
-    'fu-zhu-xi': '副主席',
-    'bu-zhang': '部长',
-    'fu-bu-zhang': '副部长',
-    'gan-shi': '干事',
+    chairman: '主席',
+    'vice-chairman': '副主席',
+    minister: '部长',
+    'vice-minister': '副部长',
+    clerk: '干事',
+    '': '无部门',
   }
-  let base = {
-    name: configuration.name,
-    number: configuration.number,
-    in: groups[configuration.in],
-    do: '',
-    icg: false,
-    record: configuration.record,
+  let base: Record<string, boolean | number | string | Record<'actions' | 'score' | 'violation', number> | string[]>
+  try {
+    base = {
+      name: configuration.name,
+      number: configuration.number,
+      in: groups.details.departments[configuration.union.department].name,
+      do: '',
+      icg: false,
+      record: configuration.record,
+      duty: configuration.union.duty,
+      admin: configuration.union.admin,
+    }
+  } catch (_e) {
+    base = {
+      name: configuration.name,
+      number: configuration.number,
+      in: '无部门',
+      do: '',
+      icg: false,
+      record: configuration.record,
+      duty: configuration.union.duty,
+      admin: configuration.union.admin,
+    }
   }
-  if (configuration.type == 'zhu-xi') {
-    base.do = types[configuration.type]
+  if (configuration.union.position.includes('chairman')) {
+    base.do = types[configuration.union.position]
     base.icg = true
-  } else if (configuration.type == 'fu-zhu-xi') {
-    base.do = admins[configuration.vadmin]
+  } else if (configuration.union.position == 'minister') {
+    base.do = groups.details.departments[configuration.union.department].name + types[configuration.union.position]
     base.icg = true
-  } else if (configuration.type == 'bu-zhang') {
-    base.do = groups[configuration.in] + types[configuration.type]
-    base.icg = true
-  } else if (configuration.type == 'fu-bu-zhang') {
-    base.do = groups[configuration.in] + types[configuration.type]
+  } else if (['vice-minister', 'clerk'].includes(configuration.union.position)) {
+    base.do = groups.details.departments[configuration.union.department].name + types[configuration.union.position]
     base.icg = false
   } else {
-    base.do = groups[configuration.in] + types[configuration.type]
+    base.do = '非正式成员'
     base.icg = false
   }
   return base

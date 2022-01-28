@@ -1,0 +1,32 @@
+departments:
+  learning:
+    name: 学习部
+    duty: [document]
+  discipline:
+    name: 纪检部
+    duty: [deduction]
+    classes:
+      - reason: 边走边吃
+        deduction: 0.1
+      - reason: 边走边喝
+        deduction: 0.1
+      - reason: 未戴校徽
+        deduction: 0.1
+  volunteer:
+    name: 青志部
+    duty: [volunteer]
+  style:
+    name: 文体部
+    duty: []
+  health:
+    name: 卫生部
+    duty: [deduction]
+    classes:
+      - reason: 垃圾分类不好
+        deduction: 0.1
+  publicity:
+    name: 宣传部
+    duty: [radio]
+  orgnize:
+    name: 组织部
+    duty: []

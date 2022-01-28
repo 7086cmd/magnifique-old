@@ -16,25 +16,27 @@ const toTag = (tag: string) => {
 <template>
   <div>
     <el-container>
-      <el-header style="text-align: right">
+      <el-header style="text-align: right; height: 30%">
         <controls />
       </el-header>
       <el-container>
-        <el-aside width="5%"></el-aside>
-        <el-main>
-          <h2>登录</h2>
-          <el-tabs v-model="choice">
-            <el-tab-pane name="class" label="班级登录">
-              <class-login></class-login>
-              <el-button style="width: 100%" plain @click="toTag('class')">直接进</el-button>
-            </el-tab-pane>
-            <el-tab-pane name="admin" label="管理员登录">
-              <admin-login></admin-login>
-              <el-button style="width: 100%" plain @click="toTag('admin')">直接进</el-button>
-            </el-tab-pane>
-          </el-tabs>
+        <el-aside width="30%"></el-aside>
+        <el-main style="padding-top: 15%">
+          <Particles id="tsparticles" />
+          <el-card shadow="never">
+            <el-tabs v-model="choice">
+              <el-tab-pane name="class" label="班级登录">
+                <class-login></class-login>
+                <el-button style="width: 100%" plain @click="toTag('class')">直接进</el-button>
+              </el-tab-pane>
+              <el-tab-pane name="admin" label="管理员登录">
+                <admin-login></admin-login>
+                <el-button style="width: 100%" plain @click="toTag('admin')">直接进</el-button>
+              </el-tab-pane>
+            </el-tabs>
+          </el-card>
         </el-main>
-        <el-aside width="5%"> </el-aside>
+        <el-aside width="30%"> </el-aside>
       </el-container>
     </el-container>
   </div>

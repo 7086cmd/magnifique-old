@@ -4,9 +4,11 @@ export default (department: string) => {
   try {
     let data = getAllMembers().details
     let resu = []
-    for (let i = 0; i in data; i++) {
-      if (data[i].in == department) {
-        resu.push(data[i])
+    if (data !== undefined) {
+      for (let i = 0; i in data; i++) {
+        if (data[i].union.department == department) {
+          resu.push(data[i])
+        }
       }
     }
     return {

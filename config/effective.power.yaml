@@ -1,0 +1,11 @@
+power:
+  deduction:
+    name: 扣分
+  post:
+    name: 投稿
+  volunteer:
+    name: 义工
+  radio:
+    name: 广播
+  orgnize:
+    name: 团校

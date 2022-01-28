@@ -1,1 +1,1 @@
-export default `/api/`
+export default `http://localhost/api/`

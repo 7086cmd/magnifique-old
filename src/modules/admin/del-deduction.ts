@@ -18,18 +18,18 @@ export default (person: number, id: string) => {
       writeFileSync(temppath, encoder(docc))
       return {
         status: 'ok',
-      }
+      } as status
     } catch (e) {
       return {
         status: 'error',
         reason: 'type-error',
         text: new Error(<string>e).message,
-      }
+      } as status
     }
   } else {
     return {
       status: 'error',
       reason: 'not-exists',
-    }
+    } as status
   }
 }

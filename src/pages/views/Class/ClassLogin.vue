@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, provide } from 'vue'
+import { ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -12,7 +12,6 @@ const router = useRouter()
 let gradeid = ref('')
 let classid = ref(0)
 let password = ref('')
-let isPwd = ref(true)
 const grades = [
   {
     label: '初一',
@@ -44,10 +43,7 @@ async function login() {
     })
     return
   }
-  axios({
-    url: `${baseurl}class/${grade}/${Number(classid.value)}/login?password=${window.btoa(password.value)}`,
-    method: 'get',
-  }).then((response) => {
+  axios(`${baseurl}class/${grade}/${Number(classid.value)}/login?password=${window.btoa(password.value)}`).then((response) => {
     if (response.data.status == 'ok') {
       let timeOut = 3
       ElMessageBox.alert(t('class.status.jump', { sec: timeOut }), t('class.status.success'), {
@@ -56,16 +52,6 @@ async function login() {
       }).then(() => {
         router.push('/class/')
       })
-      provide(
-        'classLoginInfo',
-        window.btoa(
-          JSON.stringify({
-            gradeid: grade,
-            classid: Number(classid.value),
-            password: window.btoa(password.value),
-          })
-        )
-      )
       localStorage.setItem(
         'classLoginInfo',
         window.btoa(
@@ -107,11 +93,7 @@ async function login() {
         <el-input v-model="classid" outlined style="width: 100%" :label="t('class.class')" />
       </el-form-item>
       <el-form-item label="密码">
-        <el-input v-model="password" outlined style="width: 100%" :type="isPwd ? 'password' : 'text'" :label="t('class.password')">
-          <template #append>
-            <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
-          </template>
-        </el-input>
+        <el-input v-model="password" outlined style="width: 100%" type="password" :label="t('class.password')"> </el-input>
       </el-form-item>
       <el-form-item>
         <el-button :label="t('submit')" outline plain type="primary" style="width: 100%" @click="login">

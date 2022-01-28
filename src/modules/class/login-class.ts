@@ -7,10 +7,10 @@ import * as JSON5 from 'json5'
 const loginClass = (gradeid: number, classid: number, password: string) => {
   try {
     let dirpth
-    if (gradeid >= 1 && gradeid <= 3) {
-      dirpth = resolve(tmpdir(), `../magnifique/${transformDate(gradeid)}/${classid}/password.sdbdata`)
+    if ([1, 2, 3].includes(gradeid)) {
+      dirpth = resolve(tmpdir(), '..', 'magnifique', String(transformDate(gradeid)), String(classid), 'password.sdbdata')
     } else {
-      dirpth = resolve(tmpdir(), `../magnifique/${gradeid}/${classid}/password.sdbdata`)
+      dirpth = resolve(tmpdir(), '..', 'magnifique', String(gradeid), String(classid), 'password.sdbdata')
     }
     if (existsSync(dirpth)) {
       const pwdcor = JSON5.parse(Buffer.from(readFileSync(dirpth).toString(), 'base64').toString())['password']
@@ -18,25 +18,25 @@ const loginClass = (gradeid: number, classid: number, password: string) => {
       if (pwdcor == pwdnow) {
         return {
           status: 'ok',
-        }
+        } as status
       } else {
         return {
           status: 'error',
           reason: 'password-wrong',
-        }
+        } as status
       }
     } else {
       return {
         status: 'error',
         reason: 'not-exist',
-      }
+      } as status
     }
   } catch (e: unknown) {
     return {
       status: 'error',
       reason: 'type-error',
       text: new Error(<string>e).message,
-    }
+    } as status
   }
 }
 export default loginClass

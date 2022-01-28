@@ -1,141 +1,83 @@
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+/* global member */
+import { ref, reactive, watch, Ref } from 'vue'
 import axios from 'axios'
 import { Refresh } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import baseurl from '../../modules/baseurl'
+import personExample from '../../../examples/person'
 
 const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
 let isRegistingMember = ref(false)
 let isSubmiting = ref(false)
-const information = reactive({
-  number: 0,
-  name: '',
-  in: '',
-  type: '',
-})
-let departments = ref([
+const information: member = reactive(personExample())
+const departments: Ref<
   {
-    label: '整体',
-    options: [
-      {
-        label: '主席团',
-        value: 'chair-man',
-      },
-    ],
-  },
+    name: string
+    value: string
+  }[]
+> = ref([
   {
-    label: '学生会',
-    options: [
-      {
-        label: '纪检部',
-        value: 'ji-jian',
-      },
-      {
-        label: '学习部',
-        value: 'xue-xi',
-      },
-      {
-        label: '青志部',
-        value: 'qing-zhi',
-      },
-      {
-        label: '文体部',
-        value: 'wen-ti',
-      },
-    ],
-  },
-  {
-    label: '团总支',
-    options: [
-      {
-        label: '组织部',
-        value: 'zu-zhi',
-      },
-      {
-        label: '宣传部',
-        value: 'xuan-chuan',
-      },
-    ],
+    name: '主席团',
+    value: '',
   },
 ])
 let types = ref([
   {
     name: '干事',
-    value: 'gan-shi',
+    value: 'clerk',
   },
   {
     name: '副部长',
-    value: 'fu-bu-zhang',
+    value: 'vice-minister',
   },
   {
     name: '部长',
-    value: 'bu-zhang',
+    value: 'minister',
   },
   {
     name: '副主席',
-    value: 'fu-zhu-xi',
+    value: 'vice-chairman',
   },
   {
     name: '主席',
-    value: 'zhu-xi',
+    value: 'chairman',
   },
 ])
-let vadmins = ref([
+let vadmins = ref<
   {
-    label: '团总支',
-    value: 'tuan-zong-zhi',
-  },
-  {
-    label: '青体',
-    value: 'qing-ti',
-  },
-  {
-    label: '学检',
-    value: 'xue-jian',
-  },
-])
-let vadmin = ref('')
+    name: string
+    value: string
+  }[]
+>([])
 const { t } = useI18n()
 let search = ref('')
 let choice = ref('all')
 let table = ref([])
 let loading = ref(false)
-const panes = ref([
+const panes: Ref<
   {
-    label: '全部',
+    name: string
+    value: string
+  }[]
+> = ref([
+  {
+    name: '全部',
     value: 'all',
   },
   {
-    label: '骨干',
+    name: '核心成员',
     value: 'core',
   },
-  {
-    label: '学习部',
-    value: 'xue-xi',
-  },
-  {
-    label: '纪检部',
-    value: 'ji-jian',
-  },
-  {
-    label: '青志部',
-    value: 'qing-zhi',
-  },
-  {
-    label: '文体部',
-    value: 'wen-ti',
-  },
-  {
-    label: '宣传部',
-    value: 'xuan-chuan',
-  },
-  {
-    label: '组织部',
-    value: 'zu-zhi',
-  },
 ])
+axios(`${baseurl}department/list`).then((response) => {
+  departments.value.push(...response.data.details)
+  panes.value.push(...response.data.details)
+})
+axios(`${baseurl}power/list`).then((response) => {
+  vadmins.value.push(...response.data.details)
+})
 const refresh = async (type: string) => {
   loading.value = true
   const response = await axios(`${baseurl}admin/get/${type}/member?password=${password}`, {
@@ -190,30 +132,26 @@ const createMember = async () => {
     createMsg('不正确的号码')
   } else if (information.name == '') {
     createMsg('不正确的姓名')
-  } else if (information.in == '') {
+  } else if (information.union.department == '' && !information.union.position.includes('chairman')) {
     createMsg('不正确的部门')
-  } else if (information.type == '') {
+  } else if (information.union.position == 'none') {
     createMsg('不正确的职位')
-  } else if (information.type == 'fu-zhu-xi' && vadmin.value == '') {
+  } else if (information.union.position == 'vice-chairman' && information.union.admin.length === 0) {
     createMsg('不正确的职位')
   } else {
-    const detail = {
-      name: information.name,
-      number: information.number,
-      in: information.in,
-      type: information.type,
+    try {
+      information.union.duty = (await axios(`${baseurl}department/${information.union.department}/duty`)).data.details as ('deduction' | 'document' | 'radio' | 'volunteer')[]
+    } catch (_e) {
+      information.union.duty = []
     }
-    if (information.type == 'fu-zhu-xi') {
-      detail['vadmin'] = vadmin.value
-    }
+    information.union.leader = information.union.position.includes('chairman') || information.union.position === 'minister'
     const response = await axios(`${baseurl}admin/new/member`, {
       data: {
-        member: detail,
+        member: information,
         password,
       },
       method: 'post',
     })
-    isSubmiting.value = false
     if (response.data.status == 'ok') {
       ElMessageBox.alert('注册成功', '成功', {
         center: true,
@@ -231,6 +169,13 @@ const createMember = async () => {
         }
       )
     }
+    information.name = ''
+    information.number = ''
+    information.union.duty = []
+    information.union.admin = []
+    information.department = ''
+    information.position = 'clerk'
+    isSubmiting.value = false
     refresh(choice.value)
   }
 }
@@ -240,7 +185,7 @@ const createMember = async () => {
   <div>
     <h4>成员管理</h4>
     <el-tabs v-model="choice" tab-position="left">
-      <el-tab-pane v-for="item in panes" :key="item.value" :label="item.label" :name="item.value">
+      <el-tab-pane v-for="item in panes" :key="item.value" :label="item.name" :name="item.value">
         <el-skeleton :loading="loading" animated :rows="10" :throttle="500">
           <template #default>
             <el-card shadow="never">
@@ -258,6 +203,7 @@ const createMember = async () => {
                   </template>
                   <template #default="props">
                     <el-descriptions :title="'成员' + props.row.number + '信息'" border>
+                      {{ console.log(props.row) }}
                       <el-descriptions-item label="姓名">
                         {{ props.row.name }}
                       </el-descriptions-item>
@@ -267,9 +213,12 @@ const createMember = async () => {
                       <el-descriptions-item label="所属部门">
                         {{ props.row.in }}
                       </el-descriptions-item>
-                      <el-descriptions-item label="职务">
-                        {{ String(props.row.do).replace('undefined', '') }}
+                      <!-- <el-descriptions-item label="职务">
+                        {{ props.row.duty.join('、') }}
                       </el-descriptions-item>
+                      <el-descriptions-item label="管理">
+                        {{ props.row.admin.join('、') }}
+                      </el-descriptions-item> -->
                       <el-descriptions-item label="是否为主席团成员">
                         {{ props.row.icg ? '是' : '不是' }}
                       </el-descriptions-item>
@@ -312,20 +261,18 @@ const createMember = async () => {
           <el-input v-model="information.number" />
         </el-form-item>
         <el-form-item label="加入部门">
-          <el-select v-model="information.in" style="width: 100%">
-            <el-option-group v-for="group in departments" :key="group.label" :label="group.label">
-              <el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-            </el-option-group>
+          <el-select v-model="information.union.department" style="width: 100%">
+            <el-option v-for="item in departments" :key="item.value" :label="item.name" :value="item.value"> </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="担任职位">
-          <el-select v-model="information.type" style="width: 100%">
+          <el-select v-model="information.union.position" style="width: 100%">
             <el-option v-for="item in types" :key="item.value" :label="item.name" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="information.type == 'fu-zhu-xi'" label="细则">
-          <el-select v-model="vadmin" style="width: 100%">
-            <el-option v-for="item in vadmins" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        <el-form-item v-if="information.union.position == 'vice-chairman'" label="管理权力">
+          <el-select v-model="information.union.admin" multiple collapse-tags style="width: 100%">
+            <el-option v-for="item in vadmins" :key="item.value" :label="item.name" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
       </el-form>

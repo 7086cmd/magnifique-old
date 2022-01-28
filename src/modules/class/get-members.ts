@@ -8,7 +8,7 @@ import { parse } from 'json5'
 import objectToArray from '../utils/object-to-array'
 
 export default (gradeid: number, classid: number) => {
-  if (gradeid in [1, 2, 3]) {
+  if ([1, 2, 3].includes(gradeid)) {
     gradeid = transformDate(gradeid)
   }
   const dirpth = resolve(tmpdir(), `../magnifique/${gradeid}/${classid}/members/`)
@@ -23,6 +23,6 @@ export default (gradeid: number, classid: number) => {
   }
   return {
     status: 'ok',
-    details: objectToArray('number', base),
+    details: objectToArray('number', base) as member[],
   }
 }

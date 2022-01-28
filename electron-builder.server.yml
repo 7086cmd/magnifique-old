@@ -1,53 +1,53 @@
 ---
 files:
-    - './dist/docs/**/*'
-    - './dist/pages/**/*'
-    - './dist/docs/*'
-    - './dist/pages/*'
-    - './dist/main.min.js'
-    - './dist/preload.min.js'
-    - './icon.ico'
+  - './dist/docs/**/*'
+  - './dist/pages/**/*'
+  - './dist/docs/*'
+  - './dist/pages/*'
+  - './dist/main.min.js'
+  - './dist/preload.min.js'
+  - './icons/server.ico'
 extraMetadata:
-    main: dist/main.min.js
+  main: dist/main.min.js
 asar: true
 extends:
 appId: com.magnifique.server
 copyright: Copyright ©7086cmd 2021 GNU License
 productName: Magnifique Server
 win:
-    icon: './icon.ico'
-    target:
-        - target: nsis
-          arch:
-              - x64
-              - ia32
-        - target: zip
-          arch:
-              - x64
-              - ia32
+  icon: './icons/server.ico'
+  target:
+    - target: nsis
+      arch:
+        - x64
+        - ia32
+    - target: zip
+      arch:
+        - x64
+        - ia32
 mac:
-    icon: './icon.icns'
-    target:
-        - target: dmg
-          arch:
-              - x64
-              - arm64
-        - target: zip
-          arch:
-              - x64
-              - arm64
+  icon: './icon.icns'
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+    - target: zip
+      arch:
+        - x64
+        - arm64
 dmg:
-    contents:
-        - x: 410
-          y: 210
-          type: link
-          path: './Applications'
-        - x: 130
-          y: 210
-          type: file
+  contents:
+    - x: 410
+      y: 210
+      type: link
+      path: './Applications'
+    - x: 130
+      y: 210
+      type: file
 nsis:
-    oneClick: false
-    perMachine: false
-    allowToChangeInstallationDirectory: true
-    shortcutName: Magnifique Server
-    menuCategory: Magnifique
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  shortcutName: Magnifique Server
+  menuCategory: Magnifique

@@ -23,12 +23,12 @@ export default (newPwd: string) => {
         status: 'error',
         reason: 'type-error',
         text: <string>e,
-      }
+      } as status
     }
   } else {
     return {
       status: 'error',
       reason: 'not-exists',
-    }
+    } as status
   }
 }

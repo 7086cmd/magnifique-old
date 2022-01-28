@@ -4,9 +4,11 @@ export default () => {
   try {
     let data = getAllMembers().details
     let resu = []
-    for (let i = 0; i in data; i++) {
-      if (data[i].type == 'zhu-xi' || data[i].type == 'fu-zhu-xi' || data[i].type == 'bu-zhang') {
-        resu.push(data[i])
+    if (data !== undefined) {
+      for (let i = 0; i in data; i++) {
+        if (data[i].union?.leader == true) {
+          resu.push(data[i])
+        }
       }
     }
     return {

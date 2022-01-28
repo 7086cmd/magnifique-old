@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import ElementPlus, { ElIcon } from 'element-plus'
+import ElementPlus from 'element-plus'
 import * as ElIconModules from '@element-plus/icons-vue'
 import elementPlusLang from 'element-plus/es/locale/lang/zh-cn'
 import Vant from 'vant'
@@ -12,22 +12,31 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import i18n from './i18n'
+import { ElMessage } from 'element-plus'
+import Particles from 'particles.vue3'
 
-const myApp = createApp(App)
+const app = createApp(App)
 
-myApp.use(ElementPlus, {
+app.use(ElementPlus, {
   locale: elementPlusLang,
 })
-myApp.component('ElIcon', ElIcon)
 for (const iconName in ElIconModules) {
   if (Reflect.has(ElIconModules, iconName)) {
     const item = ElIconModules[iconName]
-    myApp.component(iconName, item)
+    app.component(iconName, item)
   }
 }
 Locale.use('zh-CN', vantLang)
-myApp.use(Vant)
-myApp.use(router)
-myApp.use(store)
-myApp.use(i18n)
-myApp.mount('#app')
+app.use(Vant)
+app.use(router)
+app.use(store)
+app.use(i18n)
+app.use(Particles)
+app.mount('#app')
+
+if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  ElMessage({
+    message: '目前没有适配深色模式。',
+    type: 'warning',
+  })
+}
