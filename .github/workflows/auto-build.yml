@@ -27,8 +27,6 @@ jobs:
           cache: 'pnpm'
       - name: Install dependences
         run: pnpm install
-      - name: Edit Version
-        run: 'pnpm edit:version'
       - name: Build
         run: pnpm run build:win
         env:
