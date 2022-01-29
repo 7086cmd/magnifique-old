@@ -10,7 +10,7 @@ declare interface member {
     total: number
     details: Record<string, deduction>
   }
-  document?: {
+  post?: {
     total: number
     details: Record<string, post>
   }
@@ -25,9 +25,9 @@ declare interface member {
   union: {
     leader: boolean
     position: 'chairman' | 'vice-chairman' | 'minister' | 'vice-minister' | 'clerk' | 'registry' | 'none'
-    duty: ('deduction' | 'document' | 'radio' | 'volunteer')[]
-    admin: ('deduction' | 'document' | 'radio' | 'volunteer' | 'member')[]
-    view: ('deduction' | 'document' | 'radio' | 'volunteer' | 'member')[]
+    duty: ('deduction' | 'post' | 'radio' | 'volunteer')[]
+    admin: ('deduction' | 'post' | 'radio' | 'volunteer' | 'member')[]
+    view: ('deduction' | 'post' | 'radio' | 'volunteer' | 'member')[]
     department: string
     regist: {
       plan: string

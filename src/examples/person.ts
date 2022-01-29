@@ -11,7 +11,7 @@ export default () => {
       total: 0,
       details: {},
     },
-    document: {
+    post: {
       total: 0,
       details: {},
     },

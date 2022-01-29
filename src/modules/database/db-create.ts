@@ -88,7 +88,7 @@ export default () => {
       generateClassPassword(bsec, i, j)
       generateClassMemberFolder(bsec)
       generateClassDetail(bsec, 'deduction')
-      generateClassDetail(bsec, 'document')
+      generateClassDetail(bsec, 'post')
       generateClassDetail(bsec, 'activity')
       generateClassDetail(bsec, 'orgnize')
       generateClassDetail(bsec, 'radio')

@@ -26,8 +26,8 @@ jobs:
           cache: 'pnpm'
       - name: Install dependences
         run: pnpm install
-      - name: Install DMG-LICENSE Package
-        run: pnpm add dmg-license
+      - name: Edit Version
+        run: 'pnpm edit:version'
       - name: Build
         run: pnpm run build:win
         env:

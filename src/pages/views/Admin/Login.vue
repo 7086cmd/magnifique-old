@@ -1,22 +1,12 @@
 <!-- eslint-disable vue/html-self-closing -->
 <!-- eslint-disable vue/max-attributes-per-line -->
 <script lang="ts" setup>
-import { ref, provide } from 'vue'
+import { ref } from 'vue'
 import axios from 'axios'
 import { ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import baseurl from '../../modules/baseurl'
-import controlsWithBack from '../../components/controls-with-back.vue'
-
-let isClient = ref(false)
-
-try {
-  if (window.magnifique.isElectron === true) {
-    isClient.value = true
-  }
-  // eslint-disable-next-line no-empty
-} catch (_e) {}
 
 const { t } = useI18n()
 const router = useRouter()
@@ -24,9 +14,7 @@ const router = useRouter()
 let password = ref('')
 
 const login = () => {
-  axios({
-    url: `${baseurl}admin/login?password=${window.btoa(password.value)}`,
-  }).then((response) => {
+  axios(`${baseurl}admin/login?password=${window.btoa(password.value)}`).then((response) => {
     if (response.data.status == 'ok') {
       let timeOut = 3
       ElMessageBox.alert(`欢迎使用。` + t('class.status.jump', { sec: timeOut }), '登陆成功', {
@@ -35,14 +23,6 @@ const login = () => {
       }).then(() => {
         router.push('/admin/')
       })
-      provide(
-        'adminLoginInfo',
-        window.btoa(
-          JSON.stringify({
-            password: window.btoa(password.value),
-          })
-        )
-      )
       localStorage.setItem(
         'adminLoginInfo',
         window.btoa(

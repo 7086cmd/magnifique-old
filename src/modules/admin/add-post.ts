@@ -16,7 +16,7 @@ export default (
 ) => {
   try {
     const ana = analyzePerson(numb)
-    const temppath = resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}/document.sdbdata`)
+    const temppath = resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}/post.sdbdata`)
     if (!existsSync(temppath)) {
       return {
         status: 'error',
@@ -28,7 +28,7 @@ export default (
       ...config,
       uploader: numb,
       time: dayjs().toJSON(),
-      path: resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}`, `documents`, id + '.docx'),
+      path: resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}`, `posts`, id + '.docx'),
     } as post
     dataSave(temppath, list)
     return {

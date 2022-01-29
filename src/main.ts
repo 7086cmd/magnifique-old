@@ -57,7 +57,7 @@ import transformDate from './modules/utils/transform-date'
 import analyzePerson from './modules/utils/analyze-person'
 // import member productions
 import loginMember from './modules/member/login-member'
-import addDocument from './modules/admin/add-document'
+import appPost from './modules/admin/add-post'
 import newPassword from './modules/member/new-password'
 import uploadDispose from './modules/admin/upload-dispose'
 import newWorkflow from './modules/member/new-workflow'
@@ -68,8 +68,8 @@ import getWorkflow from './modules/member/get-workflow'
 import pauseWorkflow from './modules/member/pause-workflow'
 import getMyDeduction from './modules/member/get-my-deduction'
 import turnDown from './modules/member/turn-down'
-import getMyDocument from './modules/member/get-my-document'
-import downloadDocument from './modules/admin/download-document'
+import getMyPost from './modules/member/get-my-document'
+import downloadPost from './modules/admin/download-post'
 import networks from './modules/database/networks'
 import allowPowers from './modules/database/allow-powers'
 import getPublicPower from './modules/database/get-public-power'
@@ -116,7 +116,7 @@ const io = new Server(httpServer, {
 })
 const uploader = koaMulter({
   storage: diskStorage({
-    destination: resolve(tmpdir(), '../magnifique/documents'),
+    destination: resolve(tmpdir(), '../magnifique/posts'),
     filename: (_ctx, file, cb) => {
       cb(null, file.originalname)
     },
@@ -757,13 +757,13 @@ router.post('/api/member/deduction/:id/work/del/deduction', async (ctx) => {
 })
 
 // 学习部可用API
-router.get('/api/member/post/:id/work/get/document', async (ctx) => {
+router.get('/api/member/post/:id/work/get/post', async (ctx) => {
   try {
     const password = getPassword(ctx)
     const { id } = ctx.params
     if (loginMember(parseInt(id), password).status == 'ok') {
       if (getMemberInf(parseInt(id)).details.in == '学习部') {
-        ctx.response.body = getMyDocument(parseInt(id))
+        ctx.response.body = getMyPost(parseInt(id))
       } else {
         ctx.response.body = {
           status: 'error',
@@ -784,7 +784,7 @@ router.get('/api/member/post/:id/work/get/document', async (ctx) => {
     }
   }
 })
-router.post('/api/member/post/:id/work/upload/document', uploader.single('file'), async (ctx) => {
+router.post('/api/member/post/:id/work/upload/post', uploader.single('file'), async (ctx) => {
   if (ctx.file !== undefined) {
     ctx.response.body = uploadDispose(parseInt(ctx.params.id), ctx.file)
   } else {
@@ -799,7 +799,7 @@ router.get('/api/member/download/:id', async (ctx) => {
   ctx.response.body = docTokens[ctx.params.id]
   delete docTokens[ctx.params.id]
 })
-router.post('/api/member/post/:id/work/download/document', async (ctx) => {
+router.post('/api/member/post/:id/work/download/post', async (ctx) => {
   try {
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
@@ -808,7 +808,7 @@ router.post('/api/member/post/:id/work/download/document', async (ctx) => {
         while (docTokens[index] !== undefined) {
           index = v4()
         }
-        docTokens[index] = downloadDocument(id, person)
+        docTokens[index] = downloadPost(id, person)
         ctx.response.body = {
           status: 'ok',
           details: {
@@ -835,12 +835,12 @@ router.post('/api/member/post/:id/work/download/document', async (ctx) => {
     }
   }
 })
-router.post('/api/member/post/:id/work/new/document', async (ctx) => {
+router.post('/api/member/post/:id/work/new/post', async (ctx) => {
   try {
     const { id, password, content, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
       if (getMemberInf(parseInt(person)).details.in == '学习部') {
-        ctx.response.body = addDocument(parseInt(person), id, content)
+        ctx.response.body = appPost(parseInt(person), id, content)
       } else {
         ctx.response.body = {
           status: 'error',
@@ -1168,10 +1168,7 @@ router.get('/api/power/list', async (ctx) => {
   }
 })
 router.get('/api/power', async (ctx) => {
-  ctx.response.body = {
-    status: 'ok',
-    details: getPublicPower(),
-  }
+  ctx.response.body = getPublicPower()
 })
 router.get('/api/transformDate/:year', async (ctx) => {
   ctx.response.body = {

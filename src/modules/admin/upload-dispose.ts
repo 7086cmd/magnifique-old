@@ -9,7 +9,7 @@ import { v4 } from 'uuid'
 export default (numb: number, handle: any) => {
   try {
     const ana = analyzePerson(numb)
-    const temppath = resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}/document.sdbdata`)
+    const temppath = resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}/post.sdbdata`)
     if (!existsSync(temppath)) {
       return {
         status: 'error',
@@ -17,7 +17,7 @@ export default (numb: number, handle: any) => {
       }
     }
     let id = v4()
-    const folder = resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}/documents`)
+    const folder = resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}/posts`)
     if (!existsSync(folder)) {
       mkdirSync(folder)
     }

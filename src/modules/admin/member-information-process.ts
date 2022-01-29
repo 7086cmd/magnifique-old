@@ -1,4 +1,5 @@
 import getDepartmentData from '../database/get-department-data'
+import getPublicPower from '../database/get-public-power'
 
 export default (configuration: member) => {
   const groups = getDepartmentData()
@@ -11,6 +12,23 @@ export default (configuration: member) => {
     '': '无部门',
   }
   let base: Record<string, boolean | number | string | Record<'actions' | 'score' | 'violation', number> | string[]>
+  const publicPower = getPublicPower()
+  const duties: string[] = []
+  for (let i = 0; i in configuration.union.duty; i++) {
+    duties.push(publicPower.details.power[configuration.union.duty[i]].name)
+  }
+  const admins: string[] = []
+  for (let i = 0; i in configuration.union.admin; i++) {
+    if (configuration.union.admin[i] === 'member') {
+      admins.push('成员')
+    } else {
+      try {
+        admins.push(publicPower.details.power[configuration.union.admin[i]].name)
+      } catch (_e) {
+        admins.push(configuration.union.admin[i])
+      }
+    }
+  }
   try {
     base = {
       name: configuration.name,
@@ -19,8 +37,8 @@ export default (configuration: member) => {
       do: '',
       icg: false,
       record: configuration.record,
-      duty: configuration.union.duty,
-      admin: configuration.union.admin,
+      duty: duties,
+      admin: admins,
     }
   } catch (_e) {
     base = {
@@ -30,8 +48,8 @@ export default (configuration: member) => {
       do: '',
       icg: false,
       record: configuration.record,
-      duty: configuration.union.duty,
-      admin: configuration.union.admin,
+      duty: duties,
+      admin: admins,
     }
   }
   if (configuration.union.position.includes('chairman')) {

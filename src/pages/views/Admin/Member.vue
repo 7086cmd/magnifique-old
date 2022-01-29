@@ -159,11 +159,20 @@ const createMember = async () => {
     createMsg('不正确的职位')
   } else {
     try {
-      information.union.duty = (await axios(`${baseurl}department/${information.union.department}/duty`)).data.details as ('deduction' | 'document' | 'radio' | 'volunteer')[]
+      information.union.duty = (await axios(`${baseurl}department/${information.union.department}/duty`)).data.details as ('deduction' | 'post' | 'radio' | 'volunteer')[]
     } catch (_e) {
       information.union.duty = []
     }
+    if (information.union.duty === undefined) {
+      information.union.duty = []
+    }
     information.union.leader = information.union.position.includes('chairman') || information.union.position === 'minister'
+    if (information.union.position === 'minister') {
+      information.union.admin = [...information.union.duty, 'member']
+    }
+    if (information.union.position === 'chairman') {
+      information.union.admin = ['deduction', 'post', 'radio', 'volunteer']
+    }
     const response = await axios(`${baseurl}admin/new/member`, {
       data: {
         member: information,
@@ -219,12 +228,12 @@ const createMember = async () => {
                       <el-descriptions-item label="所属部门">
                         {{ props.row.in }}
                       </el-descriptions-item>
-                      <!-- <el-descriptions-item label="职务">
+                      <el-descriptions-item label="职务">
                         {{ props.row.duty.join('、') }}
                       </el-descriptions-item>
                       <el-descriptions-item label="管理">
                         {{ props.row.admin.join('、') }}
-                      </el-descriptions-item> -->
+                      </el-descriptions-item>
                       <el-descriptions-item label="是否为主席团成员">
                         {{ props.row.icg ? '是' : '不是' }}
                       </el-descriptions-item>

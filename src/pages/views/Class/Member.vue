@@ -82,7 +82,7 @@ const createRegistry = async () => {
     })
   } else {
     try {
-      memberifo.union.duty = (await axios(`${baseurl}department/${memberifo.union.department}/duty`)).data.details as ('deduction' | 'document' | 'radio' | 'volunteer')[]
+      memberifo.union.duty = (await axios(`${baseurl}department/${memberifo.union.department}/duty`)).data.details as ('deduction' | 'post' | 'radio' | 'volunteer')[]
     } catch (_e) {
       memberifo.union.duty = []
     }
@@ -170,49 +170,10 @@ const createRegistry = async () => {
               <el-table-column prop="name" label="姓名" />
               <el-table-column prop="number" label="学号" />
               <el-table-column prop="in" label="所属部门" />
-              <el-table-column>
-                <template #header>
-                  <el-button type="text" @click="isLoginingMember = true">成员登录</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-card>
-        </template>
-      </el-skeleton>
-      <el-skeleton :loading="loading" animated :rows="10" :throttle="500">
-        <template #default>
-          <el-card shadow="never">
-            <template #header>
-              <span style="text-align: left">注册成员</span>
-            </template>
-            <el-table :data="preMembersDetail" highlight-current-row max-height="480px">
-              <el-table-column type="expand">
-                <template #header>
-                  <el-button type="text" :icon="Refresh" @click="refresh()" />
-                </template>
-                <template #default="props">
-                  <el-descriptions :title="'成员' + props.row.number + '信息'" border>
-                    <el-descriptions-item label="姓名">
-                      {{ props.row.name }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="学号">
-                      {{ props.row.number }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="想要进入的部门">
-                      {{ props.row.in }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="想要担任的职务">
-                      {{ String(props.row.do).replace('undefined', '') }}
-                    </el-descriptions-item>
-                  </el-descriptions>
-                </template>
-              </el-table-column>
-              <el-table-column prop="name" label="姓名" />
-              <el-table-column prop="number" label="学号" />
-              <el-table-column prop="in" label="所属部门" />
               <el-table-column align="right" fixed="right">
                 <template #header>
                   <el-button type="text" @click="isRegistingMember = true"> 注册成员 </el-button>
+                  <el-button type="text" @click="isLoginingMember = true">成员登录</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -249,7 +210,7 @@ const createRegistry = async () => {
           </el-form-item>
         </el-form>
         <template #footer>
-          <span class="dialog-footer">
+          <span>
             <el-button @click="isRegistingMember = false"> 取消 </el-button>
             <el-button type="primary" :loading="isSubmiting" @click="createRegistry"> 确定 </el-button>
           </span>

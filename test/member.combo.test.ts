@@ -8,8 +8,12 @@ import moveToRel from '../src/modules/admin/move-to-rel-member'
 import deleteMember from '../src/modules/admin/del-member'
 import loginMember from '../src/modules/member/login-member'
 import { readFileSync, existsSync } from 'fs'
+import dbCreate from '../src/modules/database/db-create'
 import { tmpdir } from 'os'
 import dataOpen from '../src/modules/utils/data-open'
+import getAllMembers from '../src/modules/admin/get-all-members'
+
+dbCreate()
 
 describe('Member Combo Test', () => {
   for (let i = 1; i <= 10; i++) {

@@ -33,18 +33,6 @@ let types = ref([
     name: '副部长',
     value: 'vice-minister',
   },
-  {
-    name: '部长',
-    value: 'minister',
-  },
-  {
-    name: '副主席',
-    value: 'vice-chairman',
-  },
-  {
-    name: '主席',
-    value: 'chairman',
-  },
 ])
 let vadmins = ref<
   {
@@ -56,24 +44,8 @@ let search = ref('')
 let choice = ref('all')
 let table = ref([])
 let loading = ref(false)
-const panes = ref<
-  {
-    name: string
-    value: string
-  }[]
->([
-  {
-    name: '全部',
-    value: 'all',
-  },
-  {
-    name: '核心成员',
-    value: 'core',
-  },
-])
 axios(`${baseurl}department/list`).then((response) => {
   departments.value.push(...response.data.details)
-  panes.value.push(...response.data.details)
 })
 axios(`${baseurl}power/list`).then((response) => {
   vadmins.value.push(...response.data.details)
@@ -159,7 +131,7 @@ const createMember = async () => {
     createMsg('不正确的职位')
   } else {
     try {
-      information.union.duty = (await axios(`${baseurl}department/${information.union.department}/duty`)).data.details as ('deduction' | 'document' | 'radio' | 'volunteer')[]
+      information.union.duty = (await axios(`${baseurl}department/${information.union.department}/duty`)).data.details as ('deduction' | 'post' | 'radio' | 'volunteer')[]
     } catch (_e) {
       information.union.duty = []
     }
@@ -191,79 +163,75 @@ const createMember = async () => {
 <template>
   <div>
     <h4>成员管理</h4>
-    <el-tabs v-model="choice" tab-position="left">
-      <el-tab-pane v-for="item in panes" :key="item.value" :label="item.name" :name="item.value">
-        <el-skeleton :loading="loading" animated :rows="10" :throttle="500">
-          <template #default>
-            <el-card shadow="never">
+    <el-skeleton :loading="loading" animated :rows="10" :throttle="500">
+      <template #default>
+        <el-card shadow="never">
+          <template #header>
+            <el-button type="text" @click="isRegistingMember = true"> 添加成员 </el-button>
+          </template>
+          <el-table
+            :data="table.filter((data: any) => !search || data.number.toLowerCase().includes(search.toLowerCase()) || String(data.person).toLowerCase().includes(search.toLowerCase()))"
+            highlight-current-row
+            max-height="480px"
+          >
+            <el-table-column type="expand">
               <template #header>
-                <el-button type="text" @click="isRegistingMember = true"> 添加成员 </el-button>
+                <el-button type="text" :icon="Refresh" @click="refresh(choice)" />
               </template>
-              <el-table
-                :data="table.filter((data: any) => !search || data.number.toLowerCase().includes(search.toLowerCase()) || String(data.person).toLowerCase().includes(search.toLowerCase()))"
-                highlight-current-row
-                max-height="480px"
-              >
-                <el-table-column type="expand">
-                  <template #header>
-                    <el-button type="text" :icon="Refresh" @click="refresh(choice)" />
-                  </template>
-                  <template #default="props">
-                    <el-descriptions :title="'成员' + props.row.number + '信息'" border>
-                      <el-descriptions-item label="姓名">
-                        {{ props.row.name }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="学号">
-                        {{ props.row.number }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="所属部门">
-                        {{ props.row.in }}
-                      </el-descriptions-item>
-                      <!-- <el-descriptions-item label="职务">
+              <template #default="props">
+                <el-descriptions :title="'成员' + props.row.number + '信息'" border>
+                  <el-descriptions-item label="姓名">
+                    {{ props.row.name }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="学号">
+                    {{ props.row.number }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="所属部门">
+                    {{ props.row.in }}
+                  </el-descriptions-item>
+                  <!-- <el-descriptions-item label="职务">
                         {{ props.row.duty.join('、') }}
                       </el-descriptions-item>
                       <el-descriptions-item label="管理">
                         {{ props.row.admin.join('、') }}
                       </el-descriptions-item> -->
-                      <el-descriptions-item label="是否为主席团成员">
-                        {{ props.row.icg ? '是' : '不是' }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="素质分">
-                        {{ props.row.record.score }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="违纪次数">
-                        {{ props.row.record.violation }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="反馈次数">
-                        {{ props.row.record.actions }}
-                      </el-descriptions-item>
-                    </el-descriptions>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="name" label="姓名" />
-                <el-table-column prop="number" label="学号" />
-                <el-table-column prop="in" label="所属部门" />
-                <el-table-column align="right" fixed="right">
-                  <template #header>
-                    <el-input v-model="search" size="mini" placeholder="输入以搜索" />
-                  </template>
-                  <template #default="props">
-                    <div>
-                      <el-button v-if="String(props.row.do).includes('非正式成员')" size="small" type="text" @click="startToTrue(props.row.number)"> 转正 </el-button>
-                      <el-popconfirm title="确定删除吗？" @confirm="deletePerson(props)">
-                        <template #reference>
-                          <el-button size="small" type="text"> 删除成员 </el-button>
-                        </template>
-                      </el-popconfirm>
-                    </div>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </el-card>
-          </template>
-        </el-skeleton>
-      </el-tab-pane>
-    </el-tabs>
+                  <el-descriptions-item label="是否为主席团成员">
+                    {{ props.row.icg ? '是' : '不是' }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="素质分">
+                    {{ props.row.record.score }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="违纪次数">
+                    {{ props.row.record.violation }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="反馈次数">
+                    {{ props.row.record.actions }}
+                  </el-descriptions-item>
+                </el-descriptions>
+              </template>
+            </el-table-column>
+            <el-table-column prop="name" label="姓名" />
+            <el-table-column prop="number" label="学号" />
+            <el-table-column prop="in" label="所属部门" />
+            <el-table-column align="right" fixed="right">
+              <template #header>
+                <el-input v-model="search" size="mini" placeholder="输入以搜索" />
+              </template>
+              <template #default="props">
+                <div>
+                  <el-button v-if="String(props.row.do).includes('非正式成员')" size="small" type="text" @click="startToTrue(props.row.number)"> 转正 </el-button>
+                  <el-popconfirm title="确定删除吗？" @confirm="deletePerson(props)">
+                    <template #reference>
+                      <el-button size="small" type="text"> 删除成员 </el-button>
+                    </template>
+                  </el-popconfirm>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </template>
+    </el-skeleton>
     <el-dialog v-model="isRegistingMember" title="注册成员" center>
       <template #header>注册成员</template>
       <el-form v-model="information" title="注册成员">

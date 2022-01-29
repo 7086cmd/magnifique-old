@@ -13,7 +13,7 @@ const copyDir = (src) => {
     const itemPath = resolve(src, item)
     const lstType = statSync(itemPath)
     if (lstType.isFile()) {
-      if (readFileSync(itemPath).toString().includes('qzb')) {
+      if (readFileSync(itemPath).toString().includes('document')) {
         console.log(itemPath)
       }
     } else if (lstType.isDirectory()) {

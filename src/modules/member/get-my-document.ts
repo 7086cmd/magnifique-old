@@ -5,7 +5,7 @@ import objectToArray from '../utils/object-to-array'
 
 export default (numb: number) => {
   const { gradeid, classid } = analyzePerson(numb)
-  const docsClass = objectToArray('id', parse(getContentClass('document', gradeid, classid)).details)
+  const docsClass = objectToArray('id', parse(getContentClass('post', gradeid, classid)).details)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const all: any[] = []
   docsClass.forEach((item) => {
