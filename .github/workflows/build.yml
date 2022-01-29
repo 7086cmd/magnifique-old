@@ -2,7 +2,7 @@ name: Build App
 
 on:
   release:
-    types: [created, edited]
+    types: [created, edited, published]
     branches: [main]
 
 jobs:
