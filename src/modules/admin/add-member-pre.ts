@@ -7,7 +7,7 @@ import analyzePerson from '../utils/analyze-person'
 import { sha512 } from 'js-sha512'
 export default (configuration: member) => {
   const ana = analyzePerson(configuration.number)
-  let temppath = resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}/members/pre/`)
+  let temppath = resolve(tmpdir(), '..', 'magnifique', `${ana.gradeid}`, `${ana.classid}`, `members`)
   if (existsSync(temppath)) {
     try {
       temppath = resolve(temppath, `./${configuration.number}.sdbdata`)

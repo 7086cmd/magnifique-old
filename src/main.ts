@@ -6,7 +6,7 @@ import { createServer } from 'http'
 import { tmpdir } from 'os'
 import { v4 as generateToken, v4 } from 'uuid'
 import { encode as encodeGBK } from 'iconv-lite'
-import { app, BrowserWindow, ipcMain, screen, Tray, Menu } from 'electron'
+import { app, BrowserWindow, ipcMain, screen, Tray, Menu, dialog } from 'electron'
 // import server dependences
 import Koa from 'koa'
 import KoaRouter from '@koa/router'
@@ -196,7 +196,7 @@ router.get('/api/class/:gradeid/:classid/member/pre/get', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -224,7 +224,7 @@ router.get('/api/class/:gradeid/:classid/member/get', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -260,7 +260,7 @@ router.post('/api/class/new/feedback', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -285,7 +285,7 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/person', async 
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -310,7 +310,7 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/reason', async 
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -335,7 +335,7 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/date', async (c
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -354,7 +354,7 @@ router.post('/api/class/member/regist', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -374,7 +374,7 @@ router.post('/api/class/edit/password', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -401,15 +401,15 @@ router.get('/api/member/:id/login', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
 router.post('/api/member/admin/trans/member', async (ctx) => {
   try {
-    const { password, person, number } = ctx.request.body
+    const { password, person, number, toType } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
-      ctx.response.body = moveToRelMember(parseInt(person))
+      ctx.response.body = moveToRelMember(parseInt(person), toType)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -420,7 +420,7 @@ router.post('/api/member/admin/trans/member', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -439,7 +439,7 @@ router.post('/api/member/admin/del/member', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -458,7 +458,7 @@ router.post('/api/member/admin/new/member', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -478,7 +478,7 @@ router.get('/api/member/admin/:number/get/:department/member', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -498,7 +498,7 @@ router.post('/api/member/:id/edit/password', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -518,7 +518,7 @@ router.get('/api/member/:id/workflow/get', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -540,7 +540,7 @@ router.post('/api/member/:id/workflow/new', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -560,7 +560,7 @@ router.post('/api/member/:id/workflow/pause', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -580,7 +580,7 @@ router.post('/api/member/:id/workflow/finish', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -600,7 +600,7 @@ router.post('/api/member/:id/workflow/start', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -620,7 +620,7 @@ router.post('/api/member/:id/workflow/quit', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -641,11 +641,11 @@ router.get('/api/member/admin/:id/get/all/deduction', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
-router.get('/api/member/jjb/:id/work/get/deduction', async (ctx) => {
+router.get('/api/member/deduction/:id/work/get/deduction', async (ctx) => {
   try {
     const password = getPassword(ctx)
     const { id } = ctx.params
@@ -672,7 +672,7 @@ router.get('/api/member/jjb/:id/work/get/deduction', async (ctx) => {
     }
   }
 })
-router.post('/api/member/jjb/:id/work/new/deduction', async (ctx) => {
+router.post('/api/member/deduction/:id/work/new/deduction', async (ctx) => {
   try {
     const { id, password, content } = ctx.request.body
     if (loginMember(parseInt(id), password).status == 'ok') {
@@ -699,7 +699,7 @@ router.post('/api/member/jjb/:id/work/new/deduction', async (ctx) => {
     }
   }
 })
-router.post('/api/member/jjb/:id/work/turnd/deduction', async (ctx) => {
+router.post('/api/member/deduction/:id/work/turnd/deduction', async (ctx) => {
   try {
     const { id: number } = ctx.params
     const { id, password, person, reason } = ctx.request.body
@@ -727,7 +727,7 @@ router.post('/api/member/jjb/:id/work/turnd/deduction', async (ctx) => {
     }
   }
 })
-router.post('/api/member/jjb/:id/work/del/deduction', async (ctx) => {
+router.post('/api/member/deduction/:id/work/del/deduction', async (ctx) => {
   try {
     const { id: number } = ctx.params
     const { id, password, person } = ctx.request.body
@@ -757,7 +757,7 @@ router.post('/api/member/jjb/:id/work/del/deduction', async (ctx) => {
 })
 
 // 学习部可用API
-router.get('/api/member/xxb/:id/work/get/document', async (ctx) => {
+router.get('/api/member/post/:id/work/get/document', async (ctx) => {
   try {
     const password = getPassword(ctx)
     const { id } = ctx.params
@@ -780,11 +780,11 @@ router.get('/api/member/xxb/:id/work/get/document', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
-router.post('/api/member/xxb/:id/work/upload/document', uploader.single('file'), async (ctx) => {
+router.post('/api/member/post/:id/work/upload/document', uploader.single('file'), async (ctx) => {
   if (ctx.file !== undefined) {
     ctx.response.body = uploadDispose(parseInt(ctx.params.id), ctx.file)
   } else {
@@ -799,7 +799,7 @@ router.get('/api/member/download/:id', async (ctx) => {
   ctx.response.body = docTokens[ctx.params.id]
   delete docTokens[ctx.params.id]
 })
-router.post('/api/member/xxb/:id/work/download/document', async (ctx) => {
+router.post('/api/member/post/:id/work/download/document', async (ctx) => {
   try {
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
@@ -831,11 +831,11 @@ router.post('/api/member/xxb/:id/work/download/document', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
-router.post('/api/member/xxb/:id/work/new/document', async (ctx) => {
+router.post('/api/member/post/:id/work/new/document', async (ctx) => {
   try {
     const { id, password, content, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
@@ -857,7 +857,7 @@ router.post('/api/member/xxb/:id/work/new/document', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -871,7 +871,7 @@ router.get('/api/admin/login', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -890,7 +890,7 @@ router.get('/api/admin/get/all/deduction', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -928,7 +928,7 @@ router.get('/api/admin/get/core/member', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -954,7 +954,7 @@ router.post('/api/admin/edit/password', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -984,7 +984,7 @@ router.post('/api/admin/export/deduction/class', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -1014,7 +1014,7 @@ router.post('/api/admin/export/deduction/detail', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -1033,7 +1033,7 @@ router.get('/api/admin/get/:department/member', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -1059,7 +1059,26 @@ router.post('/api/admin/del/deduction', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
+    }
+  }
+})
+router.post('/api/admin/full/member', async (ctx) => {
+  try {
+    const { password, member, position } = ctx.request.body
+    if (loginAdmin(password).status == 'ok') {
+      ctx.response.body = moveToRelMember(parseInt(member), position)
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -1078,7 +1097,7 @@ router.post('/api/admin/new/member', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -1097,7 +1116,7 @@ router.post('/api/admin/del/member', async (ctx) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 })
@@ -1216,6 +1235,10 @@ app.whenReady().then(() => {
     webPreferences: {
       preload: resolve(__dirname, process.env.NODE_ENV == 'development' ? './preload.js' : './preload.min.js'),
     },
+    show: false,
+  })
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show()
   })
   process.env.NODE_ENV == 'development' && mainWindow.webContents.openDevTools()
   tray.setContextMenu(

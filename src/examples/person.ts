@@ -30,6 +30,12 @@ export default () => {
       admin: [],
       view: [],
       department: '',
+      regist: {
+        plan: '',
+        position: '',
+        prize: '',
+        introduce: '',
+      },
     },
     password: '',
     record: {

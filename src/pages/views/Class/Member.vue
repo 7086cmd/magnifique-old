@@ -6,6 +6,7 @@ import { ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import baseurl from '../../modules/baseurl'
 import MemberLogin from '../Member/Login.vue'
+import personExample from '../../../examples/person'
 
 let isLoginingMember = ref(false)
 const { t } = useI18n()
@@ -16,62 +17,18 @@ let basicnum = ref(0)
 })()
 let isSubmiting = ref(false)
 let isRegistingMember = ref(false)
-let memberifo = reactive({
-  name: '',
-  number: '',
-  in: '',
-  type: '',
-  description: '',
-  plan: '',
-  prize: '',
-  donow: '',
+let memberifo = reactive(personExample())
+memberifo.union.position = 'registry'
+// eslint-disable-next-line no-undef
+let departments = ref<
+  {
+    name: string
+    value: string
+  }[]
+>([])
+axios(`${baseurl}department/list`).then((response) => {
+  departments.value.push(...response.data.details)
 })
-let departments = ref([
-  {
-    label: '学生会',
-    options: [
-      {
-        label: '纪检部',
-        value: 'ji-jian',
-      },
-      {
-        label: '学习部',
-        value: 'xue-xi',
-      },
-      {
-        label: '青志部',
-        value: 'qing-zhi',
-      },
-      {
-        label: '文体部',
-        value: 'wen-ti',
-      },
-    ],
-  },
-  {
-    label: '团总支',
-    options: [
-      {
-        label: '组织部',
-        value: 'zu-zhi',
-      },
-      {
-        label: '宣传部',
-        value: 'xuan-chuan',
-      },
-    ],
-  },
-])
-let types = ref([
-  {
-    name: '干事',
-    value: 'gan-shi',
-  },
-  {
-    name: '副部长',
-    value: 'fu-bu-zhang',
-  },
-])
 let loading = ref(true)
 let membersDetail = ref([])
 let preMembersDetail = ref([])
@@ -103,32 +60,34 @@ const createRegistry = async () => {
       type: 'error',
       center: true,
     })
-  } else if (parseInt(memberifo.number) <= 0 || parseInt(memberifo.number) >= 100) {
+  } else if (memberifo.number <= 0 || memberifo.number >= 100) {
     ElMessageBox.alert('没有输入学号 或者学号输入错误', '失败', {
       type: 'error',
       center: true,
     })
-  } else if (memberifo.in == '') {
+  } else if (memberifo.union.department == '') {
     ElMessageBox.alert('没有输入想要进入的部门', '失败', {
       type: 'error',
       center: true,
     })
-  } else if (memberifo.type == '') {
-    ElMessageBox.alert('没有输入想要担任的职务', '失败', {
-      type: 'error',
-      center: true,
-    })
-  } else if (memberifo.description == '') {
+  } else if (memberifo.union.regist.position == '') {
     ElMessageBox.alert('没有输入个人介绍', '失败', {
       type: 'error',
       center: true,
     })
-  } else if (memberifo.plan == '') {
+  } else if (memberifo.union.regist.plan == '') {
     ElMessageBox.alert('没有输入工作计划', '失败', {
       type: 'error',
       center: true,
     })
   } else {
+    try {
+      memberifo.union.duty = (await axios(`${baseurl}department/${memberifo.union.department}/duty`)).data.details as ('deduction' | 'document' | 'radio' | 'volunteer')[]
+    } catch (_e) {
+      memberifo.union.duty = []
+    }
+    memberifo.union.leader = memberifo.union.position.includes('chairman') || memberifo.union.position === 'minister'
+    memberifo.number = basicnum.value + memberifo.number
     isSubmiting.value = true
     const response = await axios({
       url: `${baseurl}class/member/regist`,
@@ -136,16 +95,7 @@ const createRegistry = async () => {
         'Content-Type': 'application/json',
       },
       data: {
-        member: {
-          name: memberifo.name,
-          number: parseInt(memberifo.number) + basicnum.value * 100,
-          in: memberifo.in,
-          type: memberifo.type,
-          donow: memberifo.donow,
-          description: memberifo.description,
-          prize: memberifo.prize,
-          plan: memberifo.plan,
-        },
+        member: memberifo,
         password,
         gradeid,
         classid,
@@ -281,28 +231,21 @@ const createRegistry = async () => {
             </el-input>
           </el-form-item>
           <el-form-item label="加入部门">
-            <el-select v-model="memberifo.in" style="width: 100%">
-              <el-option-group v-for="group in departments" :key="group.label" :label="group.label">
-                <el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-              </el-option-group>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="担任职位">
-            <el-select v-model="memberifo.type" style="width: 100%">
-              <el-option v-for="item in types" :key="item.value" :label="item.name" :value="item.value"></el-option>
+            <el-select v-model="memberifo.union.department" style="width: 100%">
+              <el-option v-for="item in departments" :key="item.value" :label="item.name" :value="item.value"> </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="现任职务">
-            <el-input v-model="memberifo.donow"></el-input>
+            <el-input v-model="memberifo.union.regist.position"></el-input>
           </el-form-item>
           <el-form-item label="自我介绍">
-            <el-input v-model="memberifo.description" type="textarea" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+            <el-input v-model="memberifo.union.regist.introduce" type="textarea" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
           </el-form-item>
           <el-form-item label="发展计划">
-            <el-input v-model="memberifo.plan" type="textarea" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+            <el-input v-model="memberifo.union.regist.plan" type="textarea" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
           </el-form-item>
           <el-form-item label="荣获奖项">
-            <el-input v-model="memberifo.prize" type="textarea" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+            <el-input v-model="memberifo.union.regist.prize" type="textarea" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
           </el-form-item>
         </el-form>
         <template #footer>

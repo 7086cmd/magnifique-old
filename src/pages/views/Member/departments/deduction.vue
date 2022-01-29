@@ -7,30 +7,15 @@ import dayjs from 'dayjs'
 import { ElMessageBox, ElLoading } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import baseurl from '../../../modules/baseurl'
+import example from '../../../../examples/deduction'
+import failfuc from '../../../modules/failfuc'
+import sucfuc from '../../../modules/sucfuc'
 
 const { t } = useI18n()
 
-let choice = ref('deduction')
-
 const { number, password } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
 
-let deductionData = reactive({
-  person: 0,
-  reason: '',
-  description: '',
-  deduction: 0,
-  deductor: {
-    name: '',
-    number,
-  },
-  time: dayjs().format('YYYY/MM/DD HH:mm:ss'),
-  place: '',
-  status: 'normal',
-  msgs: {
-    feedback: '',
-    turndown: '',
-  },
-})
+let deductionData = reactive(example())
 let typs: Ref<string[]> = ref([])
 let typicals: Ref<any[]> = ref([])
 let dets: Ref<any> = ref({})
@@ -65,9 +50,10 @@ const tableRowClassName = (scope: any) => {
 }
 const refresh = async () => {
   isFetchingData.value = true
-  const response = await axios({
-    url: `${baseurl}member/jjb/${number}/work/get/deduction?password=${password}`,
-    method: 'get',
+  const response = await axios(`${baseurl}member/deduction/${number}/work/get/deduction`, {
+    params: {
+      password,
+    },
   })
   isFetchingData.value = false
   if (response.data.status == 'ok') {
@@ -89,9 +75,7 @@ const turnDown = async (props: any) => {
     const delLoad = ElLoading.service({
       text: '正在驳回，请稍后',
     })
-    const response = await axios({
-      url: `${baseurl}member/jjb/${number}/work/turnd/deduction`,
-      method: 'post',
+    const response = await axios.post(`${baseurl}member/deduction/${number}/work/turnd/deduction`, {
       data: {
         id: props.row.id,
         password,
@@ -101,21 +85,9 @@ const turnDown = async (props: any) => {
     })
     delLoad.close()
     if (response.data.status == 'ok') {
-      ElMessageBox.alert('操作成功', '成功', {
-        type: 'success',
-        center: true,
-      })
+      sucfuc()
     } else {
-      ElMessageBox.alert(
-        t('dialogs.' + response.data.reason, {
-          msg: response.data.text,
-        }),
-        '失败',
-        {
-          type: 'error',
-          center: true,
-        }
-      )
+      failfuc(response.data.reason, response.data.text)
     }
     refresh()
   })
@@ -124,9 +96,7 @@ const deleteDeduction = async (props: any) => {
   const delLoad = ElLoading.service({
     text: '正在删除扣分，请稍后',
   })
-  const response = await axios({
-    url: `${baseurl}member/jjb/${number}/work/del/deduction`,
-    method: 'post',
+  const response = await axios.post(`${baseurl}member/deduction/${number}/work/del/deduction`, {
     data: {
       id: props.row.id,
       password,
@@ -135,21 +105,9 @@ const deleteDeduction = async (props: any) => {
   })
   delLoad.close()
   if (response.data.status == 'ok') {
-    ElMessageBox.alert('操作成功', '成功', {
-      type: 'success',
-      center: true,
-    })
+    sucfuc()
   } else {
-    ElMessageBox.alert(
-      t('dialogs.' + response.data.reason, {
-        msg: response.data.text,
-      }),
-      '失败',
-      {
-        type: 'error',
-        center: true,
-      }
-    )
+    failfuc(response.data.reason, response.data.text)
   }
   refresh()
 }
@@ -159,42 +117,25 @@ const submitDeduction = async () => {
   let msgs: string[] = []
   const ded = async () => {
     if (deductionData.person >= 21000000 || deductionData.person <= 10000000) {
-      ElMessageBox.alert('学号错误', '失败', {
-        type: 'error',
-        center: true,
-      })
+      failfuc('学号错误', '')
     } else if (typs.value.length == 0) {
-      ElMessageBox.alert('类型错误', '失败', {
-        type: 'error',
-        center: true,
-      })
+      failfuc('类型错误', '')
     } else if (deductionData.place == '') {
-      ElMessageBox.alert('地点错误', '失败', {
-        type: 'error',
-        center: true,
-      })
+      failfuc('地点错误', '')
     } else if (!dayjs(deductionData.time).isValid()) {
-      ElMessageBox.alert('日期不正确', '失败', {
-        type: 'error',
-        center: true,
-      })
+      failfuc('日期错误', '')
     } else {
       isCreating.value = true
       for (let i = 0; i in typs.value; i++) {
         let data = deductionData
         data.reason = typs.value[i]
         data.deduction = dets.value[typs.value[i]]
-        const response = await axios({
-          url: `${baseurl}member/jjb/${number}/work/new/deduction`,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+        const response = await axios.post(`${baseurl}member/deduction/${number}/work/new/deduction`, {
           data: {
             id: number,
             password,
             content: data,
           },
-          method: 'post',
         })
         isCreating.value = false
         if (response.data.status !== 'ok') {
@@ -353,7 +294,7 @@ const submitDeduction = async () => {
         </el-form-item>
       </el-form>
       <template #footer>
-        <span class="dialog-footer">
+        <span>
           <el-button @click="newDeduction = false"> 取消 </el-button>
           <el-button type="primary" :loading="isCreating" @click="submitDeduction"> 确定 </el-button>
         </span>

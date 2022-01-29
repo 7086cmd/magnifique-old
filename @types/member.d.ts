@@ -29,10 +29,11 @@ declare interface member {
     admin: ('deduction' | 'document' | 'radio' | 'volunteer' | 'member')[]
     view: ('deduction' | 'document' | 'radio' | 'volunteer' | 'member')[]
     department: string
-    regist?: {
+    regist: {
       plan: string
       prize: string
       position: string
+      introduce: string
     }
   }
   record: {

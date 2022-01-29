@@ -66,7 +66,7 @@ const deleteDeduction = async (props: any) => {
     text: '正在删除扣分，请稍后',
   })
   const response = await axios({
-    url: `${baseurl}member/jjb/${number}/work/del/deduction`,
+    url: `${baseurl}member/deduction/${number}/work/del/deduction`,
     method: 'post',
     data: {
       id: props.row.id,

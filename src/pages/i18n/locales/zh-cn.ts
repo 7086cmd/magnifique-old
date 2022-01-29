@@ -31,6 +31,7 @@ export default {
   },
   dialogs: {
     'not-exist': '不存在',
+    'not-exists': '不存在',
     'password-wrong': '密码错误',
     'type-error': '服务端错误消息{msg}',
     'no-auto': '没有权限',

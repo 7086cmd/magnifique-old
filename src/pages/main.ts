@@ -14,6 +14,7 @@ import store from './store'
 import i18n from './i18n'
 import { ElMessage } from 'element-plus'
 import Particles from 'particles.vue3'
+import './registerServiceWorker'
 
 const app = createApp(App)
 
