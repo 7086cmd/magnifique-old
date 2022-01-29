@@ -3,6 +3,8 @@ name: Build App
 on:
   release:
     branches: [main]
+  workflow_dispatch:
+    branches: [main]
 
 jobs:
   Windows-Build:
