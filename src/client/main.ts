@@ -2,12 +2,41 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { resolve } from 'path'
 import { URL } from 'url'
-
+import fetch from 'node-fetch'
 import analyzePerson from '../modules/utils/analyze-person'
 import transformDate from '../modules/utils/transform-date'
 import io from 'socket.io-client'
-import { BrowserWindow, app, Tray, Menu, screen, ipcMain, Notification, dialog } from 'electron'
+import { BrowserWindow, app, Tray, Menu, screen, ipcMain, Notification, dialog, shell } from 'electron'
+import { parse } from 'yaml'
+import packageJson from '../../package.json'
 
+const update = async () => {
+  const response = await fetch('http://10.49.8.4/app/latest.yml')
+  const latest = parse(await response.text())
+  const {
+    path,
+    version,
+  }: {
+    path: string
+    version: string
+  } = latest
+  if (packageJson.version !== version) {
+    new Notification({
+      title: '新更新',
+      body: version,
+    }).show()
+    shell.openExternal(new URL('http://10.49.8.4/app/' + path.replaceAll('-', ' ')).toString())
+  } else {
+    new Notification({
+      title: '无更新',
+      body: version,
+    }).show()
+  }
+}
+
+if (process.env.NODE_ENV !== 'development') {
+  update()
+}
 let socket: any
 let connected = false
 
@@ -126,8 +155,8 @@ app.whenReady().then(() => {
   })
 })
 
-// try {
-//     // eslint-disable-next-line @typescript-eslint/no-var-requires
-//     require('electron-reloader')(module)
-//     // eslint-disable-next-line no-empty
-// } catch (_e) {}
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('electron-reloader')(module)
+  // eslint-disable-next-line no-empty
+} catch (_e) {}

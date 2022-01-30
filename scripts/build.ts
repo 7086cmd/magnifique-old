@@ -1,28 +1,17 @@
 /* eslint-disable no-console */
 import { build as buildFrontEnd } from 'vite'
-import { build as buildBackEnd, analyzeMetafile } from 'esbuild'
+import { build as buildBackEnd, analyzeMetafile, Metafile } from 'esbuild'
 import { build as buildApp } from 'electron-builder'
-import { build as buildDocs } from 'vitepress'
 import { ESLint } from 'eslint'
 import chalk from 'chalk'
-import { resolve } from 'path'
-import { readdirSync, readFileSync, writeFileSync, mkdirSync } from 'fs'
 import { platform } from 'os'
 import { exec } from 'child_process'
-const __dirname = resolve()
-// Edit Main
-const packageFile = JSON.parse(readFileSync(resolve(__dirname, './package.json')).toString())
-packageFile.main = 'dist/main.min.js'
-delete packageFile['type']
-writeFileSync(resolve(__dirname, './package.json'), JSON.stringify(packageFile, null, 4))
-const list = readdirSync(resolve(__dirname, './src/modules'))
-for (let i = 0; i in list; i++) {
-  list[i] = 'src/modules/' + list[i]
-}
+import { resolve } from 'path'
+import { copyFile, mkdir } from 'fs/promises'
+
 const lintFile = async () => {
   const eslint = new ESLint()
   const results = await eslint.lintFiles(['src/**/*.ts', 'src/main.ts', 'src/**/*.vue'])
-  // console.log(JSON.stringify(results, '', 4))
   let tw = 0,
     te = 0
   let hasw = false
@@ -77,35 +66,6 @@ const lintFile = async () => {
   }
   await lintFile()
   await buildFrontEnd()
-  await buildDocs(resolve(__dirname, './docs')).then(() => {
-    try {
-      mkdirSync(resolve(__dirname, './dist/docs'))
-      mkdirSync(resolve(__dirname, './dist/docs/assets'))
-      // eslint-disable-next-line no-empty
-    } catch (_) {}
-    const folderlist = readdirSync(resolve(__dirname, './docs/.vitepress/dist'), {
-      withFileTypes: true,
-    })
-    const childfolderlist = readdirSync(resolve(__dirname, './docs/.vitepress/dist/assets'), {
-      withFileTypes: true,
-    })
-    for (let i = 0; i in folderlist; i++) {
-      if (folderlist[i].isFile() == true) {
-        try {
-          writeFileSync(resolve(__dirname, './dist/docs', folderlist[i].name), readFileSync(resolve(__dirname, './docs/.vitepress/dist', folderlist[i].name)))
-          // eslint-disable-next-line no-empty
-        } catch (_) {}
-      }
-    }
-    for (let i = 0; i in childfolderlist; i++) {
-      if (childfolderlist[i].isFile() == true) {
-        try {
-          writeFileSync(resolve(__dirname, './dist/docs/assets', childfolderlist[i].name), readFileSync(resolve(__dirname, './docs/.vitepress/dist/assets', childfolderlist[i].name)))
-          // eslint-disable-next-line no-empty
-        } catch (_) {}
-      }
-    }
-  })
   await buildBackEnd({
     entryPoints: ['src/main.ts'],
     outdir: 'dist',
@@ -128,13 +88,13 @@ const lintFile = async () => {
     color: true,
     define: {
       'process.env.NODE_ENV': "'production'",
-      'process.env.PRELOAD_PLACE': "'preload.js'",
     },
     banner: {
-      js: '/* Copyright© 2022 7086cmd(Wu Chengyu) in Ningbo Zhenhai Jiaochuan Academy. */',
+      js: '/* Copyright© 2022 7086cmd */',
     },
     treeShaking: true,
     external: ['electron'],
+    metafile: true,
   })
   await buildBackEnd({
     entryPoints: ['src/preload.ts'],
@@ -158,10 +118,9 @@ const lintFile = async () => {
     color: true,
     define: {
       'process.env.NODE_ENV': "'production'",
-      'process.env.PRELOAD_PLACE': "'preload.js'",
     },
     banner: {
-      js: '/* Copyright© 2022 7086cmd(Wu Chengyu) in Ningbo Zhenhai Jiaochuan Academy. */',
+      js: '/* Copyright© 2022 7086cmd */',
     },
     treeShaking: true,
     external: ['electron'],
@@ -188,10 +147,9 @@ const lintFile = async () => {
     color: true,
     define: {
       'process.env.NODE_ENV': "'production'",
-      'process.env.PRELOAD_PLACE': "'preload.js'",
     },
     banner: {
-      js: '/* Copyright© 2022 7086cmd(Wu Chengyu) in Ningbo Zhenhai Jiaochuan Academy. */',
+      js: '/* Copyright© 2022 7086cmd */',
     },
     treeShaking: true,
     external: ['electron'],
@@ -218,15 +176,75 @@ const lintFile = async () => {
     color: true,
     define: {
       'process.env.NODE_ENV': "'production'",
-      'process.env.PRELOAD_PLACE': "'preload.js'",
     },
     banner: {
-      js: '/* Copyright© 2022 7086cmd(Wu Chengyu) in Ningbo Zhenhai Jiaochuan Academy. */',
+      js: '/* Copyright© 2022 7086cmd */',
     },
     treeShaking: true,
     external: ['electron'],
   })
-  await buildApp()
-  packageFile.main = 'src/main.ts'
-  writeFileSync(resolve(__dirname, './package.json'), JSON.stringify(packageFile, null, 4))
+  await mkdir(resolve('dist', 'pages', 'app'))
+  await buildApp({
+    config: {
+      files: ['./dist/main.client.min.js', './dist/preload.client.min.js', './icons/client.ico'],
+      extraMetadata: {
+        main: 'dist/main.client.min.js',
+      },
+      directories: {
+        output: 'dist/pages/app',
+      },
+      asar: true,
+      extends: null,
+      appId: 'com.magnifique.client',
+      copyright: 'Copyright ©7086cmd 2021 GNU License',
+      productName: 'Magnifique Client',
+      win: {
+        icon: './icons/client.ico',
+        target: [
+          {
+            target: 'nsis',
+            arch: ['x64'],
+          },
+        ],
+        publish: undefined,
+      },
+      nsis: {
+        oneClick: false,
+        perMachine: false,
+        allowToChangeInstallationDirectory: true,
+        shortcutName: 'Magnifique Client',
+        menuCategory: 'Magnifique',
+      },
+    },
+  })
+  await buildApp({
+    config: {
+      files: ['./dist/docs/**/*', './dist/pages/**/*', './dist/docs/*', './dist/pages/*', './dist/main.min.js', './dist/preload.min.js', './icons/server.ico'],
+      extraMetadata: {
+        main: 'dist/main.min.js',
+      },
+      asar: true,
+      extends: null,
+      appId: 'com.magnifique.server',
+      copyright: 'Copyright ©7086cmd 2021 GNU License',
+      productName: 'Magnifique Server',
+      win: {
+        icon: './icons/server.ico',
+        target: [
+          {
+            target: 'nsis',
+            arch: ['x64'],
+          },
+        ],
+        publish: ['github'],
+      },
+      nsis: {
+        oneClick: false,
+        perMachine: false,
+        allowToChangeInstallationDirectory: true,
+        shortcutName: 'Magnifique Server',
+        menuCategory: 'Magnifique',
+      },
+    },
+  })
 })()

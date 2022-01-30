@@ -73,6 +73,7 @@ import downloadPost from './modules/admin/download-post'
 import networks from './modules/database/networks'
 import allowPowers from './modules/database/allow-powers'
 import getPublicPower from './modules/database/get-public-power'
+import { stringify } from 'yaml'
 
 // Generate Chart Base File
 const chartBase = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="shortcut icon" href="https://v-charts.js.org/favicon.ico" type="image/x-icon" /><title>Chart (type: <%=tit=>)</title><script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script><script src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css" /></head><body><div id="app"><ve-<%=tpe=> :data="cdata"></ve-<%=tpe=>></div><script>var vm=new Vue({el:'#app',data(){const data=JSON.parse('<%=dat=>');return {cdata:data}}})</script></body></html>`
@@ -1184,6 +1185,21 @@ router.get('/api/analyzePerson/:person', async (ctx) => {
 })
 router.get('/config', async (ctx) => {
   ctx.response.body = readData()
+})
+router.get('/app/latest.yml', async (ctx) => {
+  ctx.response.body = stringify({
+    version: '0.1.0',
+    files: [
+      {
+        url: 'Magnifique-Client-Setup-0.1.0.exe',
+        sha512: 'lbHPkFvIWK+ZcCtXTANgyiCeyDZ6+kazQaoRaeXW61KewK7fm1+k8zaUf1i0MF4FdqK4wQALnLPeBIsoCKRklA==',
+        size: 138161174,
+      },
+    ],
+    path: 'Magnifique-Client-Setup-0.1.0.exe',
+    sha512: 'lbHPkFvIWK+ZcCtXTANgyiCeyDZ6+kazQaoRaeXW61KewK7fm1+k8zaUf1i0MF4FdqK4wQALnLPeBIsoCKRklA==',
+    releaseDate: '2022-01-29T23:39:57.030Z',
+  })
 })
 
 // Use routes to register APIs.
