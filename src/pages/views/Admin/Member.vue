@@ -3,11 +3,16 @@
 import { ref, reactive, watch } from 'vue'
 import axios from 'axios'
 import { Refresh } from '@element-plus/icons-vue'
-import { ElMessageBox } from 'element-plus'
+import { ElMessageBox, ElLoading } from 'element-plus'
 import baseurl from '../../modules/baseurl'
 import personExample from '../../../examples/person'
 import sucfuc from '../../modules/sucfuc'
 import failfuc from '../../modules/failfuc'
+import MemberDescription from '../../components/lists/MemberDescription.vue'
+
+let runner = ElLoading.service({
+  text: '获取信息中...',
+})
 
 const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
 let isRegistingMember = ref(false)
@@ -83,6 +88,9 @@ const startToTrue = (number: number) => {
   toTrueNumber.value = number
 }
 const refresh = async (type: string) => {
+  runner = ElLoading.service({
+    text: '获取信息中...',
+  })
   loading.value = true
   const response = await axios(`${baseurl}admin/get/${type}/member?password=${password}`, {
     method: 'get',
@@ -91,6 +99,7 @@ const refresh = async (type: string) => {
   if (response.data.status === 'ok') {
     table.value = response.data.details
   }
+  runner.close()
 }
 refresh('all')
 watch(choice, () => {
@@ -218,35 +227,7 @@ const createMember = async () => {
                     <el-button type="text" :icon="Refresh" @click="refresh(choice)" />
                   </template>
                   <template #default="props">
-                    <el-descriptions :title="'成员' + props.row.number + '信息'" border>
-                      <el-descriptions-item label="姓名">
-                        {{ props.row.name }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="学号">
-                        {{ props.row.number }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="所属部门">
-                        {{ props.row.in }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="职务">
-                        {{ props.row.duty.join('、') }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="管理">
-                        {{ props.row.admin.join('、') }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="是否为主席团成员">
-                        {{ props.row.icg ? '是' : '不是' }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="素质分">
-                        {{ props.row.record.score }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="违纪次数">
-                        {{ props.row.record.violation }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="反馈次数">
-                        {{ props.row.record.actions }}
-                      </el-descriptions-item>
-                    </el-descriptions>
+                    <member-description :data="props.row"></member-description>
                   </template>
                 </el-table-column>
                 <el-table-column prop="name" label="姓名" />
@@ -258,7 +239,7 @@ const createMember = async () => {
                   </template>
                   <template #default="props">
                     <div>
-                      <el-button v-if="String(props.row.do).includes('非正式成员')" size="small" type="text" @click="startToTrue(props.row.number)"> 转正 </el-button>
+                      <el-button size="small" type="text" :disabled="props.row.icg" @click="startToTrue(props.row.number)"> 切换身份 </el-button>
                       <el-popconfirm title="确定删除吗？" @confirm="deletePerson(props)">
                         <template #reference>
                           <el-button size="small" type="text"> 删除成员 </el-button>

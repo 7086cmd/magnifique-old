@@ -78,23 +78,23 @@ const tableRowClassName = ({ row }) => {
         <el-card class="box-card" shadow="never">
           <el-progress type="dashboard" :percentage="score" :status="col">
             <template #default="{ percentage }">
-              <span class="percentage-value">{{ percentage }}</span>
-              <span class="percentage-label">素质分</span>
+              <span className="percentage-value">{{ percentage }}</span>
+              <span className="percentage-label">素质分</span>
             </template>
           </el-progress>
         </el-card>
       </el-col>
       <el-col :span="7">
         <el-card class="box-card" shadow="never">
-          <span class="percentage-value-2">{{ actions }}</span>
-          <span class="percentage-label-2">操作</span>
+          <span className="percentage-value-2">{{ actions }}</span>
+          <span className="percentage-label-2">操作</span>
         </el-card>
       </el-col>
       <el-col :span="7">
         <el-card class="box-card" shadow="never">
           <template #default>
-            <span class="percentage-value-2">{{ violation }}</span>
-            <span class="percentage-label-2">违纪</span>
+            <span className="percentage-value-2">{{ violation }}</span>
+            <span className="percentage-label-2">违纪</span>
           </template>
         </el-card>
       </el-col>
@@ -102,7 +102,7 @@ const tableRowClassName = ({ row }) => {
     <el-divider>{{ whatdo }} {{ name }}</el-divider>
     <el-card class="box-card" shadow="never">
       <template #header>
-        <div class="card-header">
+        <div className="card-header">
           <span>工作流</span>
         </div>
       </template>

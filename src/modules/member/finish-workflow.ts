@@ -12,7 +12,7 @@ export default (numb: number, id: string) => {
     try {
       temppath = resolve(temppath, `./${numb}.sdbdata`)
       let cfg = dataOpen(temppath)
-      cfg.workflows[id].status = 'success'
+      cfg.workflow.details[id].status = 'success'
       dataSave(temppath, cfg)
       return {
         status: 'ok',
@@ -21,7 +21,7 @@ export default (numb: number, id: string) => {
       return {
         status: 'error',
         reason: 'type-error',
-        text: <string>e,
+        text: new Error(<string>e).message,
       }
     }
   } else {

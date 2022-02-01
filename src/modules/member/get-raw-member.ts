@@ -1,9 +1,8 @@
-import dataOpen from './data-open'
-import analyzePerson from './analyze-person'
+import dataOpen from '../utils/data-open'
+import analyzePerson from '../utils/analyze-person'
 import { tmpdir } from 'os'
 import { resolve } from 'path'
 import { existsSync } from 'fs'
-import memberInformationProcess from '../admin/member-information-process'
 
 export default (num: number) => {
   const ana = analyzePerson(num)
@@ -12,7 +11,7 @@ export default (num: number) => {
     const ctn = dataOpen(tempdir)
     return {
       status: 'ok',
-      details: memberInformationProcess(ctn),
+      details: ctn as member,
     }
   } else {
     return {

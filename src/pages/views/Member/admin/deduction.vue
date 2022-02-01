@@ -1,0 +1,133 @@
+<script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ref, reactive } from 'vue'
+import { Refresh } from '@element-plus/icons-vue'
+import axios from 'axios'
+import dayjs from 'dayjs'
+import { ElLoading } from 'element-plus'
+import baseurl from '../../../modules/baseurl'
+import sucfuc from '../../../modules/sucfuc'
+import failfuc from '../../../modules/failfuc'
+
+let data = reactive({
+  deduction: [],
+})
+const { number, password } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
+let loading = ref(false)
+let search = ref('')
+const fbstatus = {
+  normal: '未申诉',
+  processing: '未处理',
+  failed: '申诉失败',
+}
+const tableRowClassName = (props: any) => {
+  const statuses = {
+    processing: 'warning-row',
+    failed: 'error-row',
+    normal: '',
+  }
+  return statuses[props.row.status]
+}
+const refresh = async () => {
+  loading.value = true
+  data.deduction = (await axios(`${baseurl}member/admin/${number}/get/all/deduction?password=${password}`)).data.details
+  for (let i = 0; i in data.deduction; i++) {
+    data.deduction[i].time = dayjs(data.deduction[i].time).format('YYYY/MM/DD')
+  }
+  loading.value = false
+}
+const deleteDeduction = async (props: any) => {
+  const delLoad = ElLoading.service({
+    text: '正在删除扣分，请稍后',
+  })
+  const response = await axios({
+    url: `${baseurl}member/admin/${number}/del/deduction`,
+    method: 'post',
+    data: {
+      id: props.row.id,
+      password,
+      person: props.row.person,
+    },
+  })
+  delLoad.close()
+  if (response.data.status == 'ok') {
+    sucfuc()
+  } else {
+    failfuc(response.data.reason, response.data.text)
+  }
+  refresh()
+}
+refresh()
+</script>
+
+<template>
+  <div>
+    <el-card shadow="never">
+      <el-skeleton :loading="loading" animated :rows="10" :throttle="500">
+        <template #default>
+          <el-card shadow="never">
+            <el-table
+              :data="data.deduction.filter((data: any) => !search || data.reason.toLowerCase().includes(search.toLowerCase()) || String(data.person).toLowerCase().includes(search.toLowerCase()) || String(data.deduction).toLowerCase().includes(search.toLowerCase()) || String(data.time).toLowerCase().includes(search.toLowerCase()))"
+              highlight-current-row
+              max-height="480px"
+              :default-sort="{
+                prop: 'deduction',
+                order: 'descending',
+              }"
+              :row-class-name="tableRowClassName"
+            >
+              <el-table-column type="expand">
+                <template #header>
+                  <el-button type="text" :icon="Refresh" @click="refresh()"></el-button>
+                </template>
+                <template #default="props">
+                  <el-alert title="提醒：这不是Bug哦，这个真的是扣分编号" type="info" center></el-alert>
+                  <el-descriptions :title="`扣分${props.row.id}信息`" border>
+                    <el-descriptions-item label="违纪者">
+                      {{ props.row.person }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="扣分数">
+                      {{ props.row.deduction }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="原因">
+                      {{ props.row.reason }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="地点">
+                      {{ props.row.place }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="时间">
+                      {{ props.row.time }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="扣分者">
+                      {{ props.row.deductor.name }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="解释说明">
+                      {{ props.row.description }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="申诉状态">
+                      {{ fbstatus[props.row.status] }}
+                    </el-descriptions-item>
+                  </el-descriptions>
+                </template>
+              </el-table-column>
+              <!-- <el-table-column prop="id" label="扣分ID" /> -->
+              <el-table-column prop="person" label="违纪者" />
+              <el-table-column prop="deduction" label="扣分数" />
+              <el-table-column prop="reason" label="原因" />
+              <el-table-column prop="time" label="时间" />
+              <el-table-column prop="deductor.name" label="扣分者" />
+              <el-table-column align="right" fixed="right">
+                <template #header>
+                  <el-input v-model="search" size="mini" placeholder="输入以搜索" />
+                </template>
+                <template #default="props">
+                  <el-button type="text" size="small" @click="deleteDeduction(props)"> 删除 </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-card>
+        </template>
+      </el-skeleton>
+    </el-card>
+  </div>
+</template>

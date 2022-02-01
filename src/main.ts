@@ -6,7 +6,7 @@ import { createServer } from 'http'
 import { tmpdir } from 'os'
 import { v4 as generateToken, v4 } from 'uuid'
 import { encode as encodeGBK } from 'iconv-lite'
-import { app, BrowserWindow, ipcMain, screen, Tray, Menu, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, screen, Tray, Menu } from 'electron'
 // import server dependences
 import Koa from 'koa'
 import KoaRouter from '@koa/router'
@@ -73,32 +73,11 @@ import downloadPost from './modules/admin/download-post'
 import networks from './modules/database/networks'
 import allowPowers from './modules/database/allow-powers'
 import getPublicPower from './modules/database/get-public-power'
-import { stringify } from 'yaml'
+import getRawMember from './modules/member/get-raw-member'
 
 // Generate Chart Base File
 const chartBase = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="shortcut icon" href="https://v-charts.js.org/favicon.ico" type="image/x-icon" /><title>Chart (type: <%=tit=>)</title><script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script><script src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css" /></head><body><div id="app"><ve-<%=tpe=> :data="cdata"></ve-<%=tpe=>></div><script>var vm=new Vue({el:'#app',data(){const data=JSON.parse('<%=dat=>');return {cdata:data}}})</script></body></html>`
 const nodataBase = `<!DOCTYPE html><html><head><meta charset="utf-8" /><title>没有数据</title><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-plus/dist/index.css" /></head><body><div id="app"><el-empty description="没有数据"></el-empty></div><script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script><script src="https://cdn.jsdelivr.net/npm/element-plus"></script><script type="text/javascript">let app=Vue.createApp({setup(){return {}}});app.use(ElementPlus);app.mount("#app");</script></body></html>`
-const typical = ['快走', '奔跑', '边走边喝', '边走边吃', '踩草坪', '踩马路牙子', '未戴校徽', '调戏成员', '疫情期间未戴口罩', '其他']
-const deducs = {
-  快走: 0.05,
-  奔跑: 0.1,
-  边走边吃: 0.05,
-  边走边喝: 0.05,
-  踩草坪: 0.1,
-  踩马路牙子: 0.05,
-  未戴校徽: 0.1,
-  调戏成员: 0.1,
-  疫情期间未戴口罩: 0.05,
-  其他: 0.05,
-}
-const departments = {
-  'xue-xi': 'xue-xi',
-  'ji-jian': 'ji-jian',
-  'qing-zhi': 'qing-zhi',
-  'wen-ti': 'wen-ti',
-  'xuan-chuan': 'xuan-chuan',
-  'zu-zhi': 'zu-zhi',
-}
 let tray: Tray
 let csvTokens = {}
 let docTokens = {}
@@ -393,6 +372,18 @@ router.get('/api/member/getinfo/:person', async (ctx) => {
     }
   }
 })
+router.get('/api/member/getinfo/:id/raw', async (ctx) => {
+  try {
+    const { id } = ctx.params
+    ctx.response.body = getRawMember(parseInt(id))
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
 router.get('/api/member/:id/login', async (ctx) => {
   try {
     const password = getPassword(ctx)
@@ -408,9 +399,9 @@ router.get('/api/member/:id/login', async (ctx) => {
 })
 router.post('/api/member/admin/trans/member', async (ctx) => {
   try {
-    const { password, person, number, toType } = ctx.request.body
+    const { password, member, number, position } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
-      ctx.response.body = moveToRelMember(parseInt(person), toType)
+      ctx.response.body = moveToRelMember(parseInt(member), position)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -463,12 +454,11 @@ router.post('/api/member/admin/new/member', async (ctx) => {
     }
   }
 })
-
 router.get('/api/member/admin/:number/get/:department/member', async (ctx) => {
   try {
     const password = getPassword(ctx)
     if (loginMember(parseInt(ctx.params.number), password).status == 'ok') {
-      ctx.response.body = processAllMemberInfo(getDepartmentMember(departments[ctx.params.department]))
+      ctx.response.body = processAllMemberInfo(getDepartmentMember(ctx.params.department))
     } else {
       ctx.response.body = {
         status: 'error',
@@ -631,7 +621,41 @@ router.get('/api/member/admin/:id/get/all/deduction', async (ctx) => {
   try {
     const password = getPassword(ctx)
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
-      ctx.response.body = getAllDeductions()
+      if ((getRawMember(parseInt(ctx.params.id)).details as member).union.admin.includes('deduction')) {
+        ctx.response.body = getAllDeductions()
+      } else {
+        ctx.response.body = {
+          status: 'error',
+          reason: 'no-auth',
+        }
+      }
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
+router.post('/api/member/admin/:id/del/deduction', async (ctx) => {
+  try {
+    const { password } = ctx.request.body
+    const { id } = ctx.params
+    if (loginMember(parseInt(id), password).status == 'ok') {
+      ctx.response.body = delDeduction(parseInt(ctx.request.body.person), ctx.request.body.id)
+      io.emit(
+        'del-deduc',
+        JSON.stringify({
+          person: ctx.request.body.person,
+          id: ctx.request.body.id,
+        })
+      )
     } else {
       ctx.response.body = {
         status: 'error',
@@ -651,7 +675,7 @@ router.get('/api/member/deduction/:id/work/get/deduction', async (ctx) => {
     const password = getPassword(ctx)
     const { id } = ctx.params
     if (loginMember(parseInt(id), password).status == 'ok') {
-      if (getMemberInf(parseInt(id)).details.in == '纪检部') {
+      if (getRawMember(parseInt(id)).details.union.duty.includes('deduction')) {
         ctx.response.body = getMyDeduction(parseInt(id))
       } else {
         ctx.response.body = {
@@ -675,9 +699,10 @@ router.get('/api/member/deduction/:id/work/get/deduction', async (ctx) => {
 })
 router.post('/api/member/deduction/:id/work/new/deduction', async (ctx) => {
   try {
-    const { id, password, content } = ctx.request.body
+    const { id } = ctx.params
+    const { password, content } = ctx.request.body
     if (loginMember(parseInt(id), password).status == 'ok') {
-      if (getMemberInf(parseInt(id)).details.in == '纪检部') {
+      if ((getRawMember(parseInt(id)).details as member).union.duty.includes('deduction')) {
         ctx.response.body = addDeduction(content)
         io.emit('new-deduc', JSON.stringify(content))
       } else {
@@ -705,7 +730,7 @@ router.post('/api/member/deduction/:id/work/turnd/deduction', async (ctx) => {
     const { id: number } = ctx.params
     const { id, password, person, reason } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
-      if (getMemberInf(parseInt(number)).details.in == '纪检部') {
+      if ((getRawMember(parseInt(id)).details as member).union.duty.includes('deduction')) {
         ctx.response.body = turnDown(person, id, reason)
         io.emit('turnd-deduc', JSON.stringify({ person, id, reason }))
       } else {
@@ -733,7 +758,7 @@ router.post('/api/member/deduction/:id/work/del/deduction', async (ctx) => {
     const { id: number } = ctx.params
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
-      if (getMemberInf(parseInt(number)).details.in == '纪检部') {
+      if ((getRawMember(parseInt(id)).details as member).union.duty.includes('deduction')) {
         ctx.response.body = delDeduction(person, id)
         io.emit('del-deduc', JSON.stringify({ person, id }))
       } else {
@@ -763,7 +788,7 @@ router.get('/api/member/post/:id/work/get/post', async (ctx) => {
     const password = getPassword(ctx)
     const { id } = ctx.params
     if (loginMember(parseInt(id), password).status == 'ok') {
-      if (getMemberInf(parseInt(id)).details.in == '学习部') {
+      if ((getRawMember(parseInt(id)).details as member).union.duty.includes('post')) {
         ctx.response.body = getMyPost(parseInt(id))
       } else {
         ctx.response.body = {
@@ -804,7 +829,7 @@ router.post('/api/member/post/:id/work/download/post', async (ctx) => {
   try {
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
-      if (getMemberInf(parseInt(person)).details.in == '学习部') {
+      if ((getRawMember(parseInt(id)).details as member).union.duty.includes('post')) {
         let index = v4()
         while (docTokens[index] !== undefined) {
           index = v4()
@@ -840,7 +865,7 @@ router.post('/api/member/post/:id/work/new/post', async (ctx) => {
   try {
     const { id, password, content, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
-      if (getMemberInf(parseInt(person)).details.in == '学习部') {
+      if ((getRawMember(parseInt(id)).details as member).union.duty.includes('post')) {
         ctx.response.body = appPost(parseInt(person), id, content)
       } else {
         ctx.response.body = {
@@ -1068,7 +1093,7 @@ router.post('/api/admin/full/member', async (ctx) => {
   try {
     const { password, member, position } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = moveToRelMember(parseInt(member), position)
+      ctx.response.body = moveToRelMember(parseInt(member), position as 'clerk' | 'vice-minister')
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1134,18 +1159,6 @@ router.post('/api/feed/back', async (ctx) => {
     }
   }
 })
-router.get('/api/types', async (ctx) => {
-  ctx.response.body = {
-    status: 'ok',
-    details: typical,
-  }
-})
-router.get('/api/decdetails', async (ctx) => {
-  ctx.response.body = {
-    status: 'ok',
-    details: deducs,
-  }
-})
 router.get('/api/department/', async (ctx) => {
   ctx.response.body = getDepartmentData() as status
 })
@@ -1185,21 +1198,6 @@ router.get('/api/analyzePerson/:person', async (ctx) => {
 })
 router.get('/config', async (ctx) => {
   ctx.response.body = readData()
-})
-router.get('/app/latest.yml', async (ctx) => {
-  ctx.response.body = stringify({
-    version: '0.1.0',
-    files: [
-      {
-        url: 'Magnifique-Client-Setup-0.1.0.exe',
-        sha512: 'lbHPkFvIWK+ZcCtXTANgyiCeyDZ6+kazQaoRaeXW61KewK7fm1+k8zaUf1i0MF4FdqK4wQALnLPeBIsoCKRklA==',
-        size: 138161174,
-      },
-    ],
-    path: 'Magnifique-Client-Setup-0.1.0.exe',
-    sha512: 'lbHPkFvIWK+ZcCtXTANgyiCeyDZ6+kazQaoRaeXW61KewK7fm1+k8zaUf1i0MF4FdqK4wQALnLPeBIsoCKRklA==',
-    releaseDate: '2022-01-29T23:39:57.030Z',
-  })
 })
 
 // Use routes to register APIs.

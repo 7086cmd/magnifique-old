@@ -2,17 +2,14 @@ import getAllDeductions from '../admin/get-all-deductions'
 
 export default (num: number) => {
   try {
-    const list = getAllDeductions()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let base: any[] = []
-    for (let i = 0; i in list.details; i++) {
-      if (list.details[i].deductor.number == num) {
-        base.push(list.details[i])
-      }
+    const list = getAllDeductions() as {
+      status: string
+      details: DeductionList[]
     }
+
     return {
       status: 'ok',
-      details: base,
+      details: list.details.filter((item) => item.deductor.number === num),
     }
   } catch (e) {
     return {

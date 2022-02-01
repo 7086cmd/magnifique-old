@@ -7,11 +7,10 @@ import analyzePerson from '../utils/analyze-person'
 
 export default (numb: number) => {
   const ana = analyzePerson(numb)
-  let temppath = resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}/members/`)
+  let temppath = resolve(tmpdir(), `..`, `magnifique`, `${ana.gradeid}`, `${ana.classid}`, `members`, `${numb}.sdbdata`)
   if (existsSync(temppath)) {
     try {
-      temppath = resolve(temppath, `./${numb}.sdbdata`)
-      const opwd = dataOpen(temppath).workflows
+      const opwd = dataOpen(temppath).workflow.details
       return {
         status: 'ok',
         details: objectToArray('id', opwd),
@@ -20,7 +19,7 @@ export default (numb: number) => {
       return {
         status: 'error',
         reason: 'type-error',
-        text: <string>e,
+        text: new Error(<string>e).message,
       }
     }
   } else {

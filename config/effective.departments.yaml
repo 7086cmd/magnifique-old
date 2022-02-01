@@ -1,7 +1,7 @@
 departments:
   learning:
     name: 学习部
-    duty: [document]
+    duty: [post]
   discipline:
     name: 纪检部
     duty: [deduction]

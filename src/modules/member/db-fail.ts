@@ -28,7 +28,7 @@ export default (configuration: { classid: number; gradeid: number; id: string; p
     return {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 }

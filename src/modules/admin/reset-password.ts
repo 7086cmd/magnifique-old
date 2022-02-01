@@ -22,7 +22,7 @@ export default (newPwd: string) => {
       return {
         status: 'error',
         reason: 'type-error',
-        text: <string>e,
+        text: new Error(<string>e).message,
       } as status
     }
   } else {

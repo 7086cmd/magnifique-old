@@ -8,7 +8,8 @@ import resetPassword from './reset-password'
 import { useRouter } from 'vue-router'
 import baseurl from '../modules/baseurl'
 import axios from 'axios'
-import { ElMessageBox } from 'element-plus'
+import failfuc from '../modules/failfuc'
+import sucfuc from '../modules/sucfuc'
 
 const router = useRouter()
 
@@ -78,34 +79,23 @@ const fbsub = async () => {
   feedbackdialogOpen.value = false
   isSubmitingFeedBack.value = false
   if (response.data.status == 'ok') {
-    ElMessageBox.alert(`标题"${tit}"的反馈已收到`, '提交成功', {
-      type: 'success',
-      center: true,
-    })
+    sucfuc()
   } else {
-    ElMessageBox.alert(
-      t('dialogs.' + response.data.reason, {
-        msg: response.data.text,
-      }),
-      '反馈失败',
-      {
-        type: 'error',
-        center: true,
-      }
-    )
+    failfuc(response.data.reason, response.data.text)
   }
 }
 const exit = () => {
   if (type?.value !== undefined) {
     try {
       sessionStorage.removeItem(type?.value + 'LoginInfo')
+      router.push('/class/member')
       // eslint-disable-next-line no-empty
     } catch (_e) {}
     try {
       localStorage.removeItem(type?.value + 'LoginInfo')
+      router.push('/' + type?.value + '/login')
       // eslint-disable-next-line no-empty
     } catch (_e) {}
-    router.push('/' + type?.value + '/login')
   }
 }
 

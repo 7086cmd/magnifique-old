@@ -140,34 +140,11 @@ for ([key, _val] of Object.entries(data)) {
             <template #header>
               <el-button type="text" @click="isExporting = true"> 导出 </el-button>
             </template>
-            <h4>扣分数据表格</h4>
             <el-skeleton :loading="loading" animated :rows="10" :throttle="500">
               <template #default>
                 <el-card shadow="never">
                   <el-table
-                    :data="
-                                            data.deduction.filter(
-                                                (data: any) =>
-                                                    !search ||
-                                                    data.reason
-                                                        .toLowerCase()
-                                                        .includes(
-                                                            search.toLowerCase()
-                                                        ) ||
-                                                    String(data.person)
-                                                        .toLowerCase()
-                                                        .includes(
-                                                            search.toLowerCase()
-                                                        ) ||
-                                                    String(data.deduction)
-                                                        .toLowerCase()
-                                                        .includes(
-                                                            search.toLowerCase()
-                                                        ) ||
-                                                    String(data.time)
-                                                        .toLowerCase()
-                                                        .includes(search.toLowerCase())
-                                            )"
+                    :data="data.deduction.filter((data: any) => !search || data.reason.toLowerCase().includes(search.toLowerCase()) || String(data.person).toLowerCase().includes(search.toLowerCase()) || String(data.deduction).toLowerCase().includes(search.toLowerCase()) || String(data.time).toLowerCase().includes(search.toLowerCase()))"
                     highlight-current-row
                     max-height="480px"
                     :default-sort="{
@@ -245,7 +222,7 @@ for ([key, _val] of Object.entries(data)) {
           </el-form-item>
         </el-form>
         <template #footer>
-          <span class="dialog-footer">
+          <span className="dialog-footer">
             <el-button @click="isExporting = false"> 取消 </el-button>
             <el-button type="primary" :loading="isSubmiting" @click="createData"> 确定 </el-button>
           </span>

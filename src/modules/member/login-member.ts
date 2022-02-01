@@ -28,7 +28,7 @@ export default (person: number, password: string) => {
       return {
         status: 'error',
         reason: 'type-error',
-        text: <string>e,
+        text: new Error(<string>e).message,
       }
     }
   } else {

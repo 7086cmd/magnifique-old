@@ -27,7 +27,7 @@ export default (person: number, id: string, reason: string) => {
     return {
       status: 'error',
       reason: 'type-error',
-      text: <string>e,
+      text: new Error(<string>e).message,
     }
   }
 }

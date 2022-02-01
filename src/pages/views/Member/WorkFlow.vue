@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* global WorkflowList */
 import { ref, reactive, Ref } from 'vue'
 import axios from 'axios'
 import { Refresh } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
-import { ElMessageBox, ElLoading } from 'element-plus'
-import { useI18n } from 'vue-i18n'
+import { ElLoading } from 'element-plus'
 import baseurl from '../../modules/baseurl'
-
-const { t } = useI18n()
+import failfuc from '../../modules/failfuc'
+import sucfuc from '../../modules/sucfuc'
 
 const { number, password } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
 let formRef = ref(null)
@@ -24,29 +24,6 @@ let workflowInformation = reactive({
   password,
 })
 let isActing = ref(false)
-const rules = {
-  title: [
-    {
-      required: true,
-      message: '输入标题',
-      trigger: 'blur',
-    },
-    {
-      min: 5,
-      max: 20,
-      message: '标题字数必须在5-20个字之间',
-      trigger: 'blur',
-    },
-  ],
-  deadline: [
-    {
-      type: 'date',
-      required: true,
-      message: '请选择截止日期',
-      trigger: 'change',
-    },
-  ],
-}
 const statuses = {
   planning: {
     color: 'primary',
@@ -72,16 +49,14 @@ const tableRowClassName = ({ row }) => {
 
 const refresh = () => {
   isFetchingWorkflows.value = true
-  axios({
-    url: `${baseurl}member/${number}/workflow/get?password=${password}`,
-  }).then((response) => {
-    workflows.value = response.data.details
-    for (let i = 0; i in workflows.value; i++) {
-      workflows.value[i].deadline = dayjs(workflows.value[i].deadline).format('YYYY/MM/DD HH:mm:ss')
-      workflows.value[i].start = dayjs(workflows.value[i].start).format('YYYY/MM/DD HH:mm:ss')
-      workflows.value[i].statusCode = workflows.value[i].status
-      workflows.value[i].status = statuses[workflows.value[i].status].label
-    }
+  axios(`${baseurl}member/${number}/workflow/get?password=${password}`).then((response) => {
+    workflows.value = response.data.details as any[]
+    workflows.value.filter((item: any) => {
+      item.deadline = dayjs(item.deadline).format('YYYY/MM/DD HH:mm:ss')
+      item.start = dayjs(item.start).format('YYYY/MM/DD HH:mm:ss')
+      item.statusCode = item.status
+      item.status = statuses[item.status].label
+    })
     isFetchingWorkflows.value = false
   })
 }
@@ -90,54 +65,27 @@ refresh()
 
 const newWorkFlowAction = async () => {
   if (workflowInformation.deadline == '') {
-    ElMessageBox.alert('没有输入截至日期', '新建工作失败', {
-      type: 'error',
-      center: true,
-    })
-    return
-  }
-  if (workflowInformation.title == '') {
-    ElMessageBox.alert('没有输入标题', '新建工作失败', {
-      type: 'error',
-      center: true,
-    })
-    return
-  }
-  if (workflowInformation.title.split('').length >= 20 || workflowInformation.title.split('').length <= 5) {
-    ElMessageBox.alert(`标题字数不合格，要求5-20个字，您输入了${workflowInformation.title.split('').length}个字`, '新建工作失败', {
-      type: 'error',
-      center: true,
-    })
-    return
-  }
-  isSubmitingNewWorkFlow.value = true
-  const response = await axios(`${baseurl}member/${number}/workflow/new`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: workflowInformation,
-    method: 'post',
-  })
-  isSubmitingNewWorkFlow.value = false
-  if (response.data.status == 'ok') {
-    ElMessageBox.alert('创建工作成功', '成功', {
-      type: 'success',
-      center: true,
-    })
+    failfuc('无截止日期', '')
+  } else if (workflowInformation.title.split('').length >= 20 || workflowInformation.title.split('').length <= 5) {
+    failfuc('标题字数不合格，要求5-20个字', '')
   } else {
-    ElMessageBox.alert(
-      t('dialogs.' + response.data.reason, {
-        msg: response.data.text,
-      }),
-      '失败',
-      {
-        type: 'error',
-        center: true,
-      }
-    )
+    isSubmitingNewWorkFlow.value = true
+    const response = await axios(`${baseurl}member/${number}/workflow/new`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: workflowInformation,
+      method: 'post',
+    })
+    isSubmitingNewWorkFlow.value = false
+    if (response.data.status == 'ok') {
+      sucfuc()
+    } else {
+      failfuc(response.data.reason, response.data.text)
+    }
+    newWorkFlow.value = false
+    refresh()
   }
-  newWorkFlow.value = false
-  refresh()
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -159,21 +107,9 @@ const statusAction = async (props: any, action: string) => {
   })
   loadingStatus.close()
   if (response.data.status == 'ok') {
-    ElMessageBox.alert('操作成功', '成功', {
-      type: 'success',
-      center: true,
-    })
+    sucfuc()
   } else {
-    ElMessageBox.alert(
-      t('dialogs.' + response.data.reason, {
-        msg: response.data.text,
-      }),
-      '失败',
-      {
-        type: 'error',
-        center: true,
-      }
-    )
+    failfuc(response.data.reason, response.data.text)
   }
   refresh()
 }
@@ -213,7 +149,7 @@ const statusAction = async (props: any, action: string) => {
         </el-card>
       </template>
     </el-skeleton>
-    <el-dialog ref="formRef" v-model="newWorkFlow" v-loading="isActing" title="新建工作" destroy-on-close center width="60%" :rules="rules">
+    <el-dialog ref="formRef" v-model="newWorkFlow" v-loading="isActing" title="新建工作" destroy-on-close center width="60%">
       <el-form :model="workflowInformation">
         <el-form-item label="工作标题"><el-input v-model="workflowInformation.title"></el-input></el-form-item>
         <el-form-item label="工作细则"><el-input v-model="workflowInformation.description" type="textarea" :autosize="{ minRows: 6, maxRows: 10 }"></el-input></el-form-item>
@@ -221,9 +157,7 @@ const statusAction = async (props: any, action: string) => {
         <el-form-item label="重要性"><el-input-number v-model="workflowInformation.importance" :min="1" :max="10" style="width: 100%"></el-input-number></el-form-item>
       </el-form>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="newWorkFlow = false">取消</el-button><el-button type="primary" :loading="isSubmitingNewWorkFlow" @click="newWorkFlowAction">确定</el-button>
-        </span>
+        <span> <el-button @click="newWorkFlow = false">取消</el-button><el-button type="primary" :loading="isSubmitingNewWorkFlow" @click="newWorkFlowAction">确定</el-button> </span>
       </template>
     </el-dialog>
   </div>

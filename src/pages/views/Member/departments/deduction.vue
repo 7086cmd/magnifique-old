@@ -1,5 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
+/* global member */
 import { ref, reactive, watch, Ref } from 'vue'
 import { Refresh } from '@element-plus/icons-vue'
 import axios from 'axios'
@@ -10,24 +11,44 @@ import baseurl from '../../../modules/baseurl'
 import example from '../../../../examples/deduction'
 import failfuc from '../../../modules/failfuc'
 import sucfuc from '../../../modules/sucfuc'
+import arrayToObject from '../../../../modules/utils/array-to-object'
 
 const { t } = useI18n()
 
 const { number, password } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
 
 let deductionData = reactive(example())
-let typs: Ref<string[]> = ref([])
-let typicals: Ref<any[]> = ref([])
-let dets: Ref<any> = ref({})
+let typs = ref<string[]>([])
+let typicals = ref<string[]>([])
+let dets = ref<
+  Record<
+    string,
+    {
+      deduction: number
+    }
+  >
+>({})
 ;(async () => {
-  deductionData.deductor.name = (await axios(`${baseurl}member/getinfo/${number}`)).data.details.name
-  typicals.value = (await axios(`${baseurl}types`)).data.details
-  dets.value = (await axios(`${baseurl}decdetails`)).data.details
+  let data1 = (await axios(`${baseurl}member/getinfo/${number}/raw`)).data.details as member
+  deductionData.deductor.name = data1.name
+  deductionData.deductor.number = parseInt(number)
+  const result = (await axios(`${baseurl}department/`)).data
+  const typesOfDeduction = result.details.departments[data1.union.department].classes as {
+    reason: string
+    deduction: number
+  }[]
+  typicals.value = typesOfDeduction.map((item) => item.reason) as string[]
+  dets.value = arrayToObject('reason', typesOfDeduction) as Record<
+    string,
+    {
+      deduction: number
+    }
+  >
 })()
 watch(typs, () => {
   let dtotal = 0
   for (let i = 0; i in typs.value; i++) {
-    dtotal = Math.floor((dtotal + dets.value[typs.value[i]]) * 100) / 100
+    dtotal = Math.floor((dtotal + dets.value[typs.value[i]].deduction) * 100) / 100
   }
   deductionData.deduction = dtotal
 })
@@ -75,13 +96,14 @@ const turnDown = async (props: any) => {
     const delLoad = ElLoading.service({
       text: '正在驳回，请稍后',
     })
-    const response = await axios.post(`${baseurl}member/deduction/${number}/work/turnd/deduction`, {
+    const response = await axios(`${baseurl}member/deduction/${number}/work/turnd/deduction`, {
       data: {
         id: props.row.id,
         password,
         person: props.row.personnum,
         reason: result.value,
       },
+      method: 'post',
     })
     delLoad.close()
     if (response.data.status == 'ok') {
@@ -96,12 +118,13 @@ const deleteDeduction = async (props: any) => {
   const delLoad = ElLoading.service({
     text: '正在删除扣分，请稍后',
   })
-  const response = await axios.post(`${baseurl}member/deduction/${number}/work/del/deduction`, {
+  const response = await axios(`${baseurl}member/deduction/${number}/work/del/deduction`, {
     data: {
       id: props.row.id,
       password,
       person: props.row.personnum,
     },
+    method: 'post',
   })
   delLoad.close()
   if (response.data.status == 'ok') {
@@ -129,13 +152,14 @@ const submitDeduction = async () => {
       for (let i = 0; i in typs.value; i++) {
         let data = deductionData
         data.reason = typs.value[i]
-        data.deduction = dets.value[typs.value[i]]
-        const response = await axios.post(`${baseurl}member/deduction/${number}/work/new/deduction`, {
+        data.deduction = dets.value[typs.value[i]].deduction
+        const response = await axios(`${baseurl}member/deduction/${number}/work/new/deduction`, {
           data: {
             id: number,
             password,
             content: data,
           },
+          method: 'post',
         })
         isCreating.value = false
         if (response.data.status !== 'ok') {

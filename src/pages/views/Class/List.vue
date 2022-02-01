@@ -1,19 +1,18 @@
 <script lang="ts" setup>
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable vue/html-indent */
-import { ref, Ref, reactive } from 'vue'
+/* global DeductionList */
+import { ref, reactive } from 'vue'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { ElMessageBox } from 'element-plus'
 import baseurl from '../../modules/baseurl'
 import { Refresh } from '@element-plus/icons-vue'
-import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
+import failfuc from '../../modules/failfuc'
 const { gradeid, classid, password } = JSON.parse(window.atob(String(localStorage.getItem('classLoginInfo'))))
 let loading = ref(true)
 let nativeName = ref('deduction')
 let data: {
-  deduction: any[]
+  deduction: DeductionList[]
 } = reactive({
   deduction: [],
 })
@@ -24,7 +23,7 @@ const fbstatus = {
   processing: '未处理',
   failed: '申诉失败',
 }
-const tableRowClassName = (props: any) => {
+const tableRowClassName = (props: { row: DeductionList }) => {
   const statuses = {
     processing: 'warning-row',
     failed: 'error-row',
@@ -43,14 +42,13 @@ const refresh = () => {
       data.deduction = response.data.details
       for (let i = 0; i in data.deduction; i++) {
         data.deduction[i].time = dayjs(data.deduction[i].time).format('YYYY/MM/DD HH:mm:ss')
-        data.deduction[i].person = String(data.deduction[i].person % 100) + '号'
       }
       sumT.value = String(data.deduction.length)
     }
   })
 }
 refresh()
-const callbackDeductions = (inf: any) => {
+const callbackDeductions = (inf: DeductionList) => {
   ElMessageBox.prompt('确定要申诉吗？请输入原因。', '申诉', {
     center: true,
     type: 'warning',
@@ -79,16 +77,7 @@ const callbackDeductions = (inf: any) => {
         })
         refresh()
       } else {
-        ElMessageBox.alert(
-          t('dialogs.' + response.data.reason, {
-            msg: response.data.text,
-          }),
-          '申诉失败',
-          {
-            type: 'error',
-            center: true,
-          }
-        )
+        failfuc(response.data.reason, response.data.text)
       }
     })
   })

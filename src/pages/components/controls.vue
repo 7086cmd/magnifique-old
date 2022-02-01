@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { Close, Minus, Plus } from '@element-plus/icons-vue'
+
 let isClient = ref(false)
 try {
   if (window.magnifique.isElectron === true) {
