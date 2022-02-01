@@ -12,6 +12,7 @@ import example from '../../../../examples/deduction'
 import failfuc from '../../../modules/failfuc'
 import sucfuc from '../../../modules/sucfuc'
 import arrayToObject from '../../../../modules/utils/array-to-object'
+import DeductionDescription from '../../../components/lists/DeductionDescription.vue'
 
 const { t } = useI18n()
 
@@ -230,47 +231,7 @@ const submitDeduction = async () => {
                 <el-button type="text" :icon="Refresh" @click="refresh()"></el-button>
               </template>
               <template #default="props">
-                <el-alert title="提醒：这不是Bug哦，这个真的是扣分编号" type="info" center :closable="false" />
-                <el-descriptions :title="'扣分' + props.row.id + '信息'" border>
-                  <el-descriptions-item label="违纪者">
-                    {{ props.row.personnum }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="扣分数">
-                    {{ props.row.deduction }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="原因">
-                    {{ props.row.reason }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="地点">
-                    {{ props.row.place }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="时间">
-                    {{ props.row.time }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="扣分者">
-                    {{ props.row.deductor.name }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="解释说明">
-                    {{ props.row.description }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="申诉状态">
-                    <el-popover placement="top-start" title="申斥状态" :width="500" trigger="hover">
-                      <template #reference>
-                        <el-button type="text">
-                          {{ fbstatus[props.row.status] }}
-                        </el-button>
-                      </template>
-                      <span v-if="props.row.status !== 'normal'"> 申诉原因：{{ props.row.msgs.feedback }} </span>
-                      <br />
-                      <span v-if="props.row.status === 'failed'"> 驳回原因：{{ props.row.msgs.turndown }} </span>
-                    </el-popover>
-                  </el-descriptions-item>
-                </el-descriptions>
-                <p style="font-size: 14px">
-                  <span v-if="props.row.status !== 'normal'"> 申诉原因：{{ props.row.msgs.feedback }} </span>
-                  <br />
-                  <span v-if="props.row.status === 'failed'"> 驳回原因：{{ props.row.msgs.turndown }} </span>
-                </p>
+                <deduction-description :data="props.row" />
               </template>
             </el-table-column>
             <el-table-column prop="personnum" label="违纪者" />

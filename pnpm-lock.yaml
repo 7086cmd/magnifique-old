@@ -55,6 +55,7 @@ specifiers:
   lamejs: ^1.2.1
   less: ^4.1.2
   less-loader: ^10.2.0
+  lodash: ^4.17.21
   multer: ^1.4.4
   node-fetch: 2.6.7
   nodemon: ^2.0.15
@@ -169,6 +170,7 @@ devDependencies:
   jest: 27.4.3_ts-node@10.4.0
   less: 4.1.2
   less-loader: 10.2.0_less@4.1.2+webpack@5.65.0
+  lodash: 4.17.21
   nodemon: 2.0.15
   pnpm: 6.23.6
   prettier: 2.5.0

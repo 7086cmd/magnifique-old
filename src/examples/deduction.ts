@@ -11,5 +11,9 @@ export default () => {
     time: '',
     place: '',
     status: 'normal',
+    msgs: {
+      feedback: '',
+      turndown: '',
+    },
   } as deduction
 }

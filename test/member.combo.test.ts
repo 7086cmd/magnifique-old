@@ -49,9 +49,9 @@ describe('Member Combo Test', () => {
       expect(loginMember(detail.number, Buffer.from(String(detail.number)).toString('base64')).status).toBe('ok')
     })
     test('ToTrue', () => {
-      const dowhat = ['chairman', 'vice-chairman', 'minister', 'vice-minister', 'clerk'][Math.floor(Math.random() * 4) + 1]
-      detail.union.position = dowhat as 'chairman' | 'vice-chairman' | 'minister' | 'vice-minister' | 'clerk' | 'registry' | 'none'
-      expect(moveToRel(detail.number, dowhat).status).toEqual('ok')
+      const dowhat = ['vice-minister', 'clerk'][Math.floor(Math.random() * 1) + 1]
+      detail.union.position = dowhat as 'vice-minister' | 'clerk'
+      expect(moveToRel(detail.number, dowhat as 'clerk' | 'vice-minister').status).toEqual('ok')
       expect(dataOpen(resolve(tmpdir(), '..', 'magnifique', `${memb.gradeid}`, `${memb.classid}`, 'members', `${detail.number}.sdbdata`))).toEqual(detail)
     })
     test('Delete', () => {

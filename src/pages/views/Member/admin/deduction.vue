@@ -8,6 +8,7 @@ import { ElLoading } from 'element-plus'
 import baseurl from '../../../modules/baseurl'
 import sucfuc from '../../../modules/sucfuc'
 import failfuc from '../../../modules/failfuc'
+import DeductionDescription from '../../../components/lists/DeductionDescription.vue'
 
 let data = reactive({
   deduction: [],
@@ -81,33 +82,7 @@ refresh()
                   <el-button type="text" :icon="Refresh" @click="refresh()"></el-button>
                 </template>
                 <template #default="props">
-                  <el-alert title="提醒：这不是Bug哦，这个真的是扣分编号" type="info" center></el-alert>
-                  <el-descriptions :title="`扣分${props.row.id}信息`" border>
-                    <el-descriptions-item label="违纪者">
-                      {{ props.row.person }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="扣分数">
-                      {{ props.row.deduction }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="原因">
-                      {{ props.row.reason }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="地点">
-                      {{ props.row.place }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="时间">
-                      {{ props.row.time }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="扣分者">
-                      {{ props.row.deductor.name }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="解释说明">
-                      {{ props.row.description }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="申诉状态">
-                      {{ fbstatus[props.row.status] }}
-                    </el-descriptions-item>
-                  </el-descriptions>
+                  <deduction-description :data="props.row" />
                 </template>
               </el-table-column>
               <!-- <el-table-column prop="id" label="扣分ID" /> -->

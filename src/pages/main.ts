@@ -20,6 +20,7 @@ const app = createApp(App)
 
 app.use(ElementPlus, {
   locale: elementPlusLang,
+  size: 'default',
 })
 for (const iconName in ElIconModules) {
   if (Reflect.has(ElIconModules, iconName)) {

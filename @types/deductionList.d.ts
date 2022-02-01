@@ -11,4 +11,8 @@ declare interface DeductionList {
   time: string
   place: string
   status: 'normal' | 'processing' | 'failed'
+  msgs: {
+    feedback: string
+    turndown: string
+  }
 }

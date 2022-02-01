@@ -73,7 +73,6 @@ const fbsub = async () => {
     },
     data: feedbackin,
   })
-  const tit = feedbackin.title
   feedbackin.title = ''
   feedbackin.description = ''
   feedbackdialogOpen.value = false

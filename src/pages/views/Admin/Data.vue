@@ -7,6 +7,9 @@ import dayjs from 'dayjs'
 import { ElLoading, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import baseurl from '../../modules/baseurl'
+import DeductionDescription from '../../components/lists/DeductionDescription.vue'
+import sucfuc from '../../modules/sucfuc'
+import failfuc from '../../modules/failfuc'
 
 let isClient = ref(false)
 
@@ -39,11 +42,6 @@ const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLo
 let nativeName = ref('')
 let loading = ref(false)
 let search = ref('')
-const fbstatus = {
-  normal: '未申诉',
-  processing: '未处理',
-  failed: '申诉失败',
-}
 const tableRowClassName = (props: any) => {
   const statuses = {
     processing: 'warning-row',
@@ -79,21 +77,9 @@ const deleteDeduction = async (props: any) => {
   })
   delLoad.close()
   if (response.data.status == 'ok') {
-    ElMessageBox.alert('操作成功', '成功', {
-      type: 'success',
-      center: true,
-    })
+    sucfuc()
   } else {
-    ElMessageBox.alert(
-      t('dialogs.' + response.data.reason, {
-        msg: response.data.text,
-      }),
-      '失败',
-      {
-        type: 'error',
-        center: true,
-      }
-    )
+    failfuc(response.data.reason, response.data.text)
   }
   refresh('deduction')
 }
@@ -109,25 +95,11 @@ const createData = async () => {
   })
   isSubmiting.value = false
   if (response.data.status == 'ok') {
+    sucfuc()
     window.open(`${baseurl}admin/export/download/${response.data.details.token}`, isClient.value ? '_self' : '_blank')
   } else {
-    ElMessageBox.alert(
-      t('dialogs.' + response.data.reason, {
-        msg: response.data.text,
-      }),
-      '失败',
-      {
-        type: 'error',
-        center: true,
-      }
-    )
+    failfuc(response.data.reason, response.data.text)
   }
-}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let key: any, _val: any
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-for ([key, _val] of Object.entries(data)) {
-  refresh(key)
 }
 </script>
 
@@ -158,33 +130,7 @@ for ([key, _val] of Object.entries(data)) {
                         <el-button type="text" :icon="Refresh" @click="refresh('deduction')"></el-button>
                       </template>
                       <template #default="props">
-                        <el-alert title="提醒：这不是Bug哦，这个真的是扣分编号" type="info" center></el-alert>
-                        <el-descriptions :title="`扣分${props.row.id}信息`" border>
-                          <el-descriptions-item label="违纪者">
-                            {{ props.row.person }}
-                          </el-descriptions-item>
-                          <el-descriptions-item label="扣分数">
-                            {{ props.row.deduction }}
-                          </el-descriptions-item>
-                          <el-descriptions-item label="原因">
-                            {{ props.row.reason }}
-                          </el-descriptions-item>
-                          <el-descriptions-item label="地点">
-                            {{ props.row.place }}
-                          </el-descriptions-item>
-                          <el-descriptions-item label="时间">
-                            {{ props.row.time }}
-                          </el-descriptions-item>
-                          <el-descriptions-item label="扣分者">
-                            {{ props.row.deductor.name }}
-                          </el-descriptions-item>
-                          <el-descriptions-item label="解释说明">
-                            {{ props.row.description }}
-                          </el-descriptions-item>
-                          <el-descriptions-item label="申诉状态">
-                            {{ fbstatus[props.row.status] }}
-                          </el-descriptions-item>
-                        </el-descriptions>
+                        <deduction-description :data="props.row" />
                       </template>
                     </el-table-column>
                     <!-- <el-table-column prop="id" label="扣分ID" /> -->

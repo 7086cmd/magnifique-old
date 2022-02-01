@@ -1,22 +1,11 @@
 <script lang="ts" setup>
 import { ref, inject } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import baseurl from '../../modules/baseurl'
 import { UserFilled as User, List, Back, Box, HomeFilled } from '@element-plus/icons-vue'
 import ControlsPage from '../../components/controls-page.vue'
-
-let isClient = ref(false)
-
-try {
-  if (window.magnifique.isElectron === true) {
-    isClient.value = true
-  }
-  // eslint-disable-next-line no-empty
-} catch (_e) {}
 const router = useRouter()
-const { t } = useI18n()
 const leftDrawerOpen = ref(true)
 let pageSelected = ref('1')
 

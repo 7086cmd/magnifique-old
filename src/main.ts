@@ -730,7 +730,7 @@ router.post('/api/member/deduction/:id/work/turnd/deduction', async (ctx) => {
     const { id: number } = ctx.params
     const { id, password, person, reason } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
-      if ((getRawMember(parseInt(id)).details as member).union.duty.includes('deduction')) {
+      if ((getRawMember(parseInt(number)).details as member).union.duty.includes('deduction')) {
         ctx.response.body = turnDown(person, id, reason)
         io.emit('turnd-deduc', JSON.stringify({ person, id, reason }))
       } else {
@@ -758,7 +758,7 @@ router.post('/api/member/deduction/:id/work/del/deduction', async (ctx) => {
     const { id: number } = ctx.params
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
-      if ((getRawMember(parseInt(id)).details as member).union.duty.includes('deduction')) {
+      if ((getRawMember(parseInt(number)).details as member).union.duty.includes('deduction')) {
         ctx.response.body = delDeduction(person, id)
         io.emit('del-deduc', JSON.stringify({ person, id }))
       } else {

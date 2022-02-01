@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* global WorkflowList */
 import { ref, reactive, Ref } from 'vue'
 import axios from 'axios'
 import { Refresh } from '@element-plus/icons-vue'
