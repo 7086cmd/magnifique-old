@@ -57,11 +57,6 @@ let isFetchingData = ref(false)
 let newDeduction = ref(false)
 let isCreating = ref(false)
 let allData: Ref<any[]> = ref([])
-const fbstatus = {
-  normal: '未申诉',
-  processing: '未处理',
-  failed: '申诉失败',
-}
 const tableRowClassName = (scope: any) => {
   const statuses = {
     processing: 'warning-row',

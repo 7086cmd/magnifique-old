@@ -1,9 +1,15 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { ElLoading } from 'element-plus'
 import axios from 'axios'
 import baseurl from '../../modules/baseurl'
+import MemberDescription from '../../components/lists/MemberDescription.vue'
 
-const { number, password } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
+const loader = ElLoading.service({
+  text: '正在获取数据...',
+})
+
+const { number } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
 const name = ref('')
 const score = ref(0)
 let col = ref('success')
@@ -11,36 +17,19 @@ let actions = ref(0)
 let violation = ref(0)
 let department = ref('')
 let whatdo = ref('')
-let workflows = ref([])
-let isFetchingWorkflows = ref(true)
-const statuses = {
-  planning: {
-    color: 'primary',
-    label: '计划中',
-  },
-  working: {
-    color: 'warning',
-    label: '实现中',
-  },
-  success: {
-    color: 'success',
-    label: '已完成',
-  },
-  depracted: {
-    color: 'error',
-    label: '已放弃',
-  },
-}
+let aboutme = ref({})
+let loaded = ref(false)
 
-axios({
-  url: `${baseurl}member/getinfo/${number}/`,
-}).then((response) => {
+axios(`${baseurl}member/getinfo/${number}/`).then((response) => {
+  aboutme.value = response.data.details
+  loaded.value = true
   name.value = response.data.details.name
   let total = response.data.details.record.score
   actions.value = response.data.details.record.actions
   violation.value = response.data.details.record.violation
   department.value = response.data.details.in
   whatdo.value = response.data.details.do
+  loader.close()
   let itv = setInterval(() => {
     score.value++
     if (score.value >= 80) {
@@ -55,19 +44,6 @@ axios({
     }
   }, 8)
 })
-
-axios({
-  url: `${baseurl}member/${number}/workflow/get?password=${password}`,
-}).then((response) => {
-  workflows.value = response.data.details
-  setTimeout(() => {
-    isFetchingWorkflows.value = false
-  }, 1200)
-})
-
-const tableRowClassName = ({ row }) => {
-  return statuses[row.status].color + '-row'
-}
 </script>
 <template>
   <div>
@@ -100,29 +76,8 @@ const tableRowClassName = ({ row }) => {
       </el-col>
     </el-row>
     <el-divider>{{ whatdo }} {{ name }}</el-divider>
-    <el-card class="box-card" shadow="never">
-      <template #header>
-        <div className="card-header">
-          <span>工作流</span>
-        </div>
-      </template>
-      <el-skeleton animated :rows="4" :loading="isFetchingWorkflows">
-        <template #default>
-          <el-table
-            :data="workflows"
-            max-height="240px"
-            :default-sort="{
-              prop: 'importance',
-              order: 'descending',
-            }"
-            :row-class-name="tableRowClassName"
-          >
-            <el-table-column prop="title" label="标题" />
-            <el-table-column prop="description" label="解释" />
-            <el-table-column prop="deadline" label="截止日期" />
-          </el-table>
-        </template>
-      </el-skeleton>
+    <el-card class="box-card" shadow="never" v-if="loaded">
+      <member-description :data="aboutme" />
     </el-card>
   </div>
 </template>

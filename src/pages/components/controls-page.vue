@@ -87,12 +87,12 @@ const exit = () => {
   if (type?.value !== undefined) {
     try {
       sessionStorage.removeItem(type?.value + 'LoginInfo')
-      router.push('/class/member')
-      // eslint-disable-next-line no-empty
-    } catch (_e) {}
-    try {
       localStorage.removeItem(type?.value + 'LoginInfo')
-      router.push('/' + type?.value + '/login')
+      if (type?.value === 'member') {
+        router.push('/class/list')
+      } else {
+        router.push('/' + type?.value + '/login')
+      }
       // eslint-disable-next-line no-empty
     } catch (_e) {}
   }

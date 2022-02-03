@@ -9,6 +9,7 @@ import personExample from '../../../examples/person'
 import sucfuc from '../../modules/sucfuc'
 import failfuc from '../../modules/failfuc'
 import MemberDescription from '../../components/lists/MemberDescription.vue'
+import positions from './positions'
 
 let runner = ElLoading.service({
   text: '获取信息中...',
@@ -29,28 +30,7 @@ const departments = ref<
     value: '',
   },
 ])
-let types = ref([
-  {
-    name: '干事',
-    value: 'clerk',
-  },
-  {
-    name: '副部长',
-    value: 'vice-minister',
-  },
-  {
-    name: '部长',
-    value: 'minister',
-  },
-  {
-    name: '副主席',
-    value: 'vice-chairman',
-  },
-  {
-    name: '主席',
-    value: 'chairman',
-  },
-])
+let types = ref(positions)
 let vadmins = ref<
   {
     name: string

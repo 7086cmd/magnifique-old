@@ -19,10 +19,10 @@ const detail = ref(unref(data) as member_processed)
         {{ detail.name }}
       </el-descriptions-item>
       <el-descriptions-item label="学号">
-        {{ detail.number }}
+        <el-tag type="warning" v-text="detail.number"></el-tag>
       </el-descriptions-item>
       <el-descriptions-item label="所属部门">
-        <el-tag type="info">{{ detail.in }}</el-tag>
+        <el-tag type="info" v-text="detail.in"></el-tag>
       </el-descriptions-item>
       <el-descriptions-item label="职务">
         <el-tag v-for="item in detail.duty" :key="item" size="default" v-text="item" />

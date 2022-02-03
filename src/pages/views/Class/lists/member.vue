@@ -2,12 +2,12 @@
 import { ref, reactive } from 'vue'
 import axios from 'axios'
 import { Refresh } from '@element-plus/icons-vue'
-import baseurl from '../../modules/baseurl'
-import MemberLogin from '../Member/Login.vue'
-import personExample from '../../../examples/person'
-import failfuc from '../../modules/failfuc'
-import sucfuc from '../../modules/sucfuc'
-import MemberDescription from '../../components/lists/MemberDescription.vue'
+import baseurl from '../../../modules/baseurl'
+import MemberLogin from '../../Member/Login.vue'
+import personExample from '../../../../examples/person'
+import failfuc from '../../../modules/failfuc'
+import sucfuc from '../../../modules/sucfuc'
+import MemberDescription from '../../../components/lists/MemberDescription.vue'
 
 let isLoginingMember = ref(false)
 const { gradeid, classid, password } = JSON.parse(window.atob(String(localStorage.getItem('classLoginInfo'))))
@@ -19,7 +19,6 @@ let isSubmiting = ref(false)
 let isRegistingMember = ref(false)
 let memberifo = reactive(personExample())
 memberifo.union.position = 'registry'
-// eslint-disable-next-line no-undef
 let departments = ref<
   {
     name: string
@@ -34,19 +33,13 @@ let membersDetail = ref([])
 let preMembersDetail = ref([])
 const refresh = () => {
   loading.value = true
-  axios({
-    url: `${baseurl}class/${gradeid}/${classid}/member/get?password=${password}`,
-    method: 'get',
-  }).then((response) => {
+  axios(`${baseurl}class/${gradeid}/${classid}/member/get?password=${password}`).then((response) => {
     loading.value = false
     if (response.data.status == 'ok') {
       membersDetail.value = response.data.details
     }
   })
-  axios({
-    url: `${baseurl}class/${gradeid}/${classid}/member/pre/get?password=${password}`,
-    method: 'get',
-  }).then((response) => {
+  axios(`${baseurl}class/${gradeid}/${classid}/member/pre/get?password=${password}`).then((response) => {
     loading.value = false
     if (response.data.status == 'ok') {
       preMembersDetail.value = response.data.details
@@ -74,11 +67,7 @@ const createRegistry = async () => {
     memberifo.union.leader = memberifo.union.position.includes('chairman') || memberifo.union.position === 'minister'
     memberifo.number = basicnum.value + memberifo.number
     isSubmiting.value = true
-    const response = await axios({
-      url: `${baseurl}class/member/regist`,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const response = await axios(`${baseurl}class/member/regist`, {
       data: {
         member: memberifo,
         password,
@@ -99,7 +88,6 @@ const createRegistry = async () => {
 <template>
   <transition name="el-fade-in" appear>
     <div>
-      <h4>成员表格</h4>
       <el-skeleton :loading="loading" animated :rows="10" :throttle="500">
         <template #default>
           <el-card shadow="never">

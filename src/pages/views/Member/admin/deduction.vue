@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* global DeductionList */
 import { ref, reactive } from 'vue'
 import { Refresh } from '@element-plus/icons-vue'
 import axios from 'axios'
@@ -16,12 +16,7 @@ let data = reactive({
 const { number, password } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
 let loading = ref(false)
 let search = ref('')
-const fbstatus = {
-  normal: '未申诉',
-  processing: '未处理',
-  failed: '申诉失败',
-}
-const tableRowClassName = (props: any) => {
+const tableRowClassName = (props: { row: DeductionList }) => {
   const statuses = {
     processing: 'warning-row',
     failed: 'error-row',
@@ -37,12 +32,11 @@ const refresh = async () => {
   }
   loading.value = false
 }
-const deleteDeduction = async (props: any) => {
+const deleteDeduction = async (props: { row: DeductionList }) => {
   const delLoad = ElLoading.service({
     text: '正在删除扣分，请稍后',
   })
-  const response = await axios({
-    url: `${baseurl}member/admin/${number}/del/deduction`,
+  const response = await axios(`${baseurl}member/admin/${number}/del/deduction`, {
     method: 'post',
     data: {
       id: props.row.id,
@@ -69,12 +63,7 @@ refresh()
           <el-card shadow="never">
             <el-table
               :data="data.deduction.filter((data: any) => !search || data.reason.toLowerCase().includes(search.toLowerCase()) || String(data.person).toLowerCase().includes(search.toLowerCase()) || String(data.deduction).toLowerCase().includes(search.toLowerCase()) || String(data.time).toLowerCase().includes(search.toLowerCase()))"
-              highlight-current-row
               max-height="480px"
-              :default-sort="{
-                prop: 'deduction',
-                order: 'descending',
-              }"
               :row-class-name="tableRowClassName"
             >
               <el-table-column type="expand">

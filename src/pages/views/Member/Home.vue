@@ -1,34 +1,17 @@
 <script lang="ts" setup>
-import { ref, inject } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import baseurl from '../../modules/baseurl'
-import { UserFilled as User, List, Back, Box, Odometer, Magnet, Tools } from '@element-plus/icons-vue'
+import { List, Back, Box, Odometer, Magnet } from '@element-plus/icons-vue'
 import ControlsPage from '../../components/controls-page.vue'
 import { ElMessageBox } from 'element-plus'
 
 let heightClient = ref(window.innerHeight)
 
-let isClient = ref(false)
 const router = useRouter()
-const leftDrawerOpen = ref(true)
 let pageSelected = ref('1')
 let name = ref('')
-let inGroup = ref('')
-let inCfg = ref(false)
-
-try {
-  if (window.magnifique.isElectron === true) {
-    isClient.value = true
-  }
-  // eslint-disable-next-line no-empty
-} catch (_e) {}
-
-if (sessionStorage.getItem('memberLoginInfo') == undefined) {
-  if (inject('memberLoginInfo') == undefined) {
-    router.push('/class/member/')
-  }
-}
 try {
   window.atob(String(sessionStorage.getItem('memberLoginInfo')))
 } catch (e) {
@@ -40,19 +23,9 @@ const { number, password } = JSON.parse(window.atob(String(sessionStorage.getIte
 
 axios(`${baseurl}member/getinfo/${number}/`).then((response) => {
   name.value = response.data.details.name
-  inGroup.value = response.data.details.in
-  if (response.data.details.do.split('').reverse()[0] == '长' || response.data.details.do.split('').reverse()[0] == '席') {
-    inCfg.value = true
-  }
 })
 
-axios({
-  url: `${baseurl}member/${number}/login?password=${password}`,
-  data: {
-    password: password,
-  },
-  method: 'get',
-}).then((response) => {
+axios(`${baseurl}member/${number}/login?password=${password}`).then((response) => {
   if (response.data.status !== 'ok') {
     sessionStorage.removeItem('memberLoginInfo')
     ElMessageBox.alert('您的密码有误，已为您引导到班级界面，点击“成员登录”即可再次登录。', '密码错误', {
@@ -66,7 +39,7 @@ axios({
 <template>
   <el-container>
     <el-aside width="12%">
-      <el-menu v-model="pageSelected" default-active="/member/" :collapse="leftDrawerOpen" style="min-height: 1024px; padding-top: 2em" collapse-transition router>
+      <el-menu v-model="pageSelected" default-active="/member/" :collapse="true" style="min-height: 1024px; padding-top: 2em" collapse-transition router>
         <el-menu-item index="/class/">
           <el-icon>
             <Back />
@@ -79,25 +52,13 @@ axios({
           </el-icon>
           <template #title> 仪表盘 </template>
         </el-menu-item>
-        <el-menu-item index="/member/workflow/">
+        <el-menu-item index="/member/department/">
           <el-icon>
             <List />
           </el-icon>
-          <template #title> 工作流 </template>
+          <template #title> 数据处理 </template>
         </el-menu-item>
-        <el-menu-item index="/member/information/">
-          <el-icon>
-            <User />
-          </el-icon>
-          <template #title> 个人信息 </template>
-        </el-menu-item>
-        <el-menu-item v-if="inGroup !== '主席团'" :index="`/member/department/`">
-          <el-icon>
-            <Tools />
-          </el-icon>
-          <template #title> 部门功能 </template>
-        </el-menu-item>
-        <el-menu-item v-if="inCfg" :index="'/member/admin/'">
+        <el-menu-item index="/member/admin/">
           <el-icon>
             <Magnet />
           </el-icon>

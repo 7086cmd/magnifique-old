@@ -1,23 +1,17 @@
 import { createRouter, RouteRecordRaw, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import About from '../views/About.vue'
-import ClassLogin from '../views/Class/ClassLogin.vue'
 import Class from '../views/Class/Class.vue'
 import ClassHome from '../views/Class/Home.vue'
 import ClassChart from '../views/Class/Chart.vue'
 import ClassList from '../views/Class/List.vue'
-import ClassMember from '../views/Class/Member.vue'
 import ClassMessage from '../views/Class/Message.vue'
 import NotFound from '../views/NotFound.vue'
-import MemberLogin from '../views/Member/Login.vue'
 import MemberHome from '../views/Member/Home.vue'
 import MemberDashboard from '../views/Member/Dashboard.vue'
-import MemberInformation from '../views/Member/Information.vue'
-import MemberWorkFlow from '../views/Member/WorkFlow.vue'
 import MemberMessage from '../views/Member/Message.vue'
 import MemberDepartment from '../views/Member/Department.vue'
 import MemberAdminHome from '../views/Member/admin/Home.vue'
-import AdminLogin from '../views/Admin/Login.vue'
 import AdminHome from '../views/Admin/Home.vue'
 import AdminData from '../views/Admin/Data.vue'
 import AdminMember from '../views/Admin/Member.vue'
@@ -40,20 +34,6 @@ const routes: Array<RouteRecordRaw> = [
     component: NotFound,
   },
   {
-    path: '/class/login',
-    component: ClassLogin,
-    meta: {
-      transition: 'fade',
-    },
-  },
-  {
-    path: '/member/login',
-    component: MemberLogin,
-    meta: {
-      transition: 'fade',
-    },
-  },
-  {
     path: '/member',
     component: MemberHome,
     meta: {
@@ -68,22 +48,8 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'information',
-        component: MemberInformation,
-        meta: {
-          transition: 'fade',
-        },
-      },
-      {
         path: 'department',
         component: MemberDepartment,
-        meta: {
-          transition: 'fade',
-        },
-      },
-      {
-        path: 'workflow',
-        component: MemberWorkFlow,
         meta: {
           transition: 'fade',
         },
@@ -138,13 +104,6 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'member',
-        component: ClassMember,
-        meta: {
-          transition: 'fade',
-        },
-      },
-      {
         path: 'message',
         component: ClassMessage,
         meta: {
@@ -157,10 +116,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/server',
     name: 'Server',
     component: () => import('../views/Server.vue'),
-  },
-  {
-    path: '/admin/login',
-    component: AdminLogin,
   },
   {
     path: '/server',

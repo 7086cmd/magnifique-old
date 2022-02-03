@@ -5,9 +5,9 @@ import axios from 'axios'
 import { Refresh } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 import { ElLoading } from 'element-plus'
-import baseurl from '../../modules/baseurl'
-import failfuc from '../../modules/failfuc'
-import sucfuc from '../../modules/sucfuc'
+import baseurl from '../../../modules/baseurl'
+import failfuc from '../../../modules/failfuc'
+import sucfuc from '../../../modules/sucfuc'
 
 const { number, password } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
 let formRef = ref(null)
@@ -70,9 +70,6 @@ const newWorkFlowAction = async () => {
   } else {
     isSubmitingNewWorkFlow.value = true
     const response = await axios(`${baseurl}member/${number}/workflow/new`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
       data: workflowInformation,
       method: 'post',
     })
@@ -96,9 +93,6 @@ const statusAction = async (props: any, action: string) => {
   })
   const response = await axios(`${baseurl}member/${number}/workflow/${action}`, {
     method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     data: {
       id: props.row.id,
       password,
@@ -115,7 +109,6 @@ const statusAction = async (props: any, action: string) => {
 </script>
 <template>
   <div>
-    <h3>工作流</h3>
     <el-skeleton :loading="isFetchingWorkflows" :rows="4" animated :throttle="500">
       <template #default>
         <el-card shadow="never">
@@ -123,7 +116,6 @@ const statusAction = async (props: any, action: string) => {
             <el-table-column type="expand">
               <template #header><el-button type="text" :icon="Refresh" @click="refresh()"></el-button></template>
               <template #default="props">
-                <el-alert title="提醒：这不是Bug哦，这个真的是工作流的编号" type="info" center></el-alert>
                 <el-descriptions :title="'工作流' + props.row.id + '信息'" border>
                   <el-descriptions-item label="标题">{{ props.row.title }}</el-descriptions-item>
                   <el-descriptions-item label="说明">{{ props.row.description }}</el-descriptions-item>

@@ -4,8 +4,7 @@ import { ref, reactive } from 'vue'
 import { Refresh } from '@element-plus/icons-vue'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { ElLoading, ElMessageBox } from 'element-plus'
-import { useI18n } from 'vue-i18n'
+import { ElLoading } from 'element-plus'
 import baseurl from '../../modules/baseurl'
 import DeductionDescription from '../../components/lists/DeductionDescription.vue'
 import sucfuc from '../../modules/sucfuc'
@@ -33,7 +32,6 @@ let exportTypes = ref([
 ])
 let isSubmiting = ref(false)
 let exportType = ref('')
-const { t } = useI18n()
 
 let data = reactive({
   deduction: [],

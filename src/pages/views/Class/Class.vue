@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import baseurl from '../../modules/baseurl'
-import { UserFilled as User, HomeFilled as Home, List, Back, PieChart, Box } from '@element-plus/icons-vue'
+import { HomeFilled as Home, List, Back, PieChart, Box } from '@element-plus/icons-vue'
 import ControlsPage from '../../components/controls-page.vue'
 
 let heightClient = ref(window.innerHeight)
@@ -88,12 +88,6 @@ axios({
             </el-icon>
             <template #title>{{ t('class-home.menu.4') }}</template>
           </el-menu-item>
-          <el-menu-item index="/class/member/">
-            <el-icon>
-              <User />
-            </el-icon>
-            <template #title>{{ t('class-home.menu.5') }}</template>
-          </el-menu-item>
           <el-menu-item index="/class/message/">
             <el-icon>
               <Box />
@@ -104,9 +98,7 @@ axios({
       </el-aside>
       <el-container>
         <el-header reveal bordered class="bg-white text-black" style="text-align: right">
-          <el-affix :offset="20">
-            <controls-page type="class" :gradeid="gradeid" :classid="classid" />
-          </el-affix>
+          <controls-page type="class" :gradeid="gradeid" :classid="classid" />
         </el-header>
         <el-main>
           <el-scrollbar always :height="Math.floor((heightClient * 4) / 5)">

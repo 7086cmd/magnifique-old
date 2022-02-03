@@ -5,8 +5,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ElMessageBox } from 'element-plus'
 import baseurl from '../../modules/baseurl'
-
-let isClient = ref(false)
+import failfuc from '../../modules/failfuc'
 const { t } = useI18n()
 const router = useRouter()
 let gradeid = ref('')
@@ -27,26 +26,15 @@ const grades = [
   },
 ]
 
-try {
-  if (window.magnifique.isElectron === true) {
-    isClient.value = true
-  }
-  // eslint-disable-next-line no-empty
-} catch (_e) {}
-
 async function login() {
   let grade = parseInt(gradeid.value)
   if (isNaN(Number(classid.value))) {
-    ElMessageBox.alert('输入的不是班级', '错误', {
-      center: true,
-      type: 'error',
-    })
+    failfuc('输入的不是班级', '')
     return
   }
   axios(`${baseurl}class/${grade}/${Number(classid.value)}/login?password=${window.btoa(password.value)}`).then((response) => {
     if (response.data.status == 'ok') {
-      let timeOut = 3
-      ElMessageBox.alert(t('class.status.jump', { sec: timeOut }), t('class.status.success'), {
+      ElMessageBox.alert('3秒后进入主界面', '登陆成功', {
         type: 'success',
         center: true,
       }).then(() => {
@@ -67,16 +55,7 @@ async function login() {
       }, 3000)
     } else {
       localStorage.removeItem('classLoginInfo')
-      ElMessageBox.alert(
-        t('dialogs.' + response.data.reason, {
-          msg: response.data.text,
-        }),
-        t('class.status.error'),
-        {
-          type: 'error',
-          center: true,
-        }
-      )
+      failfuc(response.data.reason, response.data.text)
     }
   })
 }
