@@ -1,13 +1,14 @@
 /* eslint-disable no-console */
 import { build as buildFrontEnd } from 'vite'
-import { build as buildBackEnd, analyzeMetafile, Metafile } from 'esbuild'
+import { build as buildBackEnd } from 'esbuild'
 import { build as buildApp } from 'electron-builder'
 import { ESLint } from 'eslint'
 import chalk from 'chalk'
 import { platform } from 'os'
 import { exec } from 'child_process'
 import { resolve } from 'path'
-import { copyFile, mkdir } from 'fs/promises'
+import { version } from '../package.json'
+import { copyFile, mkdir, rename } from 'fs/promises'
 
 const lintFile = async () => {
   const eslint = new ESLint()
@@ -60,7 +61,7 @@ const lintFile = async () => {
 }
 ;(async () => {
   if (platform() == 'darwin') {
-    exec('pnpm install dmg-license -D')
+    await exec('pnpm install dmg-license -D')
   } else {
     console.log(platform(), 'Skipped to install dmg-license.')
   }
@@ -209,7 +210,7 @@ const lintFile = async () => {
         publish: undefined,
       },
       nsis: {
-        oneClick: false,
+        oneClick: true,
         perMachine: false,
         allowToChangeInstallationDirectory: true,
         shortcutName: 'Magnifique Client',
@@ -217,6 +218,8 @@ const lintFile = async () => {
       },
     },
   })
+  await rename(resolve('dist', 'pages', 'app', `Magnifique Client Setup ${version}.exe`), resolve('dist', 'pages', 'app', 'app.exe'))
+  await rename(resolve('dist', 'pages', 'app', `Magnifique Client Setup ${version}.exe.blockmap`), resolve('dist', 'pages', 'app', 'app.exe.blockmap'))
   await buildApp({
     config: {
       files: ['./dist/docs/**/*', './dist/pages/**/*', './dist/docs/*', './dist/pages/*', './dist/main.min.js', './dist/preload.min.js', './icons/server.ico'],
@@ -236,10 +239,17 @@ const lintFile = async () => {
             arch: ['x64'],
           },
         ],
-        publish: ['github'],
+        publish: [
+          {
+            provider: 'github',
+            owner: '7086cmd',
+            repo: 'magnifique',
+            token: process.env.GITHUB_TOKEN,
+          },
+        ],
       },
       nsis: {
-        oneClick: false,
+        oneClick: true,
         perMachine: false,
         allowToChangeInstallationDirectory: true,
         shortcutName: 'Magnifique Server',

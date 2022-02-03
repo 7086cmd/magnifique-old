@@ -43,7 +43,6 @@ specifiers:
   eslint: ^8.4.1
   eslint-plugin-prettier: ^4.0.0
   eslint-plugin-vue: ^8.2.0
-  fsevents: 2.3.2
   glob: ^7.2.0
   gulp: ^4.0.2
   iconv-lite: ^0.6.3
@@ -104,7 +103,6 @@ dependencies:
   '@koa/multer': 3.0.0_multer@1.4.4
   '@koa/router': 10.1.1
   chalk: 5.0.0
-  fsevents: 2.3.2
   iconv-lite: 0.6.3
   js-sha512: 0.8.0
   json5: 2.2.0
@@ -7083,6 +7081,8 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
+    dev: true
+    optional: true
 
   /fstream-ignore/1.0.5:
     resolution: {integrity: sha1-nDHa40dnAY/h0kmyTa2mfQktoQU=}

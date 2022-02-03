@@ -76,7 +76,7 @@ axios(`${baseurl}member/getinfo/${number}/`).then((response) => {
       </el-col>
     </el-row>
     <el-divider>{{ whatdo }} {{ name }}</el-divider>
-    <el-card class="box-card" shadow="never" v-if="loaded">
+    <el-card v-if="loaded" shadow="never" class="box-card">
       <member-description :data="aboutme" />
     </el-card>
   </div>
