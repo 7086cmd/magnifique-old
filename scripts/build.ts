@@ -246,7 +246,6 @@ const lintFile = async () => {
             provider: 'github',
             owner: '7086cmd',
             repo: 'magnifique',
-            token: token,
           },
         ],
       },
