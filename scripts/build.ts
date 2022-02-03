@@ -7,8 +7,7 @@ import chalk from 'chalk'
 import { platform } from 'os'
 import { exec } from 'child_process'
 import { resolve } from 'path'
-import { version } from '../package.json'
-import { copyFile, mkdir, rename } from 'fs/promises'
+import { mkdir, rename, readFile } from 'fs/promises'
 
 const lintFile = async () => {
   const eslint = new ESLint()
@@ -218,6 +217,7 @@ const lintFile = async () => {
       },
     },
   })
+  const { version } = JSON.parse((await readFile(resolve('package.json'))).toString())
   await rename(resolve('dist', 'pages', 'app', `Magnifique Client Setup ${version}.exe`), resolve('dist', 'pages', 'app', 'app.exe'))
   await rename(resolve('dist', 'pages', 'app', `Magnifique Client Setup ${version}.exe.blockmap`), resolve('dist', 'pages', 'app', 'app.exe.blockmap'))
   await buildApp({
