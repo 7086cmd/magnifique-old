@@ -184,6 +184,8 @@ const lintFile = async () => {
     external: ['electron'],
   })
   await mkdir(resolve('dist', 'pages', 'app'))
+  const token = process.env.GITHUB_TOKEN
+  process.env.GITHUB_TOKEN = undefined
   await buildApp({
     config: {
       files: ['./dist/main.client.min.js', './dist/preload.client.min.js', './icons/client.ico'],
@@ -244,7 +246,7 @@ const lintFile = async () => {
             provider: 'github',
             owner: '7086cmd',
             repo: 'magnifique',
-            token: process.env.GITHUB_TOKEN,
+            token: token,
           },
         ],
       },
