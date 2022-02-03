@@ -209,7 +209,7 @@ const lintFile = async () => {
         publish: undefined,
       },
       nsis: {
-        oneClick: true,
+        oneClick: false,
         perMachine: false,
         allowToChangeInstallationDirectory: true,
         shortcutName: 'Magnifique Client',
@@ -249,7 +249,7 @@ const lintFile = async () => {
         ],
       },
       nsis: {
-        oneClick: true,
+        oneClick: false,
         perMachine: false,
         allowToChangeInstallationDirectory: true,
         shortcutName: 'Magnifique Server',
