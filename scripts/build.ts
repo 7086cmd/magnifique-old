@@ -184,9 +184,8 @@ const lintFile = async () => {
     external: ['electron'],
   })
   await mkdir(resolve('dist', 'pages', 'app'))
-  const token = process.env.GITHUB_TOKEN
-  process.env.GITHUB_TOKEN = undefined
   await buildApp({
+    publish: 'never',
     config: {
       files: ['./dist/main.client.min.js', './dist/preload.client.min.js', './icons/client.ico'],
       extraMetadata: {
@@ -223,6 +222,7 @@ const lintFile = async () => {
   await rename(resolve('dist', 'pages', 'app', `Magnifique Client Setup ${version}.exe`), resolve('dist', 'pages', 'app', 'app.exe'))
   await rename(resolve('dist', 'pages', 'app', `Magnifique Client Setup ${version}.exe.blockmap`), resolve('dist', 'pages', 'app', 'app.exe.blockmap'))
   await buildApp({
+    publish: 'always',
     config: {
       files: ['./dist/docs/**/*', './dist/pages/**/*', './dist/docs/*', './dist/pages/*', './dist/main.min.js', './dist/preload.min.js', './icons/server.ico'],
       extraMetadata: {
