@@ -83,6 +83,11 @@ const refresh = async (type: string) => {
 }
 refresh('all')
 watch(choice, () => {
+  if (!['core', 'all'].includes(choice.value)) {
+    information.union.department = choice.value
+  } else {
+    information.union.department = ''
+  }
   refresh(choice.value)
 })
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

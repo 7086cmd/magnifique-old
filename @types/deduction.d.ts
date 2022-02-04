@@ -7,7 +7,7 @@ declare interface deduction {
     name: string
     number: number
   }
-  time: string
+  time: string | Date
   place: string
   status: 'normal' | 'processing' | 'failed'
   msgs: {

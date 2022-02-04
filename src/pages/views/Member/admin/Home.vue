@@ -5,6 +5,7 @@ import axios from 'axios'
 import baseurl from '../../../modules/baseurl'
 import MemberPage from './member.vue'
 import DeductionPage from './deduction.vue'
+import PostPage from './post.vue'
 import personExample from '../../../../examples/person'
 import { ElLoading } from 'element-plus'
 const { number } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
@@ -22,11 +23,14 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
 <template>
   <div>
     <el-tabs v-model="choice" tab-position="left">
-      <el-tab-pane v-if="me.union.admin.includes('member')" label="成员管理" name="member">
+      <el-tab-pane v-if="me.union.admin.includes('member')" label="成员" name="member">
         <member-page />
       </el-tab-pane>
-      <el-tab-pane v-if="me.union.admin.includes('deduction')" label="扣分数据" name="deduction">
+      <el-tab-pane v-if="me.union.admin.includes('deduction')" label="扣分" name="deduction">
         <deduction-page />
+      </el-tab-pane>
+      <el-tab-pane v-if="me.union.admin.includes('post')" label="稿件" name="post">
+        <post-page />
       </el-tab-pane>
     </el-tabs>
   </div>

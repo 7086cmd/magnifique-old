@@ -23,3 +23,16 @@ declare module 'particles.vue3'
 //     export default Vue
 //     export * from '@vue/runtime-dom'
 // }
+
+declare type status1 =
+  | {
+      status: 'ok'
+      details: {
+        id: string
+      }
+    }
+  | {
+      status: 'error'
+      reason: string
+      text: string
+    }

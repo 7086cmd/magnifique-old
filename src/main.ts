@@ -6,7 +6,7 @@ import { createServer } from 'http'
 import { tmpdir } from 'os'
 import { v4 as generateToken, v4 } from 'uuid'
 import { encode as encodeGBK } from 'iconv-lite'
-import { app, BrowserWindow, ipcMain, screen, Tray, Menu } from 'electron'
+import { app, BrowserWindow, ipcMain, screen, Tray, Menu, dialog } from 'electron'
 // import server dependences
 import Koa from 'koa'
 import KoaRouter from '@koa/router'
@@ -54,7 +54,6 @@ import editPassword from './modules/class/edit-password'
 import fbNewE from './modules/utils/fb-new-e'
 import getMemberInf from './modules/utils/get-member-inf'
 import transformDate from './modules/utils/transform-date'
-import analyzePerson from './modules/utils/analyze-person'
 // import member productions
 import loginMember from './modules/member/login-member'
 import appPost from './modules/admin/add-post'
@@ -69,11 +68,13 @@ import pauseWorkflow from './modules/member/pause-workflow'
 import getMyDeduction from './modules/member/get-my-deduction'
 import turnDown from './modules/member/turn-down'
 import getMyPost from './modules/member/get-my-document'
+import postDelete from './modules/admin/post-delete'
 import downloadPost from './modules/admin/download-post'
 import networks from './modules/database/networks'
 import allowPowers from './modules/database/allow-powers'
 import getPublicPower from './modules/database/get-public-power'
 import getRawMember from './modules/member/get-raw-member'
+import getAllPosts from './modules/admin/get-all-posts'
 
 // Generate Chart Base File
 const chartBase = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="shortcut icon" href="https://v-charts.js.org/favicon.ico" type="image/x-icon" /><title>Chart (type: <%=tit=>)</title><script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script><script src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css" /></head><body><div id="app"><ve-<%=tpe=> :data="cdata"></ve-<%=tpe=>></div><script>var vm=new Vue({el:'#app',data(){const data=JSON.parse('<%=dat=>');return {cdata:data}}})</script></body></html>`
@@ -397,6 +398,8 @@ router.get('/api/member/:id/login', async (ctx) => {
     }
   }
 })
+
+// Member Admin API (Member)
 router.post('/api/member/admin/trans/member', async (ctx) => {
   try {
     const { password, member, number, position } = ctx.request.body
@@ -454,10 +457,10 @@ router.post('/api/member/admin/new/member', async (ctx) => {
     }
   }
 })
-router.get('/api/member/admin/:number/get/:department/member', async (ctx) => {
+router.get('/api/member/admin/:id/get/:department/member', async (ctx) => {
   try {
     const password = getPassword(ctx)
-    if (loginMember(parseInt(ctx.params.number), password).status == 'ok') {
+    if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
       ctx.response.body = processAllMemberInfo(getDepartmentMember(ctx.params.department))
     } else {
       ctx.response.body = {
@@ -473,6 +476,7 @@ router.get('/api/member/admin/:number/get/:department/member', async (ctx) => {
     }
   }
 })
+
 router.post('/api/member/:id/edit/password', async (ctx) => {
   try {
     const { password } = ctx.request.body
@@ -648,14 +652,21 @@ router.post('/api/member/admin/:id/del/deduction', async (ctx) => {
     const { password } = ctx.request.body
     const { id } = ctx.params
     if (loginMember(parseInt(id), password).status == 'ok') {
-      ctx.response.body = delDeduction(parseInt(ctx.request.body.person), ctx.request.body.id)
-      io.emit(
-        'del-deduc',
-        JSON.stringify({
-          person: ctx.request.body.person,
-          id: ctx.request.body.id,
-        })
-      )
+      if ((getRawMember(parseInt(ctx.params.id)).details as member).union.admin.includes('deduction')) {
+        ctx.response.body = delDeduction(parseInt(ctx.request.body.person), ctx.request.body.id)
+        io.emit(
+          'del-deduc',
+          JSON.stringify({
+            person: ctx.request.body.person,
+            id: ctx.request.body.id,
+          })
+        )
+      } else {
+        ctx.response.body = {
+          status: 'error',
+          reason: 'no-auth',
+        }
+      }
     } else {
       ctx.response.body = {
         status: 'error',
@@ -670,6 +681,7 @@ router.post('/api/member/admin/:id/del/deduction', async (ctx) => {
     }
   }
 })
+
 router.get('/api/member/deduction/:id/work/get/deduction', async (ctx) => {
   try {
     const password = getPassword(ctx)
@@ -783,6 +795,102 @@ router.post('/api/member/deduction/:id/work/del/deduction', async (ctx) => {
 })
 
 // 学习部可用API
+router.get('/api/member/admin/:id/get/all/post', async (ctx) => {
+  try {
+    const password = getPassword(ctx)
+    if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
+      if ((getRawMember(parseInt(ctx.params.id)).details as member).union.admin.includes('post')) {
+        ctx.response.body = getAllPosts()
+      } else {
+        ctx.response.body = {
+          status: 'error',
+          reason: 'no-auth',
+        }
+      }
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
+router.post('/api/member/admin/:id/del/post', async (ctx) => {
+  try {
+    const { password, person } = ctx.request.body
+    const { id } = ctx.params
+    if (loginMember(parseInt(id), password).status == 'ok') {
+      if ((getRawMember(parseInt(ctx.params.id)).details as member).union.admin.includes('post')) {
+        ctx.response.body = postDelete(parseInt(person), ctx.request.body.id)
+      } else {
+        ctx.response.body = {
+          status: 'error',
+          reason: 'no-auth',
+        }
+      }
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
+router.post('/api/member/admin/:id/download/post', async (ctx) => {
+  try {
+    const { id, password, person } = ctx.request.body
+    if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
+      if ((getRawMember(parseInt(ctx.params.id)).details as member).union.admin.includes('post')) {
+        let index = v4()
+        while (docTokens[index] !== undefined) {
+          index = v4()
+        }
+        docTokens[index] = downloadPost(id, person)
+        ctx.response.body = {
+          status: 'ok',
+          details: {
+            token: index,
+          },
+        }
+      } else {
+        ctx.response.body = {
+          status: 'error',
+          reason: 'no-auth',
+        }
+      }
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
+
+router.get('/api/member/post/download/:id/:docName', async (ctx) => {
+  ctx.response.type = 'docx'
+  ctx.response.body = docTokens[ctx.params.id]
+  delete docTokens[ctx.params.id]
+})
+
 router.get('/api/member/post/:id/work/get/post', async (ctx) => {
   try {
     const password = getPassword(ctx)
@@ -810,26 +918,49 @@ router.get('/api/member/post/:id/work/get/post', async (ctx) => {
     }
   }
 })
-router.post('/api/member/post/:id/work/upload/post', uploader.single('file'), async (ctx) => {
+router.post('/api/member/post/:id/work/upload/post', async (ctx, next) => {
+  await uploader.single('file')(ctx, next)
   if (ctx.file !== undefined) {
-    ctx.response.body = uploadDispose(parseInt(ctx.params.id), ctx.file)
+    try {
+      const { password, person } = ctx.request.body
+      if (loginMember(parseInt(person), password).status == 'ok') {
+        if ((getRawMember(parseInt(person)).details as member).union.duty.includes('post')) {
+          ctx.response.body = uploadDispose(parseInt(ctx.params.id), ctx.file)
+        } else {
+          ctx.response.status = 403
+          ctx.response.body = {
+            status: 'error',
+            reason: 'no-auth',
+          }
+        }
+      } else {
+        ctx.response.status = 402
+        ctx.response.body = {
+          status: 'error',
+          reason: 'password-wrong',
+        }
+      }
+    } catch (e) {
+      ctx.response.status = 500
+      ctx.response.body = {
+        status: 'error',
+        reason: 'type-error',
+        text: new Error(<string>e).message,
+      }
+    }
   } else {
+    ctx.response.status = 403
     ctx.response.body = {
       status: 'error',
       reason: 'incorrect-type',
     }
   }
 })
-router.get('/api/member/download/:id', async (ctx) => {
-  ctx.response.type = 'docx'
-  ctx.response.body = docTokens[ctx.params.id]
-  delete docTokens[ctx.params.id]
-})
 router.post('/api/member/post/:id/work/download/post', async (ctx) => {
   try {
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
-      if ((getRawMember(parseInt(id)).details as member).union.duty.includes('post')) {
+      if ((getRawMember(parseInt(person)).details as member).union.duty.includes('post')) {
         let index = v4()
         while (docTokens[index] !== undefined) {
           index = v4()
@@ -865,8 +996,34 @@ router.post('/api/member/post/:id/work/new/post', async (ctx) => {
   try {
     const { id, password, content, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
-      if ((getRawMember(parseInt(id)).details as member).union.duty.includes('post')) {
+      if ((getRawMember(parseInt(person)).details as member).union.duty.includes('post')) {
         ctx.response.body = appPost(parseInt(person), id, content)
+      } else {
+        ctx.response.body = {
+          status: 'error',
+          reason: 'no-auth',
+        }
+      }
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
+router.post('/api/member/post/:id/work/del/post', async (ctx) => {
+  try {
+    const { id, password, person } = ctx.request.body
+    if (loginMember(parseInt(person), password).status == 'ok') {
+      if ((getRawMember(parseInt(person)).details as member).union.duty.includes('post')) {
+        ctx.response.body = postDelete(parseInt(person), id)
       } else {
         ctx.response.body = {
           status: 'error',
@@ -906,6 +1063,25 @@ router.get('/api/admin/get/all/deduction', async (ctx) => {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
       ctx.response.body = getAllDeductions()
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
+router.get('/api/admin/get/all/post', async (ctx) => {
+  try {
+    const password = getPassword(ctx)
+    if (loginAdmin(password).status == 'ok') {
+      ctx.response.body = getAllPosts()
     } else {
       ctx.response.body = {
         status: 'error',
@@ -962,6 +1138,36 @@ router.get('/api/admin/export/download/:token', async (ctx) => {
   ctx.response.type = 'text/csv'
   ctx.response.body = encodeGBK(csvTokens[ctx.params.token], 'gbk')
   delete csvTokens[ctx.params.token]
+})
+
+router.post('/api/admin/download/post', async (ctx) => {
+  try {
+    const { id, password, person } = ctx.request.body
+    if (loginAdmin(password).status == 'ok') {
+      let index = v4()
+      while (docTokens[index] !== undefined) {
+        index = v4()
+      }
+      docTokens[index] = downloadPost(id, person)
+      ctx.response.body = {
+        status: 'ok',
+        details: {
+          token: index,
+        },
+      }
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
 })
 
 router.post('/api/admin/edit/password', async (ctx) => {
@@ -1089,6 +1295,25 @@ router.post('/api/admin/del/deduction', async (ctx) => {
     }
   }
 })
+router.post('/api/admin/del/post', async (ctx) => {
+  try {
+    const { password } = ctx.request.body
+    if (loginAdmin(password).status == 'ok') {
+      ctx.response.body = postDelete(parseInt(ctx.request.body.person), ctx.request.body.id)
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
 router.post('/api/admin/full/member', async (ctx) => {
   try {
     const { password, member, position } = ctx.request.body
@@ -1184,18 +1409,6 @@ router.get('/api/power/list', async (ctx) => {
 router.get('/api/power', async (ctx) => {
   ctx.response.body = getPublicPower()
 })
-router.get('/api/transformDate/:year', async (ctx) => {
-  ctx.response.body = {
-    status: 'ok',
-    details: transformDate(parseInt(ctx.params.year)),
-  }
-})
-router.get('/api/analyzePerson/:person', async (ctx) => {
-  ctx.response.body = {
-    status: 'ok',
-    details: analyzePerson(parseInt(ctx.params.person)),
-  }
-})
 router.get('/config', async (ctx) => {
   ctx.response.body = readData()
 })
@@ -1244,7 +1457,7 @@ app.whenReady().then(() => {
     height: generateTwoThirds(height),
     frame: false,
     webPreferences: {
-      preload: resolve(__dirname, process.env.NODE_ENV == 'development' ? './preload.js' : './preload.min.js'),
+      preload: resolve(__dirname, process.env.NODE_ENV == 'development' ? './preload.js' : './server.preload.min.js'),
     },
     show: false,
   })

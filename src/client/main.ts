@@ -2,37 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { resolve } from 'path'
 import { URL } from 'url'
-import fetch from 'node-fetch'
 import analyzePerson from '../modules/utils/analyze-person'
 import transformDate from '../modules/utils/transform-date'
 import io from 'socket.io-client'
 import { BrowserWindow, app, Tray, Menu, screen, ipcMain, Notification, dialog, shell } from 'electron'
-import { parse } from 'yaml'
-import packageJson from '../../package.json'
-
-const update = async () => {
-  const response = await fetch('http://10.49.8.4/app/latest.yml')
-  const latest = parse(await response.text())
-  const {
-    path,
-    version,
-  }: {
-    path: string
-    version: string
-  } = latest
-  if (packageJson.version !== version) {
-    new Notification({
-      title: '新更新',
-      body: version,
-    }).show()
-    shell.openExternal(new URL('http://10.49.8.4/app/' + path.replaceAll('-', ' ')).toString())
-  } else {
-    new Notification({
-      title: '无更新',
-      body: version,
-    }).show()
-  }
-}
+import update from './modules/update'
 
 if (process.env.NODE_ENV !== 'development') {
   update()
@@ -60,7 +34,7 @@ app.whenReady().then(() => {
     frame: false,
     show: false,
     webPreferences: {
-      preload: resolve(__dirname, process.env.NODE_ENV == 'development' ? './preload.js' : './preload.client.min.js'),
+      preload: resolve(__dirname, process.env.NODE_ENV == 'development' ? './preload.js' : './client.preload.min.js'),
     },
   })
   mainWindow.on('ready-to-show', () => {

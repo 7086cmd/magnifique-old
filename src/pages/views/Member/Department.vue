@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import baseurl from '../../modules/baseurl'
 import deductionPage from './departments/deduction.vue'
+import postPage from './departments/post.vue'
 import WorkFlowPage from './departments/WorkFlow.vue'
 import personExample from '../../../examples/person'
 import { ElLoading } from 'element-plus'
@@ -28,6 +29,9 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
       </el-tab-pane>
       <el-tab-pane v-if="me.union.duty.includes('deduction')" label="扣分" name="deduction">
         <deduction-page />
+      </el-tab-pane>
+      <el-tab-pane v-if="me.union.duty.includes('post')" label="投稿" name="post">
+        <post-page />
       </el-tab-pane>
     </el-tabs>
   </div>

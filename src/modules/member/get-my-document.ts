@@ -5,16 +5,10 @@ import objectToArray from '../utils/object-to-array'
 
 export default (numb: number) => {
   const { gradeid, classid } = analyzePerson(numb)
-  const docsClass = objectToArray('id', parse(getContentClass('post', gradeid, classid)).details)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const all: any[] = []
-  docsClass.forEach((item) => {
-    if (item.uploader == numb) {
-      all.push(item)
-    }
-  })
+  const docsClass = objectToArray('id', parse(getContentClass('post', gradeid, classid)).details) as PostList[]
+  docsClass.filter((item) => item.person === numb)
   return {
     status: 'ok',
-    details: all,
+    details: docsClass,
   }
 }
