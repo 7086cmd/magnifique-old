@@ -163,8 +163,8 @@ const submitpost = async () => {
             drag
             :action="`${baseurl}member/post/${number}/work/upload/post`"
           >
-            <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-            <div className="el-upload__text">拖拽文件到这里或者<el-tag plain>点击上传</el-tag></div>
+            <el-icon style="padding-top: 8%; font-size: 64px; color: #dedede"><upload-filled /></el-icon>
+            <div>拖拽文件到这里或者<el-tag plain>点击上传</el-tag></div>
           </el-upload>
         </el-form-item>
         <el-form-item label="稿件">
