@@ -276,7 +276,7 @@ const submitDeduction = async () => {
       <template #footer>
         <span>
           <el-button @click="newDeduction = false"> 取消 </el-button>
-          <el-button type="primary" :loading="isCreating" @click="submitDeduction"> 确定 </el-button>
+          <el-button color="#626aef" :loading="isCreating" @click="submitDeduction"> 确定 </el-button>
         </span>
       </template>
     </el-dialog>

@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto'
 import { resolve } from 'path'
 import transformDate from '../src/modules/utils/transform-date'
 import { describe, test, expect } from '@jest/globals'
@@ -12,6 +13,7 @@ import dbCreate from '../src/modules/database/db-create'
 import { tmpdir } from 'os'
 import dataOpen from '../src/modules/utils/data-open'
 import getAllMembers from '../src/modules/admin/get-all-members'
+import { isEqual } from 'lodash'
 
 dbCreate()
 
@@ -26,9 +28,9 @@ describe('Member Combo Test', () => {
     test('Register', () => {
       detail = person()
       memb = {
-        number: Math.floor(Math.random() * 50 + 1),
-        classid: Math.floor(Math.random() * 15 + 1),
-        gradeid: transformDate(Math.floor(Math.random() * 2) + 1),
+        number: (parseInt(randomBytes(4).toString('hex'), 16) % 60) + 1,
+        classid: (parseInt(randomBytes(4).toString('hex'), 16) % 14) + 1,
+        gradeid: transformDate((parseInt(randomBytes(4).toString('hex'), 16) % 2) + 1),
       }
       detail.number = memb.number + memb.classid * 100 + memb.gradeid * 10000
       detail.name = Buffer.from(String(Math.random() * 935345)).toString('base64')

@@ -145,7 +145,7 @@ const createRegistry = async () => {
         <template #footer>
           <span>
             <el-button @click="isRegistingMember = false"> 取消 </el-button>
-            <el-button type="primary" :loading="isSubmiting" @click="createRegistry"> 确定 </el-button>
+            <el-button color="#626aef" :loading="isSubmiting" @click="createRegistry"> 确定 </el-button>
           </span>
         </template>
       </el-dialog>

@@ -4,6 +4,7 @@ import controls from '../components/controls.vue'
 import ClassLogin from './Class/ClassLogin.vue'
 import { useRouter } from 'vue-router'
 import AdminLogin from './Admin/Login.vue'
+import { loadFountainPreset } from 'tsparticles-preset-fountain'
 
 const router = useRouter()
 const choice = ref('class')
@@ -11,10 +12,15 @@ const choice = ref('class')
 const toTag = (tag: string) => {
   router.push('/' + tag + '/')
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const init = (main: any) => {
+  loadFountainPreset(main)
+}
 </script>
 
 <template>
-  <div>
+  <div className="background_must_be_gray">
+    <Particles id="tsparticles" :particles-init="init"></Particles>
     <el-container>
       <el-header style="text-align: right; height: 30%">
         <controls />

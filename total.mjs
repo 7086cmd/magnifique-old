@@ -1,4 +1,4 @@
-import { existsSync, statSync, readdirSync, readFileSync } from 'fs'
+import { existsSync, statSync, readdirSync, readFileSync, writeFileSync } from 'fs'
 import { resolve } from 'path'
 import JSON5 from 'json5'
 
@@ -14,12 +14,9 @@ const copyDir = (src) => {
     const itemPath = resolve(src, item)
     const lstType = statSync(itemPath)
     if (lstType.isFile()) {
-      total += readFileSync(itemPath)
-        .toString()
-        .split('\r')
-        .join('\n')
-        .split('\n')
-        .filter((x) => x !== '').length
+      let atotal = readFileSync(itemPath).toString()
+      atotal.includes('type="primary"') && console.log(itemPath)
+      writeFileSync(itemPath, atotal.replaceAll('type="primary"', 'color="#626aef"'))
     } else if (lstType.isDirectory()) {
       copyDir(itemPath, resolve(src, item))
     }
@@ -46,7 +43,3 @@ const copyDir2 = (src) => {
 }
 // copyDir2(resolve())
 copyDir(resolve('src'))
-copyDir(resolve('test'))
-copyDir(resolve('scripts'))
-
-console.log(total)

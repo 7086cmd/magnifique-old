@@ -15,6 +15,7 @@ import i18n from './i18n'
 import { ElMessage } from 'element-plus'
 import Particles from 'particles.vue3'
 import './registerServiceWorker'
+import TagPurple from './components/tags/tag.purple.vue'
 
 const app = createApp(App)
 
@@ -30,6 +31,7 @@ for (const iconName in ElIconModules) {
 }
 Locale.use('zh-CN', vantLang)
 app.use(Vant)
+app.use(TagPurple)
 app.use(router)
 app.use(store)
 app.use(i18n)

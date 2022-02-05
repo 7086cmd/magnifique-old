@@ -174,7 +174,7 @@ const submitpost = async () => {
       <template #footer>
         <span>
           <el-button @click="newpost = false"> 取消 </el-button>
-          <el-button type="primary" :loading="isCreating" @click="submitpost"> 确定 </el-button>
+          <el-button color="#626aef" :loading="isCreating" @click="submitpost"> 确定 </el-button>
         </span>
       </template>
     </el-dialog>

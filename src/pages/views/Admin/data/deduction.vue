@@ -161,7 +161,7 @@ const createData = async () => {
         <template #footer>
           <span className="dialog-footer">
             <el-button @click="isExporting = false"> 取消 </el-button>
-            <el-button type="primary" :loading="isSubmiting" @click="createData"> 确定 </el-button>
+            <el-button color="#626aef" :loading="isSubmiting" @click="createData"> 确定 </el-button>
           </span>
         </template>
       </el-dialog>

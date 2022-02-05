@@ -75,7 +75,7 @@ async function login() {
         <el-input v-model="password" outlined style="width: 100%" type="password" :label="t('class.password')"> </el-input>
       </el-form-item>
       <el-form-item>
-        <el-button :label="t('submit')" outline plain type="primary" style="width: 100%" @click="login">
+        <el-button :label="t('submit')" outline plain color="#626aef" style="width: 100%" @click="login">
           {{ t('submit') }}
         </el-button>
       </el-form-item>
