@@ -5,7 +5,7 @@ const lintFile = async () => {
   const eslint = new ESLint({
     fix: true,
   })
-  const results = await eslint.lintFiles(['src/**/*.ts', 'src/main.ts', 'src/**/*.vue'])
+  const results = await eslint.lintFiles(['src/**/*.ts', 'src/*.ts', 'src/**/*.vue', 'scripts/*.mjs'])
   await ESLint.outputFixes(results)
   // console.log(JSON.stringify(results, '', 4))
   let tw = 0,
@@ -13,13 +13,14 @@ const lintFile = async () => {
   let hasw = false
   for (let i = 0; i in results; i++) {
     if (results[i].messages.length != 0) {
-      console.log(chalk.underline(results[i].filePath))
+      console.log(chalk.green('[Lint] ') + chalk.underline(results[i].filePath))
       hasw = true
     }
     for (let j = 0; j in results[i].messages; j++) {
       if (results[i].messages[j].severity == 1) {
         console.log(
-          '  ' +
+          chalk.green('[Lint] ') +
+            '  ' +
             chalk.dim(`${results[i].messages[j].line}:${results[i].messages[j].column}`) +
             '  ' +
             chalk.yellow('warning') +
@@ -30,7 +31,8 @@ const lintFile = async () => {
         )
       } else if (results[i].messages[j].severity == 2) {
         console.log(
-          '  ' +
+          chalk.green('[Lint] ') +
+            '  ' +
             chalk.dim(`${results[i].messages[j].line}:${results[i].messages[j].column}`) +
             '  ' +
             chalk.red('error') +
@@ -42,16 +44,13 @@ const lintFile = async () => {
       }
     }
     if (results[i].messages.length != 0) {
-      console.log()
+      console.log(chalk.green('[Lint] '))
     }
     tw += results[i].warningCount
     te += results[i].errorCount
   }
   if (hasw) {
-    console.log(chalk.bold.yellow(`✖ ${tw + te} problems (${te} errors, ${tw} warnings)`))
-  }
-  if (te > 0) {
-    console.log(chalk.dim.red('Builder is waiting for no error.'))
+    console.log(chalk.green('[Lint] ') + chalk.bold.yellow(`✖ ${tw + te} problems (${te} errors, ${tw} warnings)`))
   }
 }
 lintFile()

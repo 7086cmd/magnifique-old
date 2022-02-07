@@ -2,11 +2,12 @@
 import { resolve } from 'path'
 import { readFileSync } from 'fs'
 import { URLSearchParams } from 'url'
-import { createServer } from 'http'
+import { createServer as createHttpServer } from 'http'
+import { createServer as createHttpsServer } from 'https'
 import { tmpdir } from 'os'
 import { v4 as generateToken, v4 } from 'uuid'
 import { encode as encodeGBK } from 'iconv-lite'
-import { app, BrowserWindow, ipcMain, screen, Tray, Menu, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, screen, Tray, Menu } from 'electron'
 // import server dependences
 import Koa from 'koa'
 import KoaRouter from '@koa/router'
@@ -83,10 +84,17 @@ let tray: Tray
 let csvTokens = {}
 let docTokens = {}
 
-// Installize Server.
+// Initializate Server.
 const server = new Koa()
 const router = new KoaRouter()
-const httpServer = createServer(server.callback())
+const httpServer = createHttpServer(server.callback())
+const httpsServer = createHttpsServer(
+  {
+    key: readFileSync(resolve(tmpdir(), '..', 'magnifique', 'ssl', 'server.key')),
+    cert: readFileSync(resolve(tmpdir(), '..', 'magnifique', 'ssl', 'server.pem')),
+  },
+  server.callback()
+)
 const io = new Server(httpServer, {
   cors: {
     origin: 'http://localhost:3000',
@@ -1424,7 +1432,7 @@ server.use(async (ctx) => {
       ctx.response.body = readFileSync(resolve(__dirname, './pages/index.html')).toString()
     } else {
       ctx.response.type = 'html'
-      ctx.response.body = 'Sorry, we do not have index page in <b>Develoption</b> server.'
+      ctx.response.body = 'Sorry, we do not have index page in <b>Development</b> server.'
     }
   }
 })
@@ -1496,9 +1504,10 @@ app.whenReady().then(() => {
 
 // Listen the Server(Let it run.)
 httpServer.listen(80)
+httpsServer.listen(443)
 
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require('electron-reloader')(module)
-  // eslint-disable-next-line no-empty
-} catch (_e) {}
+// try {
+//   // eslint-disable-next-line @typescript-eslint/no-var-requires
+//   require('electron-reloader')(module)
+//   // eslint-disable-next-line no-empty
+// } catch (_e) {}

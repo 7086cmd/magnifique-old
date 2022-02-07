@@ -4,9 +4,8 @@ import { build as buildBackEnd } from 'esbuild'
 import { build as buildApp } from 'electron-builder'
 import { resolve } from 'path'
 import { mkdir } from 'fs/promises'
-import lintFile from './lint.mjs'
+import './lint.mjs'
 const main = async () => {
-  await lintFile()
   await buildFrontEnd()
   await buildBackEnd({
     entryPoints: ['src/main.ts'],
@@ -134,6 +133,10 @@ const main = async () => {
         target: [
           {
             target: 'nsis',
+            arch: ['x64', 'ia32'],
+          },
+          {
+            target: 'zip',
             arch: ['x64'],
           },
         ],
@@ -151,7 +154,7 @@ const main = async () => {
   await buildApp({
     publish: 'always',
     config: {
-      files: ['./dist/docs/**/*', './dist/pages/**/*', './dist/docs/*', './dist/pages/*', './dist/server.min.js', './dist/server.preload.min.js', './icons/server.ico'],
+      files: ['./dist/docs/**/*', './dist/pages/**/*', './dist/docs/*', './dist/pages/*', './dist/server.min.js', './dist/server.preload.min.js', './icons/server.ico', './ssl/*'],
       extraMetadata: {
         main: 'dist/server.min.js',
       },
@@ -165,6 +168,10 @@ const main = async () => {
         target: [
           {
             target: 'nsis',
+            arch: ['x64'],
+          },
+          {
+            target: 'zip',
             arch: ['x64'],
           },
         ],

@@ -1,56 +1,11 @@
-# Stunning App
+# Magnifique
 
-## Wiki
+It is a repo for a great platform we use. Here, you can see what you can do to use this app.
 
-使用：
-
--   koa
--   socket.io
--   electron
--   vite
--   vue
-    等新颖的`library`而成
-
-## Install
-
-> 该项目使用`pnpm`进行包管理，而且开启了`only-allow`
-
-### 安装
-
-```bash
-pnpm install
-```
-
-### 开发
-
-```bash
-pnpm run serve
-# or
-pnpm run dev
-```
-
-开发使用：
-
-1. `Vite.js`进行前端热更新
-2. `VitePress`文档
-3. `esbuild`编译`TypeScript`
-
-### 预构建
-
-::: tip 预构建含义
-预构建指只构建文档、后端脚本、前端页面，不将其构建为应用
-:::
-
-```bash
-pnpm run prebuild
-```
-
-### 构建
-
-```bash
-pnpm run build
-```
-
-## 源码结构
-
-所有的源码全部放置在`/src`文件夹里面
+1. Prepare a server runned `Windows 11` or `Windows Server 2022`. This app must have the latest system due to run `electron`
+2. Keep 8GB RAM and 16GB SSD. The database is in `${os.tmpdir()}/../magnifique`, and you must have storage to save the data.
+3. Prepare a domain, and get the `SSL` cert to enfore `https`. The domain should arrow to your ip.
+4. Save `SSL` cert to `${os.tmpdir()}/../magnifique/ssl/`, including `key` file and `pem` file.
+5. Be a sponsor and install the app from `GitHub`
+6. Wait for complete, and run it.
+7. It will show your ip and you can visit it in `LAN` via domain(`https`)

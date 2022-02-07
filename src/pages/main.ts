@@ -12,9 +12,9 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import i18n from './i18n'
-import { ElMessage } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 import Particles from 'particles.vue3'
-import './registerServiceWorker'
+import './pwa'
 import TagPurple from './components/tags/tag.purple.vue'
 
 const app = createApp(App)
@@ -31,7 +31,7 @@ for (const iconName in ElIconModules) {
 }
 Locale.use('zh-CN', vantLang)
 app.use(Vant)
-app.use(TagPurple)
+app.component('TagPurple', TagPurple)
 app.use(router)
 app.use(store)
 app.use(i18n)
@@ -39,8 +39,8 @@ app.use(Particles)
 app.mount('#app')
 
 if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-  ElMessage({
-    message: '目前没有适配深色模式。',
+  ElMessageBox.alert('检测到该为深色模式，目前未适配。', '深色模式提醒', {
+    center: true,
     type: 'warning',
   })
 }

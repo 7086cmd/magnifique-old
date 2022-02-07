@@ -10,6 +10,7 @@ extends:
   - plugin:vue/essential
   - plugin:@typescript-eslint/recommended
   - plugin:vue/vue3-recommended
+  - plugin:css/recommended
 parser: vue-eslint-parser
 parserOptions:
   parser: '@typescript-eslint/parser'
@@ -21,6 +22,7 @@ plugins:
   - '@typescript-eslint'
   - prettier
   - vue
+  - css
 rules:
   semi: 0
   no-console: 2
