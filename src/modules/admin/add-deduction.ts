@@ -6,6 +6,10 @@ import { parse, stringify } from 'json5'
 import { v4 } from 'uuid'
 import decoder from '../utils/decode-base64'
 import encoder from '../utils/encode-base64'
+import getRawMember from '../member/get-raw-member'
+import dataSave from '../utils/data-save'
+import generateMemberIndex from '../utils/generate-member-index'
+import addAction from '../member/records/actions/add-action'
 
 export default (configuration: deduction) => {
   let uuid = v4()
@@ -19,6 +23,12 @@ export default (configuration: deduction) => {
         uuid = v4()
       }
       decoded.details[uuid] = configuration
+      addAction(configuration.deductor.number, 1)
+      if (existsSync(generateMemberIndex(configuration.person))) {
+        const persondetail = getRawMember(configuration.person).details as member
+        persondetail.deduction.details[uuid] = configuration
+        dataSave(generateMemberIndex(persondetail.number), persondetail)
+      }
       const docc = stringify(decoded)
       writeFileSync(temppath, encoder(docc))
       return {

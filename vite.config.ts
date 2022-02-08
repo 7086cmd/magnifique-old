@@ -4,7 +4,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import styleImport from 'vite-plugin-style-import'
+// import styleImport from 'vite-plugin-style-import'
 import lagacy from '@vitejs/plugin-legacy'
 import { VitePWA as pwa } from 'vite-plugin-pwa'
 import { resolve } from 'path'
@@ -19,15 +19,15 @@ export default defineConfig({
     Components({
       resolvers: [ElementPlusResolver()],
     }),
-    styleImport({
-      libs: [
-        {
-          libraryName: 'vant',
-          esModule: true,
-          resolveStyle: (name) => `vant/es/${name}/style/index`,
-        },
-      ],
-    }),
+    // styleImport({
+    //   libs: [
+    //     {
+    //       libraryName: 'vant',
+    //       esModule: true,
+    //       resolveStyle: (name) => `vant/es/${name}/style/index`,
+    //     },
+    //   ],
+    // }),
     lagacy({
       targets: ['defaults'],
       additionalLegacyPolyfills: ['regenerator-runtime/runtime'],

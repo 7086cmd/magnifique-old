@@ -33,5 +33,8 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
         <post-page />
       </el-tab-pane>
     </el-tabs>
+    <el-card v-if="me.union.admin.length === 0" shadow="never">
+      <el-result icon="error" title="不可使用" sub-title="不具有管理权限" />
+    </el-card>
   </div>
 </template>

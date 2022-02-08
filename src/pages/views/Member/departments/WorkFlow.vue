@@ -148,7 +148,9 @@ const statusAction = async (props: any, action: string) => {
         <el-form-item label="重要性"><el-input-number v-model="workflowInformation.importance" :min="1" :max="10" style="width: 100%"></el-input-number></el-form-item>
       </el-form>
       <template #footer>
-        <span> <el-button @click="newWorkFlow = false">取消</el-button><el-button color="#626aef" :loading="isSubmitingNewWorkFlow" @click="newWorkFlowAction">确定</el-button> </span>
+        <span>
+          <el-button @click="newWorkFlow = false">取消</el-button><el-button color="#626aef" style="color: white" :loading="isSubmitingNewWorkFlow" @click="newWorkFlowAction">确定</el-button>
+        </span>
       </template>
     </el-dialog>
   </div>

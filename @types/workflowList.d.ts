@@ -4,4 +4,5 @@ declare interface WorkflowList {
   description: string
   deadline: string
   importance: number
+  status: string
 }

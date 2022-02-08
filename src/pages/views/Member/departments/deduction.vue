@@ -255,28 +255,28 @@ const submitDeduction = async () => {
         <el-form-item label="时间">
           <el-date-picker v-model="deductionData.time" type="datetime" style="width: 100%" />
         </el-form-item>
-        <el-form-item label="违纪者">
+        <el-form-item label="违者">
           <el-input v-model="deductionData.person" />
         </el-form-item>
-        <el-form-item label="扣分原因">
+        <el-form-item label="原因">
           <el-select v-model="typs" style="width: 100%" multiple>
             <el-option v-for="i in typicals" :key="i" :label="i" :value="i"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="扣分数">
+        <el-form-item label="扣分">
           <el-input v-model="deductionData.deduction" readonly></el-input>
         </el-form-item>
         <el-form-item label="地点">
           <el-input v-model="deductionData.place"></el-input>
         </el-form-item>
-        <el-form-item label="解释说明">
+        <el-form-item label="解释">
           <el-input v-model="deductionData.description" type="textarea" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
         <span>
           <el-button @click="newDeduction = false"> 取消 </el-button>
-          <el-button color="#626aef" :loading="isCreating" @click="submitDeduction"> 确定 </el-button>
+          <el-button color="#626aef" style="color: white" :loading="isCreating" @click="submitDeduction"> 确定 </el-button>
         </span>
       </template>
     </el-dialog>

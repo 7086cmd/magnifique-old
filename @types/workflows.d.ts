@@ -3,4 +3,5 @@ declare interface workflow {
   description: string
   deadline: string
   importance: number
+  status: string
 }

@@ -76,6 +76,7 @@ import allowPowers from './modules/database/allow-powers'
 import getPublicPower from './modules/database/get-public-power'
 import getRawMember from './modules/member/get-raw-member'
 import getAllPosts from './modules/admin/get-all-posts'
+import calculate from './modules/member/records/calculate'
 
 // Generate Chart Base File
 const chartBase = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="shortcut icon" href="https://v-charts.js.org/favicon.ico" type="image/x-icon" /><title>Chart (type: <%=tit=>)</title><script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script><script src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css" /></head><body><div id="app"><ve-<%=tpe=> :data="cdata"></ve-<%=tpe=>></div><script>var vm=new Vue({el:'#app',data(){const data=JSON.parse('<%=dat=>');return {cdata:data}}})</script></body></html>`
@@ -1420,6 +1421,13 @@ router.get('/api/power', async (ctx) => {
 router.get('/config', async (ctx) => {
   ctx.response.body = readData()
 })
+
+setInterval(() => {
+  const members = getAllMembers().details as member[]
+  members.forEach((item) => {
+    calculate(item.number)
+  })
+}, 60 * 60 * 1000) // 每1小时计算一次素质分
 
 // Use routes to register APIs.
 server.use(router.routes())

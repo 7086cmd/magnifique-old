@@ -154,7 +154,7 @@ const openPassword = () => {
       <el-button v-if="isClient" style="text-align: right" :icon="Plus" type="success" circle plain size="small" @click="maxServerWindow()"> </el-button>
       <el-button v-if="isClient" style="text-align: right" :icon="Close" type="danger" circle plain size="small" @click="closeServer()"> </el-button>
     </div>
-    <el-drawer v-model="reset_password" title="修改密码" direction="btt" size="60%" style="text-align: center">
+    <el-drawer v-model="reset_password" title="修改密码" direction="rtl" size="40%" style="text-align: center">
       <el-form v-model="newpwd">
         <el-form-item label="原密码">
           <el-input v-model="newpwd.oldpwd" type="password" />
@@ -167,12 +167,12 @@ const openPassword = () => {
         </el-form-item>
         <el-form-item>
           <el-button plain @click="reset_password = false"> 取消 </el-button>
-          <el-button color="#626aef" plain :loading="isSubmitingPassword" @click="npd"> 确定 </el-button>
+          <el-button color="#626aef" style="color: white" plain :loading="isSubmitingPassword" @click="npd"> 确定 </el-button>
         </el-form-item>
       </el-form>
     </el-drawer>
 
-    <el-drawer v-model="feedbackdialogOpen" title="问题反馈" direction="btt" size="60%" style="text-align: center">
+    <el-drawer v-model="feedbackdialogOpen" title="问题反馈" direction="ltr" size="40%" style="text-align: center">
       <el-form v-model="feedbackin">
         <el-form-item label="反馈标题">
           <el-input v-model="feedbackin.title" />
@@ -182,7 +182,7 @@ const openPassword = () => {
         </el-form-item>
         <el-form-item>
           <el-button plain @click="feedbackdialogOpen = false">取消</el-button>
-          <el-button color="#626aef" plain :loading="isSubmitingFeedBack" @click="fbsub">确定</el-button>
+          <el-button color="#626aef" style="color: white" plain :loading="isSubmitingFeedBack" @click="fbsub">确定</el-button>
         </el-form-item>
       </el-form>
     </el-drawer>

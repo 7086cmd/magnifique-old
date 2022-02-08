@@ -6,8 +6,13 @@ const router = useRouter()
   <el-container>
     <el-aside width="5%" />
     <el-main>
-      <h2>404 Page Not Found...</h2>
-      <el-button @click="router.push('/')">回到主页</el-button>
+      <el-card shadow="never">
+        <el-result icon="warning" title="404 Not Found" sub-title="找不到你要访问的地方">
+          <template #extra>
+            <el-button color="#626aef" style="color: white" @click="router.push('/')">返回主页</el-button>
+          </template>
+        </el-result>
+      </el-card>
     </el-main>
     <el-aside width="5%" />
   </el-container>
