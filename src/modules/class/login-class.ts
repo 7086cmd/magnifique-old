@@ -1,20 +1,15 @@
-import { existsSync, readFileSync } from 'fs'
+import { existsSync } from 'fs'
 import { tmpdir } from 'os'
-import transformDate from '../utils/transform-date'
 import { resolve } from 'path'
 import { sha512 } from 'js-sha512'
-import * as JSON5 from 'json5'
-const loginClass = (gradeid: number, classid: number, password: string) => {
+import { createYearTransformer, createSdbdataParser, createENBase64 } from '../utils'
+
+export default (gradeid: number, classid: number, password: string) => {
   try {
-    let dirpth
-    if ([1, 2, 3].includes(gradeid)) {
-      dirpth = resolve(tmpdir(), '..', 'magnifique', String(transformDate(gradeid)), String(classid), 'password.sdbdata')
-    } else {
-      dirpth = resolve(tmpdir(), '..', 'magnifique', String(gradeid), String(classid), 'password.sdbdata')
-    }
+    let dirpth = resolve(tmpdir(), '..', 'magnifique', String([1, 2, 3].includes(gradeid) ? createYearTransformer(gradeid) : gradeid), String(classid), 'password.sdbdata')
     if (existsSync(dirpth)) {
-      const pwdcor = JSON5.parse(Buffer.from(readFileSync(dirpth).toString(), 'base64').toString())['password']
-      const pwdnow = sha512(Buffer.from(password, 'base64').toString())
+      const pwdcor = createSdbdataParser(dirpth).password
+      const pwdnow = sha512(createENBase64(password))
       if (pwdcor == pwdnow) {
         return {
           status: 'ok',
@@ -39,4 +34,3 @@ const loginClass = (gradeid: number, classid: number, password: string) => {
     } as status
   }
 }
-export default loginClass

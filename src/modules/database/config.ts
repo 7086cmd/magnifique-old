@@ -1,15 +1,14 @@
-import dataSave from '../utils/data-save'
 import { tmpdir } from 'os'
 import { resolve } from 'path'
 import type { NetworkInterfaceInfo } from 'os'
-import dataOpen from '../utils/data-open'
 import packageJson from '../../../package.json'
 import dayjs from 'dayjs'
+import { createSdbdataParser, createSdbdataSaver } from '../utils'
 
 export function writeData(address: NetworkInterfaceInfo[]) {
   const path = resolve(tmpdir(), '..', 'magnifique', './magnifique.config.sdbdata')
   const { name, version, dependencies, description } = packageJson
-  dataSave(path, {
+  createSdbdataSaver(path, {
     name,
     version,
     dependencies,
@@ -20,5 +19,5 @@ export function writeData(address: NetworkInterfaceInfo[]) {
 }
 
 export function readData() {
-  return dataOpen(resolve(tmpdir(), '..', 'magnifique', './magnifique.config.sdbdata'))
+  return createSdbdataParser(resolve(tmpdir(), '..', 'magnifique', './magnifique.config.sdbdata'))
 }

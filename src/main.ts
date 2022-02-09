@@ -16,67 +16,27 @@ import koaStatic from 'koa-static'
 import koaBodyparser from 'koa-bodyparser'
 import koaMulter, { diskStorage } from '@koa/multer'
 import { Server } from 'socket.io'
-// import database dependences
-import { parse } from 'json5'
-// import self-defingning database tool
+// import class productions
+import loginClass from './modules/class/login-class'
+import editPassword from './modules/class/edit-password'
+// import admin productions
+import loginAdmin from './modules/admin/login-admin'
+import resetPassword from './modules/admin/reset-password'
+// import member productions
+import loginMember from './modules/member/login-member'
+import newPassword from './modules/member/new-password'
+// import data
 import dbCreate from './modules/database/db-create'
 import { writeData, readData } from './modules/database/config'
 import getDepartmentData from './modules/database/get-department-data'
-// import class productions
-import loginClass from './modules/class/login-class'
-import getContentClass from './modules/class/get-content-class'
-import getMembers from './modules/class/get-members'
-import fbNew from './modules/class/fb-new'
-import chartClassDate from './modules/class/graphapi/date'
-import chartClassPerson from './modules/class/graphapi/person'
-import chartClassReason from './modules/class/graphapi/reason'
-import getMembersPre from './modules/class/get-members-pre'
-// import admin productions
-import loginAdmin from './modules/admin/login-admin'
-import getAllDeductions from './modules/admin/get-all-deductions'
-import memberInformationProcess from './modules/admin/member-information-process'
-import processAllMemberInfo from './modules/admin/process-all-member-info'
-import addDeduction from './modules/admin/add-deduction'
-import delDeduction from './modules/admin/del-deduction'
-import delMember from './modules/admin/del-member'
-import addMember from './modules/admin/add-member'
-import deductionExportReason from './modules/admin/deduction-export-reason'
-import getClassTotal from './modules/admin/get-class-total'
-import getCoreMember from './modules/admin/get-core-member'
-import addMemberPre from './modules/admin/add-member-pre'
-import getAllMembers from './modules/admin/get-all-members'
-import moveToRelMember from './modules/admin/move-to-rel-member'
-import getDepartmentMember from './modules/admin/get-department-member'
-import resetPassword from './modules/admin/reset-password'
-// import utils
-import objectToArray from './modules/utils/object-to-array'
-import decodeBase64 from './modules/utils/decode-base64'
-import editPassword from './modules/class/edit-password'
-import fbNewE from './modules/utils/fb-new-e'
-import getMemberInf from './modules/utils/get-member-inf'
-import transformDate from './modules/utils/transform-date'
-// import member productions
-import loginMember from './modules/member/login-member'
-import appPost from './modules/admin/add-post'
-import newPassword from './modules/member/new-password'
-import uploadDispose from './modules/admin/upload-dispose'
-import newWorkflow from './modules/member/new-workflow'
-import finishWorkflow from './modules/member/finish-workflow'
-import startWorkflow from './modules/member/start-workflow'
-import quitWorkflow from './modules/member/quit-workflow'
-import getWorkflow from './modules/member/get-workflow'
-import pauseWorkflow from './modules/member/pause-workflow'
-import getMyDeduction from './modules/member/get-my-deduction'
-import turnDown from './modules/member/turn-down'
-import getMyPost from './modules/member/get-my-document'
-import postDelete from './modules/admin/post-delete'
-import downloadPost from './modules/admin/download-post'
 import networks from './modules/database/networks'
 import allowPowers from './modules/database/allow-powers'
 import getPublicPower from './modules/database/get-public-power'
-import getRawMember from './modules/member/get-raw-member'
-import getAllPosts from './modules/admin/get-all-posts'
-import calculate from './modules/member/records/calculate'
+// Refactor: import uses
+import * as postActions from './modules/powers/post'
+import * as deductionActions from './modules/powers/deduction'
+import * as memberActions from './modules/powers/member'
+import * as utils from './modules/utils'
 
 // Generate Chart Base File
 const chartBase = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="shortcut icon" href="https://v-charts.js.org/favicon.ico" type="image/x-icon" /><title>Chart (type: <%=tit=>)</title><script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script><script src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css" /></head><body><div id="app"><ve-<%=tpe=> :data="cdata"></ve-<%=tpe=>></div><script>var vm=new Vue({el:'#app',data(){const data=JSON.parse('<%=dat=>');return {cdata:data}}})</script></body></html>`
@@ -162,47 +122,18 @@ router.get('/api/class/:gradeid/:classid/login', async (ctx) => {
   ctx.response.type = 'json'
   ctx.response.body = loginClass(parseInt(gradeid), parseInt(classid), String(password))
 })
-router.get('/api/class/:gradeid/:classid/member/pre/get', async (ctx) => {
-  try {
-    const password = getPassword(ctx)
-    const { gradeid, classid } = ctx.params
-    if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
-      const members = getMembersPre(parseInt(gradeid), parseInt(classid)).details
-      let base = []
-      for (let i = 0; i in members; i++) {
-        base.push(memberInformationProcess(members[i]))
-      }
-      ctx.response.body = {
-        status: 'ok',
-        details: base,
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
 router.get('/api/class/:gradeid/:classid/member/get', async (ctx) => {
   try {
     const password = getPassword(ctx)
     const { gradeid, classid } = ctx.params
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
-      const members = getMembers(parseInt(gradeid), parseInt(classid)).details
-      let base = []
-      for (let i = 0; i in members; i++) {
-        base.push(memberInformationProcess(members[i]))
-      }
+      const members = memberActions.getClassAsRaw(parseInt(gradeid), parseInt(classid)).details
       ctx.response.body = {
         status: 'ok',
-        details: base,
+        details: memberActions.multiProcess({
+          status: 'ok',
+          details: members,
+        }),
       }
     } else {
       ctx.response.body = {
@@ -218,15 +149,25 @@ router.get('/api/class/:gradeid/:classid/member/get', async (ctx) => {
     }
   }
 })
-router.get('/api/class/:gradeid/:classid/get/:contentType', async (ctx) => {
+router.get('/api/class/:gradeid/:classid/get/deduction', async (ctx) => {
   const params = new URLSearchParams(ctx.querystring)
   const password = params.get('password')
-  const { gradeid, classid, contentType } = ctx.params
+  const { gradeid, classid } = ctx.params
   if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
+    ctx.response.body = deductionActions.getClass(parseInt(gradeid), parseInt(classid))
+  } else {
     ctx.response.body = {
-      status: 'ok',
-      details: objectToArray('id', parse(getContentClass(contentType, parseInt(gradeid), parseInt(classid))).details),
+      status: 'error',
+      reason: 'password-error',
     }
+  }
+})
+router.get('/api/class/:gradeid/:classid/get/post', async (ctx) => {
+  const params = new URLSearchParams(ctx.querystring)
+  const password = params.get('password')
+  const { gradeid, classid } = ctx.params
+  if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
+    ctx.response.body = postActions.getClass(parseInt(gradeid), parseInt(classid))
   } else {
     ctx.response.body = {
       status: 'error',
@@ -236,10 +177,10 @@ router.get('/api/class/:gradeid/:classid/get/:contentType', async (ctx) => {
 })
 router.post('/api/class/new/feedback', async (ctx) => {
   try {
-    const password = decodeBase64(ctx.request.body.password)
+    const password = utils.createDEBase64(ctx.request.body.password)
     const { gradeid, classid } = ctx.request.body
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
-      ctx.response.body = fbNew(ctx.request.body)
+      ctx.response.body = deductionActions.createCallback(ctx.request.body)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -259,7 +200,7 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/person', async 
     const password = getPassword(ctx)
     const { gradeid, classid, start, end, type } = ctx.params
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
-      const chartData = chartClassPerson(parseInt(gradeid), parseInt(classid), start, end)
+      const chartData = deductionActions.graphAsPerson(parseInt(gradeid), parseInt(classid), start, end)
       ctx.response.type = 'plain'
       ctx.response.body = chartBase.split('<%=tit=>').join(type).split('<%=tpe=>').join(type).split('<%=dat=>').join(JSON.stringify(chartData))
       if (chartData.rows.length == 0) {
@@ -284,7 +225,7 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/reason', async 
     const password = getPassword(ctx)
     const { gradeid, classid, start, end, type } = ctx.params
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
-      const chartData = chartClassReason(parseInt(gradeid), parseInt(classid), start, end)
+      const chartData = deductionActions.graphAsReason(parseInt(gradeid), parseInt(classid), start, end)
       ctx.response.type = 'html'
       ctx.response.body = chartBase.split('<%=tit=>').join(type).split('<%=tpe=>').join(type).split('<%=dat=>').join(JSON.stringify(chartData))
       if (chartData.rows.length == 0) {
@@ -309,7 +250,7 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/date', async (c
     const password = getPassword(ctx)
     const { gradeid, classid, start, end, type } = ctx.params
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
-      const chartData = chartClassDate(parseInt(gradeid), parseInt(classid), start, end)
+      const chartData = deductionActions.graphAsDate(parseInt(gradeid), parseInt(classid), start, end)
       ctx.response.type = 'plain'
       ctx.response.body = chartBase.split('<%=tit=>').join(type).split('<%=tpe=>').join(type).split('<%=dat=>').join(JSON.stringify(chartData))
       if (chartData.rows.length == 0) {
@@ -333,7 +274,7 @@ router.post('/api/class/member/regist', async (ctx) => {
   try {
     const { gradeid, classid, password, member } = ctx.request.body
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
-      ctx.response.body = addMemberPre(member)
+      ctx.response.body = memberActions.createMember(member)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -353,7 +294,7 @@ router.post('/api/class/edit/password', async (ctx) => {
     const password = ctx.request.body.password
     const { gradeid, classid, newp } = ctx.request.body
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
-      ctx.response.body = editPassword(gradeid, classid, decodeBase64(newp))
+      ctx.response.body = editPassword(gradeid, classid, utils.createDEBase64(newp))
     } else {
       ctx.response.body = {
         status: 'error',
@@ -373,7 +314,7 @@ router.post('/api/class/edit/password', async (ctx) => {
 router.get('/api/member/getinfo/:person', async (ctx) => {
   try {
     const { person } = ctx.params
-    ctx.response.body = getMemberInf(parseInt(person))
+    ctx.response.body = memberActions.singleProcess(memberActions.getSingleMemberAsRaw(parseInt(person)).details)
   } catch (e) {
     ctx.response.body = {
       status: 'error',
@@ -385,7 +326,7 @@ router.get('/api/member/getinfo/:person', async (ctx) => {
 router.get('/api/member/getinfo/:id/raw', async (ctx) => {
   try {
     const { id } = ctx.params
-    ctx.response.body = getRawMember(parseInt(id))
+    ctx.response.body = memberActions.getSingleMemberAsRaw(parseInt(id))
   } catch (e) {
     ctx.response.body = {
       status: 'error',
@@ -413,7 +354,7 @@ router.post('/api/member/admin/trans/member', async (ctx) => {
   try {
     const { password, member, number, position } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
-      ctx.response.body = moveToRelMember(parseInt(member), position)
+      ctx.response.body = memberActions.editPosition(parseInt(member), position)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -432,7 +373,7 @@ router.post('/api/member/admin/del/member', async (ctx) => {
   try {
     const { password, person, number } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
-      ctx.response.body = delMember(parseInt(person))
+      ctx.response.body = memberActions.deleteMember(parseInt(person))
     } else {
       ctx.response.body = {
         status: 'error',
@@ -451,7 +392,7 @@ router.post('/api/member/admin/new/member', async (ctx) => {
   try {
     const { password, number, member } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
-      ctx.response.body = addMember(member)
+      ctx.response.body = memberActions.createMember(member)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -470,7 +411,7 @@ router.get('/api/member/admin/:id/get/:department/member', async (ctx) => {
   try {
     const password = getPassword(ctx)
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
-      ctx.response.body = processAllMemberInfo(getDepartmentMember(ctx.params.department))
+      ctx.response.body = memberActions.multiProcess(memberActions.getDepartmentAsRaw(ctx.params.department))
     } else {
       ctx.response.body = {
         status: 'error',
@@ -491,7 +432,7 @@ router.post('/api/member/:id/edit/password', async (ctx) => {
     const { password } = ctx.request.body
     const { id } = ctx.params
     if (loginMember(parseInt(id), password).status == 'ok') {
-      ctx.response.body = newPassword(parseInt(id), decodeBase64(ctx.request.body.newp))
+      ctx.response.body = newPassword(parseInt(id), utils.createDEBase64(ctx.request.body.newp))
     } else {
       ctx.response.body = {
         status: 'error',
@@ -511,7 +452,7 @@ router.get('/api/member/:id/workflow/get', async (ctx) => {
     const password = getPassword(ctx)
     const { id } = ctx.params
     if (loginMember(parseInt(id), password).status == 'ok') {
-      ctx.response.body = getWorkflow(parseInt(id))
+      ctx.response.body = memberActions.readWorkflow(parseInt(id))
     } else {
       ctx.response.body = {
         status: 'error',
@@ -533,7 +474,7 @@ router.post('/api/member/:id/workflow/new', async (ctx) => {
     if (loginMember(parseInt(id), password).status == 'ok') {
       let detail = ctx.request.body
       delete detail['password']
-      ctx.response.body = newWorkflow(parseInt(id), detail)
+      ctx.response.body = memberActions.createWorkflow(parseInt(id), detail)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -553,7 +494,7 @@ router.post('/api/member/:id/workflow/pause', async (ctx) => {
     const { password, id } = ctx.request.body
     const { id: num } = ctx.params
     if (loginMember(parseInt(num), password).status == 'ok') {
-      ctx.response.body = pauseWorkflow(parseInt(num), id)
+      ctx.response.body = memberActions.editWorkflow(parseInt(num), id, 'planning')
     } else {
       ctx.response.body = {
         status: 'error',
@@ -573,7 +514,7 @@ router.post('/api/member/:id/workflow/finish', async (ctx) => {
     const { password, id } = ctx.request.body
     const { id: num } = ctx.params
     if (loginMember(parseInt(num), password).status == 'ok') {
-      ctx.response.body = finishWorkflow(parseInt(num), id)
+      ctx.response.body = memberActions.editWorkflow(parseInt(num), id, 'success')
     } else {
       ctx.response.body = {
         status: 'error',
@@ -593,7 +534,7 @@ router.post('/api/member/:id/workflow/start', async (ctx) => {
     const { password, id } = ctx.request.body
     const { id: num } = ctx.params
     if (loginMember(parseInt(num), password).status == 'ok') {
-      ctx.response.body = startWorkflow(parseInt(num), id)
+      ctx.response.body = memberActions.editWorkflow(parseInt(num), id, 'working')
     } else {
       ctx.response.body = {
         status: 'error',
@@ -613,7 +554,7 @@ router.post('/api/member/:id/workflow/quit', async (ctx) => {
     const { password, id } = ctx.request.body
     const { id: num } = ctx.params
     if (loginMember(parseInt(num), password).status == 'ok') {
-      ctx.response.body = quitWorkflow(parseInt(num), id)
+      ctx.response.body = memberActions.editWorkflow(parseInt(num), id, 'depracted')
     } else {
       ctx.response.body = {
         status: 'error',
@@ -634,8 +575,8 @@ router.get('/api/member/admin/:id/get/all/deduction', async (ctx) => {
   try {
     const password = getPassword(ctx)
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
-      if ((getRawMember(parseInt(ctx.params.id)).details as member).union.admin.includes('deduction')) {
-        ctx.response.body = getAllDeductions()
+      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'deduction')) {
+        ctx.response.body = deductionActions.getAll()
       } else {
         ctx.response.body = {
           status: 'error',
@@ -661,8 +602,8 @@ router.post('/api/member/admin/:id/del/deduction', async (ctx) => {
     const { password } = ctx.request.body
     const { id } = ctx.params
     if (loginMember(parseInt(id), password).status == 'ok') {
-      if ((getRawMember(parseInt(ctx.params.id)).details as member).union.admin.includes('deduction')) {
-        ctx.response.body = delDeduction(parseInt(ctx.request.body.person), ctx.request.body.id)
+      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'deduction')) {
+        ctx.response.body = deductionActions.deleteDeduction(parseInt(ctx.request.body.person), ctx.request.body.id)
         io.emit(
           'del-deduc',
           JSON.stringify({
@@ -696,8 +637,8 @@ router.get('/api/member/deduction/:id/work/get/deduction', async (ctx) => {
     const password = getPassword(ctx)
     const { id } = ctx.params
     if (loginMember(parseInt(id), password).status == 'ok') {
-      if (getRawMember(parseInt(id)).details.union.duty.includes('deduction')) {
-        ctx.response.body = getMyDeduction(parseInt(id))
+      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'deduction')) {
+        ctx.response.body = deductionActions.getOwn(parseInt(id))
       } else {
         ctx.response.body = {
           status: 'error',
@@ -723,8 +664,8 @@ router.post('/api/member/deduction/:id/work/new/deduction', async (ctx) => {
     const { id } = ctx.params
     const { password, content } = ctx.request.body
     if (loginMember(parseInt(id), password).status == 'ok') {
-      if ((getRawMember(parseInt(id)).details as member).union.duty.includes('deduction')) {
-        ctx.response.body = addDeduction(content)
+      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'deduction')) {
+        ctx.response.body = deductionActions.createDeduction(content)
         io.emit('new-deduc', JSON.stringify(content))
       } else {
         ctx.response.body = {
@@ -751,8 +692,8 @@ router.post('/api/member/deduction/:id/work/turnd/deduction', async (ctx) => {
     const { id: number } = ctx.params
     const { id, password, person, reason } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
-      if ((getRawMember(parseInt(number)).details as member).union.duty.includes('deduction')) {
-        ctx.response.body = turnDown(person, id, reason)
+      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'deduction')) {
+        ctx.response.body = deductionActions.refuseCallback(person, id, reason)
         io.emit('turnd-deduc', JSON.stringify({ person, id, reason }))
       } else {
         ctx.response.body = {
@@ -779,8 +720,8 @@ router.post('/api/member/deduction/:id/work/del/deduction', async (ctx) => {
     const { id: number } = ctx.params
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
-      if ((getRawMember(parseInt(number)).details as member).union.duty.includes('deduction')) {
-        ctx.response.body = delDeduction(person, id)
+      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'deduction')) {
+        ctx.response.body = deductionActions.deleteDeduction(person, id)
         io.emit('del-deduc', JSON.stringify({ person, id }))
       } else {
         ctx.response.body = {
@@ -808,8 +749,8 @@ router.get('/api/member/admin/:id/get/all/post', async (ctx) => {
   try {
     const password = getPassword(ctx)
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
-      if ((getRawMember(parseInt(ctx.params.id)).details as member).union.admin.includes('post')) {
-        ctx.response.body = getAllPosts()
+      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'post')) {
+        ctx.response.body = postActions.getAll()
       } else {
         ctx.response.body = {
           status: 'error',
@@ -835,8 +776,8 @@ router.post('/api/member/admin/:id/del/post', async (ctx) => {
     const { password, person } = ctx.request.body
     const { id } = ctx.params
     if (loginMember(parseInt(id), password).status == 'ok') {
-      if ((getRawMember(parseInt(ctx.params.id)).details as member).union.admin.includes('post')) {
-        ctx.response.body = postDelete(parseInt(person), ctx.request.body.id)
+      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'post')) {
+        ctx.response.body = postActions.deletePost(parseInt(person), ctx.request.body.id)
       } else {
         ctx.response.body = {
           status: 'error',
@@ -861,12 +802,12 @@ router.post('/api/member/admin/:id/download/post', async (ctx) => {
   try {
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
-      if ((getRawMember(parseInt(ctx.params.id)).details as member).union.admin.includes('post')) {
+      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'post')) {
         let index = v4()
         while (docTokens[index] !== undefined) {
           index = v4()
         }
-        docTokens[index] = downloadPost(id, person)
+        docTokens[index] = postActions.downloadDocument(id, person)
         ctx.response.body = {
           status: 'ok',
           details: {
@@ -905,8 +846,8 @@ router.get('/api/member/post/:id/work/get/post', async (ctx) => {
     const password = getPassword(ctx)
     const { id } = ctx.params
     if (loginMember(parseInt(id), password).status == 'ok') {
-      if ((getRawMember(parseInt(id)).details as member).union.duty.includes('post')) {
-        ctx.response.body = getMyPost(parseInt(id))
+      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'post')) {
+        ctx.response.body = postActions.getOwn(parseInt(id))
       } else {
         ctx.response.body = {
           status: 'error',
@@ -933,8 +874,8 @@ router.post('/api/member/post/:id/work/upload/post', async (ctx, next) => {
     try {
       const { password, person } = ctx.request.body
       if (loginMember(parseInt(person), password).status == 'ok') {
-        if ((getRawMember(parseInt(person)).details as member).union.duty.includes('post')) {
-          ctx.response.body = uploadDispose(parseInt(ctx.params.id), ctx.file)
+        if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'post')) {
+          ctx.response.body = postActions.editLocation(parseInt(ctx.params.id), ctx.file)
         } else {
           ctx.response.status = 403
           ctx.response.body = {
@@ -969,12 +910,12 @@ router.post('/api/member/post/:id/work/download/post', async (ctx) => {
   try {
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
-      if ((getRawMember(parseInt(person)).details as member).union.duty.includes('post')) {
+      if (memberActions.memberDutyLimitCheckPower(person, 'post')) {
         let index = v4()
         while (docTokens[index] !== undefined) {
           index = v4()
         }
-        docTokens[index] = downloadPost(id, person)
+        docTokens[index] = postActions.downloadDocument(id, person)
         ctx.response.body = {
           status: 'ok',
           details: {
@@ -1005,8 +946,8 @@ router.post('/api/member/post/:id/work/new/post', async (ctx) => {
   try {
     const { id, password, content, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
-      if ((getRawMember(parseInt(person)).details as member).union.duty.includes('post')) {
-        ctx.response.body = appPost(parseInt(person), id, content)
+      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'post')) {
+        ctx.response.body = postActions.createPost(parseInt(person), id, content)
       } else {
         ctx.response.body = {
           status: 'error',
@@ -1031,8 +972,8 @@ router.post('/api/member/post/:id/work/del/post', async (ctx) => {
   try {
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
-      if ((getRawMember(parseInt(person)).details as member).union.duty.includes('post')) {
-        ctx.response.body = postDelete(parseInt(person), id)
+      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'post')) {
+        ctx.response.body = postActions.deletePost(parseInt(person), id)
       } else {
         ctx.response.body = {
           status: 'error',
@@ -1071,7 +1012,7 @@ router.get('/api/admin/get/all/deduction', async (ctx) => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = getAllDeductions()
+      ctx.response.body = deductionActions.getAll()
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1090,7 +1031,7 @@ router.get('/api/admin/get/all/post', async (ctx) => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = getAllPosts()
+      ctx.response.body = postActions.getAll()
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1109,7 +1050,7 @@ router.get('/api/admin/get/all/member', async (ctx) => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = processAllMemberInfo(getAllMembers())
+      ctx.response.body = memberActions.multiProcess(memberActions.getAllAsRaw())
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1128,7 +1069,7 @@ router.get('/api/admin/get/core/member', async (ctx) => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = processAllMemberInfo(getCoreMember())
+      ctx.response.body = memberActions.multiProcess(memberActions.getCoreAsRaw())
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1157,7 +1098,7 @@ router.post('/api/admin/download/post', async (ctx) => {
       while (docTokens[index] !== undefined) {
         index = v4()
       }
-      docTokens[index] = downloadPost(id, person)
+      docTokens[index] = postActions.downloadDocument(id, person)
       ctx.response.body = {
         status: 'ok',
         details: {
@@ -1184,7 +1125,7 @@ router.post('/api/admin/edit/password', async (ctx) => {
     const password = ctx.request.body.password
     const { newp } = ctx.request.body
     if (loginAdmin(String(password)).status == 'ok') {
-      ctx.response.body = resetPassword(decodeBase64(newp))
+      ctx.response.body = resetPassword(utils.createDEBase64(newp))
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1203,7 +1144,7 @@ router.post('/api/admin/export/deduction/class', async (ctx) => {
   try {
     const { password, start, end } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
-      const data = getClassTotal({
+      const data = deductionActions.exportAsClass({
         start,
         end,
       })
@@ -1233,7 +1174,7 @@ router.post('/api/admin/export/deduction/detail', async (ctx) => {
   try {
     const { password, start, end } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
-      const data = deductionExportReason({
+      const data = deductionActions.exportAsDetails({
         start,
         end,
       })
@@ -1263,7 +1204,7 @@ router.get('/api/admin/get/:department/member', async (ctx) => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = processAllMemberInfo(getDepartmentMember(ctx.params.department))
+      ctx.response.body = memberActions.multiProcess(memberActions.getDepartmentAsRaw(ctx.params.department))
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1282,7 +1223,7 @@ router.post('/api/admin/del/deduction', async (ctx) => {
   try {
     const { password } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = delDeduction(parseInt(ctx.request.body.person), ctx.request.body.id)
+      ctx.response.body = deductionActions.deleteDeduction(parseInt(ctx.request.body.person), ctx.request.body.id)
       io.emit(
         'del-deduc',
         JSON.stringify({
@@ -1308,7 +1249,7 @@ router.post('/api/admin/del/post', async (ctx) => {
   try {
     const { password } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = postDelete(parseInt(ctx.request.body.person), ctx.request.body.id)
+      ctx.response.body = postActions.deletePost(parseInt(ctx.request.body.person), ctx.request.body.id)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1327,7 +1268,7 @@ router.post('/api/admin/full/member', async (ctx) => {
   try {
     const { password, member, position } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = moveToRelMember(parseInt(member), position as 'clerk' | 'vice-minister')
+      ctx.response.body = memberActions.editPosition(parseInt(member), position as 'clerk' | 'vice-minister')
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1346,7 +1287,7 @@ router.post('/api/admin/new/member', async (ctx) => {
   try {
     const { password, member } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = addMember(member)
+      ctx.response.body = memberActions.createMember(member)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1365,7 +1306,7 @@ router.post('/api/admin/del/member', async (ctx) => {
   try {
     const { password, person } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = delMember(parseInt(person))
+      ctx.response.body = memberActions.deleteMember(parseInt(person))
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1384,7 +1325,7 @@ router.post('/api/admin/del/member', async (ctx) => {
 router.post('/api/feed/back', async (ctx) => {
   // Here, it is no use to check the password
   try {
-    ctx.response.body = fbNewE(ctx.request.body)
+    ctx.response.body = utils.createFeedback(ctx.request.body)
   } catch (e) {
     ctx.response.body = {
       status: 'error',
@@ -1400,7 +1341,7 @@ router.get('/api/department/list', async (ctx) => {
   const data = getDepartmentData()
   ctx.response.body = {
     status: 'ok',
-    details: objectToArray('value', data.details.departments),
+    details: utils.createObjectToArrayTransformer('value', data.details.departments),
   }
 })
 router.get('/api/department/:department/duty', async (ctx) => {
@@ -1412,7 +1353,7 @@ router.get('/api/department/:department/duty', async (ctx) => {
 router.get('/api/power/list', async (ctx) => {
   ctx.response.body = {
     status: 'ok',
-    details: objectToArray('value', getPublicPower().details.power),
+    details: utils.createObjectToArrayTransformer('value', getPublicPower().details.power),
   }
 })
 router.get('/api/power', async (ctx) => {
@@ -1423,9 +1364,9 @@ router.get('/config', async (ctx) => {
 })
 
 setInterval(() => {
-  const members = getAllMembers().details as member[]
+  const members = memberActions.getAllAsRaw().details
   members.forEach((item) => {
-    calculate(item.number)
+    memberActions.autoCalculateScore(item.number)
   })
 }, 60 * 60 * 1000) // 每1小时计算一次素质分
 
@@ -1451,7 +1392,7 @@ io.on('connection', (socket) => {
   // ...
   let query
   if (socket.handshake.query.type == 'class') {
-    query = `class/${transformDate(<number>(<unknown>socket.handshake.query.gradeid))} / ${<number>(<unknown>socket.handshake.query.classid)}`
+    query = `class/${utils.createYearTransformer(<number>(<unknown>socket.handshake.query.gradeid))} / ${<number>(<unknown>socket.handshake.query.classid)}`
   } else {
     query = 'admin'
   }

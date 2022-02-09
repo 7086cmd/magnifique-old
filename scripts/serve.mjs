@@ -8,7 +8,7 @@ import { readFileSync, writeFileSync } from 'fs'
 import glob from 'glob'
 import lintFile from './lint.mjs'
 import electron from 'electron'
-import { exec } from 'child_process'
+import { exec, spawn } from 'child_process'
 import { createServer } from 'vite'
 import { platform } from 'os'
 import { watch } from 'chokidar'
@@ -56,8 +56,13 @@ const execElectron = () => {
     runner.kill()
   }
   exec(`taskkill /f /im electron.exe`)
-  console.log(`${electron} ${resolve('dist', 'main.js')}`)
-  runner = exec(`${electron} ${resolve('dist', 'main.js')}`)
+  runner = spawn(electron, [resolve('dist', 'main.js')])
+  runner.stdout?.on('data', (data) => {
+    console.log(chalk.cyan(`[App] ${data}`))
+  })
+  runner.stderr?.on('data', (data) => {
+    console.error(chalk.red(`[App Err] ${data}`))
+  })
 }
 
 generate().then(() => execElectron())
@@ -96,7 +101,7 @@ setInterval(() => {
     lintFile()
       .then(() => generate())
       .then(() => execElectron())
-      .then(() => (oldGlob = Array.of(getGlob())))
+      .then(() => (oldGlob = getGlob()))
       .then(() => (isbuilding = true))
   }
 }, 500)

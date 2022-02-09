@@ -1,8 +1,8 @@
 declare interface member_processed {
   name: string
   number: number
-  in: string[]
-  do: string[]
+  in: string // department
+  do: string // position
   icg: boolean
   record: {
     actions: number

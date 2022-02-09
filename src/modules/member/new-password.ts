@@ -1,20 +1,14 @@
-import { tmpdir } from 'os'
 import { existsSync } from 'fs'
-import { resolve } from 'path'
 import { sha512 } from 'js-sha512'
-import encodeBase64 from '../utils/encode-base64'
-import analyzePerson from '../utils/analyze-person'
-import dataOpen from '../utils/data-open'
-import dataSave from '../utils/data-save'
+import { createMemberIndex, createSdbdataParser, createSdbdataSaver, createENBase64 } from '../utils'
 
 export default (person: number, newPwd: string) => {
-  const ana = analyzePerson(person)
-  let temppath = resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}/members/${person}.sdbdata`)
+  let temppath = createMemberIndex(person)
   if (existsSync(temppath)) {
     try {
-      let old = dataOpen(temppath)
-      old['password'] = sha512(encodeBase64(newPwd))
-      dataSave(temppath, old)
+      let old = createSdbdataParser(temppath)
+      old.password = sha512(createENBase64(newPwd))
+      createSdbdataSaver(temppath, old)
       return {
         status: 'ok',
       }

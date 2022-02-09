@@ -1,10 +1,10 @@
-import dataOpen from '../utils/data-open'
 import { tmpdir } from 'os'
 import { resolve } from 'path'
+import { createSdbdataParser } from '../utils'
 
 export default () => {
   return {
     status: 'ok',
-    details: dataOpen(resolve(tmpdir(), '..', 'magnifique', 'departments.sdbdata')) as department,
+    details: createSdbdataParser(resolve(tmpdir(), '..', 'magnifique', 'departments.sdbdata')) as department,
   }
 }

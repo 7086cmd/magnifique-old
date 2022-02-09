@@ -1,18 +1,16 @@
 import { tmpdir } from 'os'
-import { readFileSync, existsSync } from 'fs'
-import decodeBase64 from '../utils/decode-base64'
-import { parse } from 'json5'
+import { existsSync } from 'fs'
 import { resolve } from 'path'
 import { sha512 } from 'js-sha512'
-import analyzePerson from '../utils/analyze-person'
+import { createPersonNumberAnalyzor, createSdbdataParser } from '../utils'
 
 export default (person: number, password: string) => {
-  const ana = analyzePerson(person)
+  const ana = createPersonNumberAnalyzor(person)
   let temppath = resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}/members/`)
   if (existsSync(temppath)) {
     try {
       temppath = resolve(temppath, `./${person}.sdbdata`)
-      const opwd = parse(decodeBase64(readFileSync(temppath).toString())).password
+      const opwd = (createSdbdataParser(temppath) as member).password
       const npwd = sha512(password)
       if (opwd == npwd) {
         return {

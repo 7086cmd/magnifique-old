@@ -11,7 +11,7 @@ import baseurl from '../../../modules/baseurl'
 import example from '../../../../examples/deduction'
 import failfuc from '../../../modules/failfuc'
 import sucfuc from '../../../modules/sucfuc'
-import arrayToObject from '../../../../modules/utils/array-to-object'
+import createArrayToObjectTramsformer from '../../../../modules/utils/array-to-object'
 import DeductionDescription from '../../../components/lists/DeductionDescription.vue'
 
 const { t } = useI18n()
@@ -39,7 +39,7 @@ let dets = ref<
     deduction: number
   }[]
   typicals.value = typesOfDeduction.map((item) => item.reason) as string[]
-  dets.value = arrayToObject('reason', typesOfDeduction) as Record<
+  dets.value = createArrayToObjectTramsformer('reason', typesOfDeduction) as Record<
     string,
     {
       deduction: number

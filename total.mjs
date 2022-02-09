@@ -1,4 +1,4 @@
-import { existsSync, statSync, readdirSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, statSync, readdirSync, readFileSync } from 'fs'
 import { resolve } from 'path'
 
 const copyDir = (src) => {
@@ -11,8 +11,7 @@ const copyDir = (src) => {
     const lstType = statSync(itemPath)
     if (lstType.isFile()) {
       let atotal = readFileSync(itemPath).toString()
-      // atotal.includes('color="#626aef"') && console.log(itemPath)
-      writeFileSync(itemPath, atotal.replaceAll('color="#626aef"', 'color="#626aef" style="color: white"'))
+      if (atotal.includes('pinia')) console.log(itemPath)
     } else if (lstType.isDirectory()) {
       copyDir(itemPath, resolve(src, item))
     }

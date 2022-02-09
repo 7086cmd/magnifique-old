@@ -1,6 +1,8 @@
 declare interface volunteer {
   person: string
   duration: number
-  index: string[]
+  project: string
+  place: string
   status: 'planning' | 'done' | 'miss'
+  time: Date
 }

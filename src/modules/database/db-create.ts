@@ -2,8 +2,7 @@ import { tmpdir } from 'os'
 import { mkdirSync, existsSync } from 'fs'
 import { resolve } from 'path'
 import { sha512 } from 'js-sha512'
-import transformDate from '../utils/transform-date'
-import dataSave from '../utils/data-save'
+import { createSdbdataSaver, createYearTransformer } from '../utils'
 
 const generateRoot = () => {
   const tpth = resolve(tmpdir(), '../magnifique/')
@@ -15,7 +14,7 @@ const generateRoot = () => {
 
 const generateAdminPassword = (basep: string) => {
   if (!existsSync(resolve(basep, './password.sdbdata'))) {
-    dataSave(resolve(basep, './password.sdbdata'), {
+    createSdbdataSaver(resolve(basep, './password.sdbdata'), {
       secret: {
         password: sha512('secret'),
       },
@@ -40,7 +39,7 @@ const generateFeedbackFolder = (basep: string) => {
 }
 
 const generateGradeFolder = (basep: string, gradeid: number) => {
-  const tpth = resolve(basep, String(transformDate(gradeid)))
+  const tpth = resolve(basep, String(createYearTransformer(gradeid)))
   if (!existsSync(tpth)) {
     mkdirSync(tpth)
   }
@@ -65,7 +64,7 @@ const generateClassMemberFolder = (basep: string) => {
 
 const generateClassDetail = (basep: string, file: string) => {
   if (!existsSync(resolve(basep, `./${file}.sdbdata`))) {
-    dataSave(resolve(basep, `./${file}.sdbdata`), {
+    createSdbdataSaver(resolve(basep, `./${file}.sdbdata`), {
       details: {},
     })
   }
@@ -73,8 +72,8 @@ const generateClassDetail = (basep: string, file: string) => {
 
 const generateClassPassword = (basep: string, gradeid: number, classid: number) => {
   if (!existsSync(resolve(basep, './password.sdbdata'))) {
-    dataSave(resolve(basep, './password.sdbdata'), {
-      password: sha512(String(transformDate(gradeid) * 100 + classid)),
+    createSdbdataSaver(resolve(basep, './password.sdbdata'), {
+      password: sha512(String(createYearTransformer(gradeid) * 100 + classid)),
     })
   }
 }

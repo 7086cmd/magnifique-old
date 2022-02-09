@@ -6,10 +6,9 @@ import 'element-plus/dist/index.css'
 import './index.css'
 import App from './App.vue'
 import router from './router'
-import store from './store'
+// import store from './store'
 import i18n from './i18n'
 import { ElMessageBox } from 'element-plus'
-import './pwa'
 import TagPurple from './components/tags/tag.purple.vue'
 
 const app = createApp(App)
@@ -26,7 +25,7 @@ for (const iconName in ElIconModules) {
 }
 app.component('TagPurple', TagPurple)
 app.use(router)
-app.use(store)
+// app.use(store)
 app.use(i18n)
 app.mount('#app')
 

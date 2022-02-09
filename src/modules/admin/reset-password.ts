@@ -1,23 +1,18 @@
 import { tmpdir } from 'os'
-import { writeFileSync, existsSync } from 'fs'
+import { existsSync } from 'fs'
 import { resolve } from 'path'
 import { sha512 } from 'js-sha512'
-import { stringify } from 'json5'
+import { createSdbdataSaver } from '../utils'
 
 export default (newPwd: string) => {
   const temppath = resolve(tmpdir(), `../magnifique/admin/password.sdbdata`)
   if (existsSync(temppath)) {
     try {
-      writeFileSync(
-        resolve(temppath, './admin/password.sdbdata'),
-        Buffer.from(
-          stringify({
-            secret: {
-              password: sha512(newPwd),
-            },
-          })
-        ).toString('base64')
-      )
+      createSdbdataSaver(resolve(temppath, './admin/password.sdbdata'), {
+        secret: {
+          password: sha512(newPwd),
+        },
+      })
     } catch (e) {
       return {
         status: 'error',
