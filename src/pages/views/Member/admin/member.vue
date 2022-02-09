@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/* global member */
+/* global member, member_processed */
 import { ref, reactive } from 'vue'
 import axios from 'axios'
 import { Refresh } from '@element-plus/icons-vue'
@@ -77,8 +77,25 @@ async function refresh() {
   })
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const deletePerson = async (props: any) => {
+const deletePerson = async (props: member_processed) => {
   const response = await axios(`${baseurl}member/admin/del/member`, {
+    data: {
+      person: props.row.number,
+      number,
+      password,
+    },
+    method: 'post',
+  })
+  if (response.data.status === 'ok') {
+    sucfuc()
+  } else {
+    failfuc(response.data.reason, response.data.text)
+  }
+  refresh()
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const vioPerson = async (props: member_processed) => {
+  const response = await axios(`${baseurl}member/admin/vio/member`, {
     data: {
       person: props.row.number,
       number,
@@ -191,6 +208,11 @@ const createMember = async () => {
               </template>
               <template #default="props">
                 <div>
+                  <el-popconfirm title="确定通报吗？该成员的素质分将减少15份。" @confirm="vioPerson(props)">
+                    <template #reference>
+                      <el-button size="small" type="text"> 通报批评 </el-button>
+                    </template>
+                  </el-popconfirm>
                   <el-button size="small" type="text" :disabled="props.row.icg" @click="startToTrue(props.row.number)"> 切换身份 </el-button>
                   <el-popconfirm title="确定删除吗？" @confirm="deletePerson(props)">
                     <template #reference>

@@ -11,7 +11,7 @@ const copyDir = (src) => {
     const lstType = statSync(itemPath)
     if (lstType.isFile()) {
       let atotal = readFileSync(itemPath).toString()
-      if (atotal.includes('pinia')) console.log(itemPath)
+      if (atotal.includes("'src/")) console.log(itemPath)
     } else if (lstType.isDirectory()) {
       copyDir(itemPath, resolve(src, item))
     }

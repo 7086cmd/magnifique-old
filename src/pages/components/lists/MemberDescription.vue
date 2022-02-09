@@ -23,6 +23,7 @@ const detail = ref(unref(data) as member_processed)
       </el-descriptions-item>
       <el-descriptions-item label="所属部门">
         <el-tag type="info" v-text="detail.in"></el-tag>
+        <el-tag type="info" v-text="detail.do"></el-tag>
       </el-descriptions-item>
       <el-descriptions-item label="职权">
         <el-tag type="warning" size="default" v-text="'工作'"></el-tag>
@@ -35,7 +36,7 @@ const detail = ref(unref(data) as member_processed)
       </el-descriptions-item>
       <el-descriptions-item label="责任">
         <span v-if="detail.icg">
-          <el-tag type="warning">核心会员</el-tag>
+          <el-tag type="warning">骨干成员</el-tag>
           做好带头作用，团结互助
         </span>
         <span v-if="!detail.icg">

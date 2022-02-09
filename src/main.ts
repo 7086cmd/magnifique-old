@@ -128,13 +128,10 @@ router.get('/api/class/:gradeid/:classid/member/get', async (ctx) => {
     const { gradeid, classid } = ctx.params
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
       const members = memberActions.getClassAsRaw(parseInt(gradeid), parseInt(classid)).details
-      ctx.response.body = {
+      ctx.response.body = memberActions.multiProcess({
         status: 'ok',
-        details: memberActions.multiProcess({
-          status: 'ok',
-          details: members,
-        }),
-      }
+        details: members,
+      })
     } else {
       ctx.response.body = {
         status: 'error',
@@ -314,7 +311,10 @@ router.post('/api/class/edit/password', async (ctx) => {
 router.get('/api/member/getinfo/:person', async (ctx) => {
   try {
     const { person } = ctx.params
-    ctx.response.body = memberActions.singleProcess(memberActions.getSingleMemberAsRaw(parseInt(person)).details)
+    ctx.response.body = {
+      status: 'ok',
+      details: memberActions.singleProcess(memberActions.getSingleMemberAsRaw(parseInt(person)).details),
+    }
   } catch (e) {
     ctx.response.body = {
       status: 'error',
@@ -374,6 +374,26 @@ router.post('/api/member/admin/del/member', async (ctx) => {
     const { password, person, number } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
       ctx.response.body = memberActions.deleteMember(parseInt(person))
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
+router.post('/api/member/admin/vio/member', async (ctx) => {
+  try {
+    const { password, person, number } = ctx.request.body
+    if (loginMember(parseInt(number), password).status == 'ok') {
+      memberActions.createNewViolation(parseInt(person), 1)
+      ctx.response.body = { status: 'ok' }
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1283,6 +1303,28 @@ router.post('/api/admin/full/member', async (ctx) => {
     }
   }
 })
+router.post('/api/admin/vio/member', async (ctx) => {
+  try {
+    const { password, member } = ctx.request.body
+    if (loginAdmin(password).status == 'ok') {
+      memberActions.createNewViolation(parseInt(member), 1)
+      ctx.response.body = {
+        status: 'ok',
+      }
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
 router.post('/api/admin/new/member', async (ctx) => {
   try {
     const { password, member } = ctx.request.body
@@ -1367,8 +1409,9 @@ setInterval(() => {
   const members = memberActions.getAllAsRaw().details
   members.forEach((item) => {
     memberActions.autoCalculateScore(item.number)
+    memberActions.autoCalculateVolunteer(item.number)
   })
-}, 60 * 60 * 1000) // 每1小时计算一次素质分
+}, 30 * 1000) // 每1小时计算一次素质分
 
 // Use routes to register APIs.
 server.use(router.routes())

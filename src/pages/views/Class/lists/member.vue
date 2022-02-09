@@ -8,12 +8,13 @@ import personExample from '../../../../examples/person'
 import failfuc from '../../../modules/failfuc'
 import sucfuc from '../../../modules/sucfuc'
 import MemberDescription from '../../../components/lists/MemberDescription.vue'
+import createYearTransformer from '../../../../modules/utils/transform-date'
 
 let isLoginingMember = ref(false)
 const { gradeid, classid, password } = JSON.parse(window.atob(String(localStorage.getItem('classLoginInfo'))))
 let basicnum = ref(0)
 ;(async () => {
-  basicnum.value = (await axios(`${baseurl}transformDate/${gradeid}`)).data.details * 100 + classid
+  basicnum.value = createYearTransformer(gradeid) * 100 + classid
 })()
 let isSubmiting = ref(false)
 let isRegistingMember = ref(false)
@@ -30,19 +31,12 @@ axios(`${baseurl}department/list`).then((response) => {
 })
 let loading = ref(true)
 let membersDetail = ref([])
-let preMembersDetail = ref([])
 const refresh = () => {
   loading.value = true
   axios(`${baseurl}class/${gradeid}/${classid}/member/get?password=${password}`).then((response) => {
     loading.value = false
     if (response.data.status == 'ok') {
       membersDetail.value = response.data.details
-    }
-  })
-  axios(`${baseurl}class/${gradeid}/${classid}/member/pre/get?password=${password}`).then((response) => {
-    loading.value = false
-    if (response.data.status == 'ok') {
-      preMembersDetail.value = response.data.details
     }
   })
 }

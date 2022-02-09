@@ -1,4 +1,4 @@
-import { createPersonNumberAnalyzor, createSdbdataParser, createSdbdataSaver } from 'src/modules/utils'
+import { createPersonNumberAnalyzor, createSdbdataParser, createSdbdataSaver } from '../../../..//utils'
 import { tmpdir } from 'os'
 import { resolve } from 'path'
 import { existsSync } from 'fs'

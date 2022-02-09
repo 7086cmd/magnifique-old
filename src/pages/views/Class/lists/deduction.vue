@@ -33,6 +33,7 @@ const refresh = () => {
       data.deduction = response.data.details
       data.deduction.map((item: DeductionList) => {
         item.time = dayjs(item.time).format('YYYY/MM/DD HH:mm:ss')
+        item.person = String(item.person)
       })
       sumT.value = String(data.deduction.length)
     }

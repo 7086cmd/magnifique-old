@@ -1,5 +1,5 @@
 declare interface volunteer {
-  person: string
+  person: number
   duration: number
   project: string
   place: string

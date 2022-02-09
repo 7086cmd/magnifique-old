@@ -22,7 +22,7 @@ export default (de_data: deduction) => {
       if (existsSync(createMemberIndex(de_data.person))) {
         const persondetail = getSingleMemberAsRaw(de_data.person).details as member
         persondetail.deduction.details[uuid] = de_data
-        createSdbdataSaver(createMemberIndex(persondetail.number), persondetail)
+        createSdbdataSaver(createMemberIndex(de_data.person), persondetail)
       }
       createSdbdataSaver(temppath, decoded)
       return {

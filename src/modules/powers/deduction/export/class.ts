@@ -1,4 +1,4 @@
-import { getClass } from '..'
+import { getClass } from '../crud/read/index'
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween'
 import { createObjectToArrayTransformer, createYearTransformer } from '../../../utils'
@@ -25,17 +25,15 @@ export default (config: { start: string; end: string }) => {
   let stri = `"开始时间: ${dayjs(config.start).format('YYYY/MM/DD')}"\r\n"结束时间: ${dayjs(config.end).format('YYYY/MM/DD')}"\r\n${doit(items)}`
   for (let i = 1; i <= 3; i++) {
     for (let j = 1; j <= 15; j++) {
-      let deductiont = 0.0
-      const classList = createObjectToArrayTransformer('id', getClass(createYearTransformer(i), j))
-      for (let k = 0; k in classList; k++) {
-        const startline = dayjs(config.start)
-        const endline = dayjs(config.end)
-        if (dayjs(classList[k].time).isBetween(startline, endline)) {
+      let deductiont = 0
+      const classList = getClass(createYearTransformer(i), j).details
+      classList.forEach((item) => {
+        if (dayjs(item.time).isBetween(dayjs(config.start), dayjs(config.end))) {
           let t = Math.floor(deductiont * 100)
-          t += Math.floor(classList[k].deduction * 100)
+          t += Math.floor(item.deduction * 100)
           deductiont = t / 100
         }
-      }
+      })
       stri += doit([createClassName(i, j), deductiont])
     }
   }

@@ -2,7 +2,7 @@ import { existsSync } from 'fs'
 import { tmpdir } from 'os'
 import { resolve } from 'path'
 import { sha512 } from 'js-sha512'
-import { createSdbdataParser, createENBase64 } from '../utils'
+import { createSdbdataParser, createDEBase64 } from '../utils'
 
 export default (password: string) => {
   try {
@@ -10,7 +10,7 @@ export default (password: string) => {
     let dirpth = resolve(tmpdir(), `../magnifique/admin/password.sdbdata`)
     if (existsSync(dirpth)) {
       const pwdcor = createSdbdataParser(dirpth).secret.password
-      const pwdnow = sha512(createENBase64(password))
+      const pwdnow = sha512(createDEBase64(password))
       if (pwdcor == pwdnow) {
         return {
           status: 'ok',

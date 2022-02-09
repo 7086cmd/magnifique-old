@@ -1,6 +1,6 @@
-// formula: 80 + 投稿数 * 5 + 检查到他人的违纪次数 + 反馈数 * 2 + 义工时间 * 3 - 点名违纪次数 * 20 - 扣分数 * 20
-import createMemberDeletion from '../crud/delete/delete'
-import { createSdbdataSaver, createMemberIndex } from 'src/modules/utils'
+// formula: 80 + 投稿数 * 5 + 检查到他人的违纪次数 + 反馈数 * 2 + 义工时间 * 3 - 点名违纪次数 * 15 - 扣分数 * 20
+import deleteMember from '../crud/delete/delete'
+import { createSdbdataSaver, createMemberIndex } from '../../../utils'
 import { getOwn as getMyOwnDeduction } from '../../deduction'
 import getMemberAsRaw from '../crud/read/raw'
 
@@ -48,7 +48,7 @@ export default (memberNum: number) => {
     infor.record.actions * 2 +
     countVolunteer(infor.volunteer.details) -
     infor.record.violation * 20 -
-    countDeduction(infor.deduction?.details) * 20 +
+    countDeduction(infor.deduction?.details) * 15 +
     countWorkflow(infor.workflow.details)
   if (score >= 100) {
     infor.record.score = 100
@@ -58,14 +58,11 @@ export default (memberNum: number) => {
   // eslint-disable-next-line no-console
   console.log(`Member ${memberNum}'s score: ${infor.record.score}`)
   if (score <= 60) {
-    createMemberDeletion(memberNum)
-    return {
-      status: 'ok',
-      details: {
-        do: 'delete',
-        score,
-      },
-    }
+    infor.union.position = 'registry'
+    createSdbdataSaver(createMemberIndex(memberNum), infor)
+  }
+  if (score <= 30) {
+    deleteMember(memberNum)
   }
   createSdbdataSaver(createMemberIndex(memberNum), infor)
   return {

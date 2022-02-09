@@ -9,7 +9,12 @@ const statuses = {
 }
 const createClassName = (gradeid: number, classid: number) => {
   let grade = 0
-  grade = [1, 2, 3].includes(gradeid) ? createYearTransformer(gradeid) : gradeid
+  for (let i = 1; i <= 3; i++) {
+    if (createYearTransformer(i) == gradeid) {
+      grade = i
+      break
+    }
+  }
   const grades = ['', '初一', '初二', '初三']
   return grades[grade] + '（' + classid + '）班'
 }

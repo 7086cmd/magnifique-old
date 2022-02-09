@@ -24,7 +24,7 @@ platform === 'win32' && exec('taskkill /f /im electron.exe')
 
 const generate = async () => {
   await build({
-    entryPoints: getGlob(),
+    entryPoints: ['src/main.ts', 'src/preload.ts', 'src/client/main.ts', 'src/client/preload.ts'],
     outdir: 'dist',
     platform: 'node',
     format: 'cjs',
@@ -34,7 +34,7 @@ const generate = async () => {
       '.png': 'file',
     },
     target: ['node16'],
-    logLevel: 'silent',
+    logLevel: 'info',
     chunkNames: 'chunks/[name]-[hash]',
     assetNames: 'assets/[name]',
     color: true,
@@ -45,6 +45,9 @@ const generate = async () => {
     banner: {
       js: '/* Copyright© 2022 7086cmd. */',
     },
+    bundle: true,
+    sourcemap: true,
+    external: ['electron'],
   })
   console.log(chalk.green(`[Build] ${getGlob().length} files have built.`))
 }
@@ -80,7 +83,7 @@ createServer()
 
 let oldGlob = getGlob()
 
-let watcher = watch(oldGlob)
+let watcher = watch(getGlob())
 
 watcher.on('change', (path) => {
   console.log(chalk.blue(`[Watcher] File ${path} changed.`))
@@ -88,7 +91,6 @@ watcher.on('change', (path) => {
   lintFile()
     .then(() => generate())
     .then(() => execElectron())
-  oldGlob = Array.of(getGlob())
 })
 
 setInterval(() => {
@@ -103,5 +105,7 @@ setInterval(() => {
       .then(() => execElectron())
       .then(() => (oldGlob = getGlob()))
       .then(() => (isbuilding = true))
+      .then(() => watcher.close())
+      .then(() => (watcher = watch(getGlob())))
   }
 }, 500)

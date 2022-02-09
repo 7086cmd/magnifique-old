@@ -17,6 +17,7 @@ body {
   /* -ms-overflow-style: none; */
   overflow-x: hidden;
   overflow-y: hidden;
+  font-size: 14px;
   /* background-color: #9e9e9e; */
 }
 h2 {

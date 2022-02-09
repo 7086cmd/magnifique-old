@@ -1,14 +1,24 @@
 <!-- eslint-disable vue/html-self-closing -->
 <!-- eslint-disable vue/max-attributes-per-line -->
 <script lang="ts" setup>
+/* global member_processed */
 import { ref, watch } from 'vue'
 import axios from 'axios'
 import { ElMessageBox } from 'element-plus'
-import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import baseurl from '../../modules/baseurl'
 import getData from '../../components/get-data'
 import { encode } from '../../components/record-data'
+import failfuc from '../../modules/failfuc'
+
+const { gradeid, classid, password: passwordClass } = JSON.parse(window.atob(String(localStorage.getItem('classLoginInfo'))))
+
+let options = ref<member_processed[]>([])
+axios(`${baseurl}class/${gradeid}/${classid}/member/get?password=${passwordClass}`).then((response) => {
+  if (response.data.status == 'ok') {
+    options.value = response.data.details
+  }
+})
 
 let isClient = ref(false)
 
@@ -18,7 +28,6 @@ try {
   }
   // eslint-disable-next-line no-empty
 } catch (_e) {}
-const { t } = useI18n()
 const router = useRouter()
 
 let number = ref('')
@@ -49,8 +58,7 @@ const login = () => {
     })
     axios(`${baseurl}member/${number.value}/login?password=${window.btoa(password.value)}`).then((response) => {
       if (response.data.status == 'ok') {
-        let timeOut = 3
-        ElMessageBox.alert(`${name.value}，欢迎使用。` + t('class.status.jump', { sec: timeOut }), '登陆成功', {
+        ElMessageBox.alert(`${name.value}，欢迎使用。`, '登陆成功', {
           type: 'success',
           center: true,
         }).then(() => {
@@ -68,16 +76,7 @@ const login = () => {
         }, 3000)
       } else {
         localStorage.removeItem('memberLoginInfo')
-        ElMessageBox.alert(
-          t('dialogs.' + response.data.reason, {
-            msg: response.data.text,
-          }),
-          '登陆失败',
-          {
-            type: 'error',
-            center: true,
-          }
-        )
+        failfuc(response.data.reason, response.data.text)
       }
     })
   }
@@ -86,11 +85,16 @@ const login = () => {
 
 <template>
   <el-form>
-    <el-form-item label="学号">
+    <!-- <el-form-item label="学号">
       <el-input v-model="number" />
     </el-form-item>
     <el-form-item label="姓名">
       <el-input v-model="name" readonly />
+    </el-form-item> -->
+    <el-form-item label="姓名">
+      <el-select v-model="number" style="width: 100%">
+        <el-option v-for="item in options" :key="item.number" :value="item.number" :label="item.name"></el-option>
+      </el-select>
     </el-form-item>
     <el-form-item label="密码">
       <el-input v-model="password" type="password" />

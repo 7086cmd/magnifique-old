@@ -1,20 +1,23 @@
 import { existsSync } from 'fs'
 import { getSingleMemberAsRaw, createNewAction } from '../../../member'
-import { createSdbdataParser, createSdbdataSaver, createMemberIndex } from '../../../../utils'
+import { createSdbdataParser, createSdbdataSaver, createMemberIndex, createPersonNumberAnalyzor } from '../../../../utils'
+import { resolve } from 'path'
+import { tmpdir } from 'os'
 
 export default (person: number, id: string) => {
-  const temppath = createMemberIndex(person)
+  const deductor = createPersonNumberAnalyzor(person)
+  const temppath = resolve(tmpdir(), '..', 'magnifique', `${deductor.gradeid}`, `${deductor.classid}`, 'deduction.sdbdata')
   if (existsSync(temppath)) {
     try {
       const decoded = createSdbdataParser(temppath) as {
         details: Record<string, deduction>
       }
+      createNewAction((decoded.details[id] as deduction).deductor.number, -1)
       if (existsSync(createMemberIndex(person))) {
         const persondetail = getSingleMemberAsRaw(person).details as member
         delete persondetail.deduction.details[id]
         createSdbdataSaver(createMemberIndex(persondetail.number), persondetail)
       }
-      createNewAction((decoded.details[id] as deduction).deductor.number, -1)
       delete decoded.details[id]
       createSdbdataSaver(temppath, decoded)
       return {
