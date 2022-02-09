@@ -1,4 +1,4 @@
-declare interface volunteer {
+declare interface VolunteerList {
   person: number
   duration: number
   project: string
@@ -6,4 +6,5 @@ declare interface volunteer {
   status: 'planning' | 'done' | 'miss'
   time: Date
   createId: string
+  idInUserData: string
 }

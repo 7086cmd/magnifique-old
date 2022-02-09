@@ -1,7 +1,7 @@
 import { getClass } from '../crud/read/index'
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween'
-import { createObjectToArrayTransformer, createYearTransformer } from '../../../utils'
+import { createYearTransformer } from '../../../utils'
 
 dayjs.extend(isBetween)
 

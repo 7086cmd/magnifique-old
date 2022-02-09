@@ -55,8 +55,6 @@ export default (memberNum: number) => {
   } else {
     infor.record.score = score
   }
-  // eslint-disable-next-line no-console
-  console.log(`Member ${memberNum}'s score: ${infor.record.score}`)
   if (score <= 60) {
     infor.union.position = 'registry'
     createSdbdataSaver(createMemberIndex(memberNum), infor)

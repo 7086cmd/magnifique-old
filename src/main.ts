@@ -5,7 +5,7 @@ import { URLSearchParams } from 'url'
 import { createServer as createHttpServer } from 'http'
 import { createServer as createHttpsServer } from 'https'
 import { tmpdir } from 'os'
-import { v4 as generateToken, v4 } from 'uuid'
+import { v4 } from 'uuid'
 import { encode as encodeGBK } from 'iconv-lite'
 import { app, BrowserWindow, ipcMain, screen, Tray, Menu } from 'electron'
 // import server dependences
@@ -36,6 +36,7 @@ import getPublicPower from './modules/database/get-public-power'
 import * as postActions from './modules/powers/post'
 import * as deductionActions from './modules/powers/deduction'
 import * as memberActions from './modules/powers/member'
+import * as volunteerActions from './modules/powers/volunteer'
 import * as utils from './modules/utils'
 
 // Generate Chart Base File
@@ -165,6 +166,19 @@ router.get('/api/class/:gradeid/:classid/get/post', async (ctx) => {
   const { gradeid, classid } = ctx.params
   if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
     ctx.response.body = postActions.getClass(parseInt(gradeid), parseInt(classid))
+  } else {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'password-error',
+    }
+  }
+})
+router.get('/api/class/:gradeid/:classid/get/volunteer', async (ctx) => {
+  const params = new URLSearchParams(ctx.querystring)
+  const password = params.get('password')
+  const { gradeid, classid } = ctx.params
+  if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
+    ctx.response.body = volunteerActions.getVolunteerAsClass(parseInt(gradeid), parseInt(classid))
   } else {
     ctx.response.body = {
       status: 'error',
@@ -575,6 +589,26 @@ router.post('/api/member/:id/workflow/quit', async (ctx) => {
     const { id: num } = ctx.params
     if (loginMember(parseInt(num), password).status == 'ok') {
       ctx.response.body = memberActions.editWorkflow(parseInt(num), id, 'depracted')
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
+router.get('/api/member/:id/volunteer/get', async (ctx) => {
+  try {
+    const { id } = ctx.params
+    const password = new URLSearchParams(ctx.querystring).get('password')
+    if (loginMember(parseInt(id), password).status == 'ok') {
+      ctx.response.body = volunteerActions.getVolunteerAsOwn(parseInt(id))
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1168,7 +1202,7 @@ router.post('/api/admin/export/deduction/class', async (ctx) => {
         start,
         end,
       })
-      const token = generateToken()
+      const token = v4()
       csvTokens[token] = data.details
       ctx.response.body = {
         status: 'ok',
@@ -1198,7 +1232,7 @@ router.post('/api/admin/export/deduction/detail', async (ctx) => {
         start,
         end,
       })
-      const token = generateToken()
+      const token = v4()
       csvTokens[token] = data.details
       ctx.response.body = {
         status: 'ok',
@@ -1363,6 +1397,34 @@ router.post('/api/admin/del/member', async (ctx) => {
     }
   }
 })
+router.post('/api/admin/volunteer/sendout', async (ctx) => {
+  try {
+    const { password } = ctx.request.body
+    if (loginAdmin(password).status == 'ok') {
+      const members = memberActions.getAllAsRaw().details
+      members.forEach((item) => {
+        memberActions.autoCalculateVolunteer(item.number)
+      })
+      if (members.length === 0) {
+        throw '没有成员'
+      }
+      return {
+        status: 'ok',
+      }
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
 // All APIs
 router.post('/api/feed/back', async (ctx) => {
   // Here, it is no use to check the password
@@ -1409,9 +1471,8 @@ setInterval(() => {
   const members = memberActions.getAllAsRaw().details
   members.forEach((item) => {
     memberActions.autoCalculateScore(item.number)
-    memberActions.autoCalculateVolunteer(item.number)
   })
-}, 30 * 1000) // 每1小时计算一次素质分
+}, 10800000) // 每3小时计算一次素质分
 
 // Use routes to register APIs.
 server.use(router.routes())
