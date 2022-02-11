@@ -1,4 +1,4 @@
-declare interface VolunteerQueryResult {
+declare interface VolunteerMulti {
   person: number[]
   duration: number
   project: string
@@ -6,5 +6,4 @@ declare interface VolunteerQueryResult {
   status: 'planning' | 'done' | 'miss'
   time: string
   createId: string
-  idInUserData: string
 }

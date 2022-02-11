@@ -8,10 +8,9 @@ const fbstatus = {
   failed: '申诉失败',
 }
 
-const props = defineProps({
-  // eslint-disable-next-line vue/require-default-prop
-  data: Object,
-})
+const props = defineProps<{
+  data: DeductionList
+}>()
 
 const { data } = toRefs(props)
 

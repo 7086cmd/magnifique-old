@@ -22,12 +22,12 @@ export default (memberNumber: number) => {
     }
     if (showAddForVolunteer) {
       createVolunteer(memberNumber, {
-        person: memberNumber,
+        person: Number(memberNumber),
         duration: Math.round(score / 10) / 2,
         project: `期末义工结算`,
         place: '学生会/团总支',
         status: 'done',
-        time: new Date(dayjs().toJSON()),
+        time: dayjs().toJSON(),
         createId: createUUID(),
       })
     }

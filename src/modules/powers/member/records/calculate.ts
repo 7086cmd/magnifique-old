@@ -3,6 +3,7 @@ import deleteMember from '../crud/delete/delete'
 import { createSdbdataSaver, createMemberIndex } from '../../../utils'
 import { getOwn as getMyOwnDeduction } from '../../deduction'
 import getMemberAsRaw from '../crud/read/raw'
+import { createVolunteerCounter } from '../../volunteer'
 
 const countWorkflow = (wfl: Record<string, workflow>) => {
   let t = 0
@@ -14,14 +15,6 @@ const countWorkflow = (wfl: Record<string, workflow>) => {
       depracted: -5,
     }
     t += statuses[val.status]
-  }
-  return t
-}
-
-const countVolunteer = (vol: Record<string, volunteer>) => {
-  let t = 0
-  for (let val of Object.values(vol)) {
-    t = (t * 10 + val.duration * 10) / 10
   }
   return t
 }
@@ -46,7 +39,7 @@ export default (memberNum: number) => {
     countPost(infor.post?.details) * 5 +
     getMyOwnDeduction(memberNum).details.length +
     infor.record.actions * 2 +
-    countVolunteer(infor.volunteer.details) -
+    createVolunteerCounter(memberNum) -
     infor.record.violation * 20 -
     countDeduction(infor.deduction?.details) * 15 +
     countWorkflow(infor.workflow.details)

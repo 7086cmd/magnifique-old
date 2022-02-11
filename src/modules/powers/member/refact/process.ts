@@ -1,5 +1,6 @@
 import getDepartmentData from '../../../database/get-department-data'
 import getPublicPower from '../../../database/get-public-power'
+import count from '../../volunteer/count/count'
 
 export default (configuration: member) => {
   const groups = getDepartmentData()
@@ -39,6 +40,7 @@ export default (configuration: member) => {
       record: configuration.record,
       duty: duties,
       admin: admins,
+      volunteer: count(configuration.number),
     }
   } catch (_e) {
     base = {
@@ -50,6 +52,7 @@ export default (configuration: member) => {
       record: configuration.record,
       duty: duties,
       admin: admins,
+      volunteer: count(configuration.number),
     }
   }
   if (configuration.union.position.includes('chairman')) {

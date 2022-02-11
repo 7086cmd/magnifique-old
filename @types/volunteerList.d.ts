@@ -4,7 +4,7 @@ declare interface VolunteerList {
   project: string
   place: string
   status: 'planning' | 'done' | 'miss'
-  time: Date
+  time: string
   createId: string
   idInUserData: string
 }

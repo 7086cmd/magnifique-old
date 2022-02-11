@@ -5,6 +5,9 @@ import { sha512 } from 'js-sha512'
 import { createPersonNumberAnalyzor, createSdbdataParser } from '../utils'
 
 export default (person: number, password: string) => {
+  if (typeof person !== 'number') {
+    person = Number(person)
+  }
   const ana = createPersonNumberAnalyzor(person)
   let temppath = resolve(tmpdir(), `../magnifique/${ana.gradeid}/${ana.classid}/members/`)
   if (existsSync(temppath)) {

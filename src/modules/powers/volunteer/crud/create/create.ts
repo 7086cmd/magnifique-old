@@ -11,4 +11,7 @@ export default (memberNumber: number, volunteerData: volunteer) => {
   }
   info.volunteer.details[id] = volunteerData
   createSdbdataSaver(path, info)
+  return {
+    status: 'ok',
+  }
 }

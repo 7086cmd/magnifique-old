@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* global DeductionList */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ref, reactive } from 'vue'
 import { Refresh } from '@element-plus/icons-vue'
@@ -33,7 +34,7 @@ let exportTypes = ref([
 let isSubmiting = ref(false)
 let exportType = ref('')
 
-let data = reactive({
+let data = reactive<{ deduction: Array<DeductionList> }>({
   deduction: [],
 })
 const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
@@ -49,11 +50,7 @@ const tableRowClassName = (props: any) => {
 }
 const refresh = async () => {
   loading.value = true
-  data.deduction = (
-    await axios(`${baseurl}admin/get/all/deduction?password=${password}`, {
-      method: 'get',
-    })
-  ).data.details
+  data.deduction = (await axios(`${baseurl}admin/get/all/deduction?password=${password}`)).data.details
   for (let i = 0; i in data.deduction; i++) {
     data.deduction[i].time = dayjs(data.deduction[i].time).format('YYYY/MM/DD')
   }

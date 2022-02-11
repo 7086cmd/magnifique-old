@@ -1,5 +1,5 @@
-declare interface VolunteerQueryResult {
-  person: number[]
+declare interface VolunteerCombo {
+  person: number | number[]
   duration: number
   project: string
   place: string

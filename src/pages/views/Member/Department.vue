@@ -5,6 +5,7 @@ import axios from 'axios'
 import baseurl from '../../modules/baseurl'
 import deductionPage from './departments/deduction.vue'
 import postPage from './departments/post.vue'
+import volunteerPage from './departments/volunteer.vue'
 import WorkFlowPage from './departments/WorkFlow.vue'
 import personExample from '../../../examples/person'
 import { ElLoading } from 'element-plus'
@@ -26,6 +27,9 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
     <el-tabs v-model="choice" tab-position="left">
       <el-tab-pane label="工作流" name="workflow">
         <work-flow-page />
+      </el-tab-pane>
+      <el-tab-pane label="义工" name="volunteer">
+        <volunteer-page />
       </el-tab-pane>
       <el-tab-pane v-if="me.union.duty.includes('deduction')" label="扣分" name="deduction">
         <deduction-page />

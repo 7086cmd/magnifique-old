@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import deduction from './lists/deduction.vue'
 import member from './lists/member.vue'
 import post from './lists/post.vue'
+import volunteer from './lists/volunteer.vue'
 let page = ref('deduction')
 </script>
 <template>
@@ -17,6 +18,9 @@ let page = ref('deduction')
         </el-tab-pane>
         <el-tab-pane label="稿件" name="post">
           <post />
+        </el-tab-pane>
+        <el-tab-pane label="义工" name="volunteer">
+          <volunteer />
         </el-tab-pane>
       </el-tabs>
     </div>

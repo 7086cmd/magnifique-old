@@ -77,7 +77,7 @@ async function refresh() {
   })
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const deletePerson = async (props: member_processed) => {
+const deletePerson = async (props: { row: member_processed }) => {
   const response = await axios(`${baseurl}member/admin/del/member`, {
     data: {
       person: props.row.number,
@@ -94,7 +94,7 @@ const deletePerson = async (props: member_processed) => {
   refresh()
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const vioPerson = async (props: member_processed) => {
+const vioPerson = async (props: { row: member_processed }) => {
   const response = await axios(`${baseurl}member/admin/vio/member`, {
     data: {
       person: props.row.number,
@@ -188,8 +188,9 @@ const createMember = async () => {
           </template>
           <el-table
             :data="table.filter((data: any) => !search || data.number.toLowerCase().includes(search.toLowerCase()) || String(data.person).toLowerCase().includes(search.toLowerCase()))"
-            highlight-current-row
             max-height="480px"
+            :item-per-age="10"
+            :current="1"
           >
             <el-table-column type="expand">
               <template #header>

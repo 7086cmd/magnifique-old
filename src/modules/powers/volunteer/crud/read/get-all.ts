@@ -7,7 +7,7 @@ interface VolunteerWorking {
   project: string
   place: string
   status: 'planning' | 'done' | 'miss'
-  time: Date
+  time: string
   createId: string
   idInUserData: string
 }
@@ -30,6 +30,6 @@ export default () => {
   })
   return {
     status: 'ok',
-    details: createObjectToArrayTransformer('createId', volList),
+    details: createObjectToArrayTransformer('createId', volList) as VolunteerQueryResult[],
   }
 }
