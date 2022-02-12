@@ -114,7 +114,44 @@ const deleteVolunteer = (props: { row: VolunteerQueryResult }) => {
     }
   })
 }
+let isExporting = ref(false)
+let exportTime = ref<string[]>([])
+const ExportStart = () => {
+  isExporting.value = true
+}
+let isClient = ref(false)
+
+try {
+  if (window.magnifique.isElectron === true) {
+    isClient.value = true
+  }
+  // eslint-disable-next-line no-empty
+} catch (_e) {}
+const createExport = async () => {
+  isSubmiting.value = true
+  const response = await axios(`${baseurl}admin/export/volunteer`, {
+    data: {
+      password,
+      config:
+        exportTime.value.length == 0
+          ? undefined
+          : {
+              start: dayjs(exportTime.value[0]).toJSON(),
+              end: dayjs(exportTime.value[1]).toJSON(),
+            },
+    },
+    method: 'post',
+  })
+  isSubmiting.value = false
+  if (response.data.status == 'ok') {
+    sucfuc()
+    window.open(`${baseurl}admin/export/download/${response.data.details.token}`, isClient.value ? '_self' : '_blank')
+  } else {
+    failfuc(response.data.reason, response.data.text)
+  }
+}
 </script>
+
 <template>
   <transition name="el-fade-in" appear>
     <div>
@@ -150,6 +187,7 @@ const deleteVolunteer = (props: { row: VolunteerQueryResult }) => {
               <el-table-column align="right" fixed="right">
                 <template #header>
                   <el-button type="text" @click="startRegistVolunteer()"> 义工登记 </el-button>
+                  <el-button type="text" @click="ExportStart()"> 导出 </el-button>
                 </template>
                 <template #default="prop">
                   <el-button type="text" :disabled="prop.row.status === 'done'" @click="editStatusVolunteer(prop)">通过</el-button>
@@ -194,6 +232,13 @@ const deleteVolunteer = (props: { row: VolunteerQueryResult }) => {
             <el-button @click="isRegistingVolunteer = false"> 取消 </el-button>
             <el-button color="#626aef" style="color: white" :loading="isSubmiting" @click="createRegistry"> 确定 </el-button>
           </span>
+        </template>
+      </el-dialog>
+      <el-dialog v-model="isExporting" title="导出数据" center>
+        <el-date-picker v-model="exportTime" type="datetimerange" style="width: 100%" range-separator="到" start-placeholder="开始日期" end-placeholder="结束日期" />
+        <br />
+        <template #footer>
+          <el-button color="#626aef" style="color: white; text-align: center" @click="createExport" v-text="'导出'" />
         </template>
       </el-dialog>
     </div>

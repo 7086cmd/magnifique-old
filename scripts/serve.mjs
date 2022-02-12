@@ -1,17 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
 import { build } from 'esbuild'
-import { ESLint } from 'eslint'
 import chalk from 'chalk'
 import { resolve } from 'path'
 import { readFileSync, writeFileSync } from 'fs'
 import glob from 'glob'
-import lintFile from './lint.mjs'
-import electron from 'electron'
-import { exec, spawn } from 'child_process'
+import { exec } from 'child_process'
 import { createServer } from 'vite'
 import { platform } from 'os'
-import { watch } from 'chokidar'
 
 const getGlob = () => [...glob.sync('src/modules/**/*.*'), ...glob.sync('src/*.*'), ...glob.sync('src/examples/*.*'), ...glob.sync('src/client/*.*'), ...glob.sync('src/client/**/*.*')]
 
@@ -23,7 +19,7 @@ writeFileSync(resolve(__dirname, './package.json'), JSON.stringify(packageFile, 
 platform === 'win32' && exec('taskkill /f /im electron.exe')
 
 const generate = async () => {
-  await build({
+  build({
     entryPoints: ['src/main.ts', 'src/preload.ts', 'src/client/main.ts', 'src/client/preload.ts'],
     outdir: 'dist',
     platform: 'node',
@@ -45,31 +41,13 @@ const generate = async () => {
     banner: {
       js: '/* Copyright© 2022 7086cmd. */',
     },
+    watch: true,
     bundle: true,
     sourcemap: true,
     external: ['electron'],
   })
   console.log(chalk.green(`[Build] ${getGlob().length} files have built.`))
 }
-let runner
-let isbuilding = false
-
-const execElectron = () => {
-  if (runner !== undefined) {
-    runner.kill()
-  }
-  exec(`taskkill /f /im electron.exe`)
-  runner = spawn(electron, [resolve('dist', 'main.js')])
-  runner.stdout?.on('data', (data) => {
-    console.log(chalk.cyan(`[App] ${data}`))
-  })
-  runner.stderr?.on('data', (data) => {
-    console.error(chalk.red(`[App Err] ${data}`))
-  })
-}
-
-generate().then(() => execElectron())
-
 createServer()
   .then((result) => {
     return result.listen()
@@ -81,31 +59,4 @@ createServer()
     console.log(chalk.blue('[Vite] ----------------------------------'))
   })
 
-let oldGlob = getGlob()
-
-let watcher = watch(getGlob())
-
-watcher.on('change', (path) => {
-  console.log(chalk.blue(`[Watcher] File ${path} changed.`))
-  console.log(chalk.green('[Lint] Linting...'))
-  lintFile()
-    .then(() => generate())
-    .then(() => execElectron())
-})
-
-setInterval(() => {
-  if (getGlob().length !== oldGlob.length && !isbuilding) {
-    isbuilding = true
-    console.log(chalk.blue('[Watcher] Foelder change effected. rebuilding...'))
-    watcher.close()
-    watcher = watch(getGlob())
-    console.log(chalk.green('[Lint] Linting...'))
-    lintFile()
-      .then(() => generate())
-      .then(() => execElectron())
-      .then(() => (oldGlob = getGlob()))
-      .then(() => (isbuilding = true))
-      .then(() => watcher.close())
-      .then(() => (watcher = watch(getGlob())))
-  }
-}, 500)
+generate()

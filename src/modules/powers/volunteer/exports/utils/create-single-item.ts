@@ -3,7 +3,7 @@ import count from '../../count/count'
 import { createClassName } from './create-class-name'
 
 export default (
-  personNumber,
+  personNumber: number,
   config?: {
     start: string
     end: string

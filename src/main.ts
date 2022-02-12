@@ -738,7 +738,7 @@ router.post('/api/member/admin/edit/volunteer', async (ctx) => {
 })
 router.post('/api/member/admin/export/volunteer', async (ctx) => {
   try {
-    const { password, number, config, department } = ctx.request.body as {
+    const { password, number, config, department, type } = ctx.request.body as {
       password: string
       number: number
       config?: {
@@ -746,11 +746,21 @@ router.post('/api/member/admin/export/volunteer', async (ctx) => {
         end: string
       }
       department: string
+      type: 'department' | 'all'
     }
     if (loginMember(number, password).status == 'ok') {
       if (memberActions.memberAdminLimitCheckPower(number, 'member') || memberActions.memberAdminLimitCheckPower(number, 'volunteer')) {
         const token = v4()
-        csvTokens[token] = volunteerActions.exportData.exportAsDepartment(department, config)
+        if (type === 'all') {
+          if (memberActions.memberAdminLimitCheckPower(number, 'volunteer')) {
+            csvTokens[token] = volunteerActions.exportData.exportAsAll(config)
+          } else {
+            ctx.response.body = {
+              status: 'error',
+              reason: 'no-auth',
+            }
+          }
+        } else csvTokens[token] = volunteerActions.exportData.exportAsDepartment(department, config)
         ctx.response.body = {
           status: 'ok',
           details: {
@@ -1178,6 +1188,76 @@ router.post('/api/member/deduction/:id/work/del/deduction', async (ctx) => {
           status: 'error',
           reason: 'no-auth',
         }
+      }
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
+router.post('/api/member/admin/export/deduction/class', async (ctx) => {
+  try {
+    const { password, start, end, number } = ctx.request.body as {
+      password: string
+      start: string
+      end: string
+      number: number
+    }
+    if (loginMember(number, password).status == 'ok') {
+      const data = deductionActions.exportAsClass({
+        start,
+        end,
+      })
+      const token = v4()
+      csvTokens[token] = data.details
+      ctx.response.body = {
+        status: 'ok',
+        details: {
+          token,
+        },
+      }
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
+router.post('/api/member/admin/export/deduction/detail', async (ctx) => {
+  try {
+    const { password, start, end, number } = ctx.request.body as {
+      password: string
+      start: string
+      end: string
+      number: number
+    }
+    if (loginMember(number, password).status == 'ok') {
+      const data = deductionActions.exportAsDetails({
+        start,
+        end,
+      })
+      const token = v4()
+      csvTokens[token] = data.details
+      ctx.response.body = {
+        status: 'ok',
+        details: {
+          token,
+        },
       }
     } else {
       ctx.response.body = {
