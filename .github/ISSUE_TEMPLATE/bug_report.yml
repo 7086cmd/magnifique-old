@@ -1,7 +1,7 @@
 name: Bug report
 description: Report an bug.
 title: '[Bug]: '
-label: [':bug:']
+label: ['bug']
 body:
   - type: checkboxes
     attributes:
@@ -31,8 +31,7 @@ body:
         - 'In requesting("Reference Error")'
   - type: textarea
     attributes:
-      value: |
-        Thanks for reporting the bug. Please write the reference here.
+      value: 'Thanks for reporting the bug. Please write the reference here.'
   - type: input
     attributes:
       label: Contact Details
