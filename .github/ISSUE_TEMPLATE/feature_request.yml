@@ -1,5 +1,5 @@
 name: Future Request
-about: Create a imagine for this project.
+description: Create a imagine for this project.
 title: '[Future Request]: '
 body:
   - type: checkboxes
