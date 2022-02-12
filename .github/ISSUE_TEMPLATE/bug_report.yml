@@ -1,7 +1,7 @@
 name: Bug report
 description: Report an bug.
 title: '[Bug]: '
-labels: ':bug:'
+labels: [':bug:']
 body:
   - type: checkboxes
     attributes:
@@ -21,8 +21,6 @@ body:
       description: What is the version your school / you use?
       options:
         - 0.0.0
-      validations:
-        required: true
   - type: dropdown
     id: place
     attributes:
