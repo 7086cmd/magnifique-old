@@ -1,7 +1,6 @@
 name: Future Request
 about: Create a imagine for this project.
 title: '[Future Request]: '
-labels: ['bug', 'triage']
 body:
   - type: checkboxes
     attributes:
@@ -14,10 +13,11 @@ body:
           required: true
         - label: I have searched the [issue tracker](https://www.github.com/7086cmd/magnifique/issues) for a bug report that matches the one I want to file, without success.
           required: true
-  - type: markdown
+  - type: textarea
     attributes:
-      value: |
-        What is the reference you want?
+      value: What is the reference you want?
+    validations:
+      requied: true
   - type: input
     attributes:
       label: Contact Details
