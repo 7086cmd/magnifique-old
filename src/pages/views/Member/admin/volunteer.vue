@@ -10,6 +10,7 @@ import sucfuc from '../../../modules/sucfuc'
 import VolunteerDescription from '../../../components/lists/VolunteerDescription.vue'
 import personExample from '../../../../examples/person'
 import dayjs from 'dayjs'
+import { v4 } from 'uuid'
 const { password, number } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
 
 const props = defineProps<{ type: 'member' | 'volunteer' }>()
@@ -26,22 +27,20 @@ let loading = ref(true)
 let volunteerDetail = ref([])
 axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
   aboutme.value = response.data.details as member
-  axios(`${baseurl}member/admin/${number}/get/${(response.data.details as member).union.department}/member?password=${password}`).then((response) => {
-    persons.value.push(...response.data.details)
+  axios(`${baseurl}member/admin/${number}/get/${props.type === 'volunteer' ? 'core' : (aboutme.value as member).union.department}/member?password=${password}`).then((responser) => {
+    persons.value = responser.data.details
   })
   refresh()
   information.union.department = aboutme.value.union.department
 })
 const refresh = () => {
   loading.value = true
-  if ((aboutme.value as member).union.department !== '') {
-    axios(`${baseurl}member/admin/${number}/get/${props.type === 'volunteer' ? '' : (aboutme.value as member).union.department}/volunteer?password=${password}`).then((response) => {
-      loading.value = false
-      if (response.data.status == 'ok') {
-        volunteerDetail.value = response.data.details as VolunteerQueryResult[]
-      }
-    })
-  }
+  axios(`${baseurl}member/admin/${number}/get/${props.type === 'volunteer' ? 'core' : (aboutme.value as member).union.department}/volunteer?password=${password}`).then((response) => {
+    loading.value = false
+    if (response.data.status == 'ok') {
+      volunteerDetail.value = response.data.details as VolunteerQueryResult[]
+    }
+  })
 }
 const createRegistry = async () => {
   if (volunteerData.person.length == 0) {
@@ -64,6 +63,12 @@ const createRegistry = async () => {
     })
     isSubmiting.value = false
     if (response.data.status === 'ok') {
+      volunteerData.time = dayjs().toJSON()
+      volunteerData.createId = v4()
+      volunteerData.person = []
+      volunteerData.project = ''
+      volunteerData.place = ''
+      refresh()
       sucfuc()
     } else {
       failfuc(response.data.reason, response.data.text)
@@ -121,27 +126,34 @@ const deleteVolunteer = (props: { row: VolunteerQueryResult }) => {
                 <template #header>
                   <el-button type="text" :icon="Refresh" @click="refresh()" />
                 </template>
-                <template #default="props">
-                  <volunteer-description :data="props.row" />
+                <template #default="prop">
+                  <volunteer-description :data="prop.row" />
                 </template>
               </el-table-column>
               <el-table-column label="参与者">
-                <template #default="props">
-                  <el-tag v-if="typeof props.row.person === 'number'" type="success" v-text="props.row.person" />
-                  <el-tag v-for="item in props.row.person" v-else :key="item" type="success" v-text="item" />
+                <template #default="prop">
+                  <el-tag v-if="typeof prop.row.person === 'number'" type="success" v-text="prop.row.person" />
+                  <el-tag v-for="item in prop.row.person" v-else :key="item" type="success" v-text="item" />
                 </template>
               </el-table-column>
               <el-table-column prop="project" label="义工项目" />
               <el-table-column label="义工时长">
-                <template #default="props"> {{ props.row.duration }}小时 </template>
+                <template #default="prop"> {{ prop.row.duration }}小时 </template>
+              </el-table-column>
+              <el-table-column label="登记状态">
+                <template #default="prop">
+                  <el-tag v-if="prop.row.status === 'done'" type="success">已完成</el-tag>
+                  <el-tag v-else-if="prop.row.status === 'planning'" type="warning">计划中</el-tag>
+                  <el-tag v-else type="error">已错过</el-tag>
+                </template>
               </el-table-column>
               <el-table-column align="right" fixed="right">
                 <template #header>
                   <el-button type="text" @click="isRegistingVolunteer = true"> 义工登记 </el-button>
                 </template>
-                <template #default="props">
-                  <el-button type="text" :disabled="props.row.status === 'done'" @click="editStatusVolunteer(props)">通过</el-button>
-                  <el-button type="text" :disabled="props.row.status === 'miss'" @click="deleteVolunteer(props)">删除</el-button>
+                <template #default="prop">
+                  <el-button type="text" :disabled="prop.row.status === 'done' || prop.row.person.includes(number)" @click="editStatusVolunteer(prop)">通过</el-button>
+                  <el-button type="text" :disabled="prop.row.status === 'miss'" @click="deleteVolunteer(prop)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -172,6 +184,9 @@ const deleteVolunteer = (props: { row: VolunteerQueryResult }) => {
             <el-slider v-model="volunteerData.duration" :step="0.5" :min="0" :max="3"></el-slider>
             <!-- 一次登记不得超过3小时 -->
             <el-input-number v-model="volunteerData.duration" style="width: 100%" :step="0.5" />
+          </el-form-item>
+          <el-form-item label="创建ID">
+            <el-input v-model="volunteerData.createId" readonly></el-input>
           </el-form-item>
         </el-form>
         <template #footer>

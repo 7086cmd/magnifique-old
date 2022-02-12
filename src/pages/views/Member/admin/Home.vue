@@ -5,7 +5,7 @@ import axios from 'axios'
 import baseurl from '../../../modules/baseurl'
 import MemberPage from './member.vue'
 import DeductionPage from './deduction.vue'
-import MemberVolunteerPage from './volunteer-member.vue'
+import VolunteerPage from './volunteer.vue'
 import PostPage from './post.vue'
 import personExample from '../../../../examples/person'
 import { ElLoading } from 'element-plus'
@@ -34,7 +34,10 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
         <post-page />
       </el-tab-pane>
       <el-tab-pane v-if="me.union.admin.includes('member')" label="成员义工" name="member-volunteer">
-        <member-volunteer-page />
+        <volunteer-page type="member" />
+      </el-tab-pane>
+      <el-tab-pane v-if="me.union.admin.includes('volunteer')" label="义工" name="volunteer">
+        <volunteer-page type="volunteer" />
       </el-tab-pane>
     </el-tabs>
     <el-card v-if="me.union.admin.length === 0" shadow="never">

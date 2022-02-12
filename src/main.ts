@@ -424,6 +424,59 @@ router.get('/api/member/:id/login', async (ctx) => {
   }
 })
 
+// 青志部管理义工可用
+router.get('/api/member/admin/:id/get/core/volunteer', async (ctx) => {
+  try {
+    const password = getPassword(ctx)
+    if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
+      if (memberActions.memberAdminLimitCheckPower(parseInt(ctx.params.id), 'volunteer')) {
+        ctx.response.body = volunteerActions.getVolunteerAsCore()
+      } else {
+        ctx.response.body = {
+          status: 'error',
+          reason: 'no-auth',
+        }
+      }
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
+router.get('/api/member/admin/:id/get/core/member', async (ctx) => {
+  try {
+    const password = getPassword(ctx)
+    if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
+      if (memberActions.memberAdminLimitCheckPower(parseInt(ctx.params.id), 'volunteer')) {
+        ctx.response.body = memberActions.multiProcess(memberActions.getCoreAsRaw())
+      } else {
+        ctx.response.body = {
+          status: 'error',
+          reason: 'no-auth',
+        }
+      }
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  } catch (e) {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'type-error',
+      text: new Error(<string>e).message,
+    }
+  }
+})
 // Member Admin API (Member)
 router.post('/api/member/admin/trans/member', async (ctx) => {
   try {
@@ -951,34 +1004,6 @@ router.post('/api/member/:id/volunteer/export', async (ctx) => {
         details: {
           token,
         },
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-
-// 青志部管理义工可用
-router.get('/api/member/admin/:id/get/all/volunteer', async (ctx) => {
-  try {
-    const password = getPassword(ctx)
-    if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'volunteer')) {
-        ctx.response.body = volunteerActions.getVolunteerAsAll()
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
       }
     } else {
       ctx.response.body = {
@@ -1796,7 +1821,7 @@ router.post('/api/admin/volunteer/sendout', async (ctx) => {
     }
   }
 })
-router.get('/api/member/admin/get/all/volunteer', async (ctx) => {
+router.get('/api/admin/get/all/volunteer', async (ctx) => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
@@ -1815,7 +1840,7 @@ router.get('/api/member/admin/get/all/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/create/volunteer', async (ctx) => {
+router.post('/api/admin/create/volunteer', async (ctx) => {
   try {
     const { password, volunteer } = ctx.request.body as {
       password: string
@@ -1837,7 +1862,7 @@ router.post('/api/member/admin/create/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/delete/volunteer', async (ctx) => {
+router.post('/api/admin/delete/volunteer', async (ctx) => {
   try {
     const { password, volunteerInfo } = ctx.request.body as {
       password: string
@@ -1863,7 +1888,7 @@ router.post('/api/member/admin/delete/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/edit/volunteer', async (ctx) => {
+router.post('/api/admin/edit/volunteer', async (ctx) => {
   try {
     const { password, volunteerInfo } = ctx.request.body as {
       password: string
@@ -1890,7 +1915,7 @@ router.post('/api/member/admin/edit/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/export/volunteer', async (ctx) => {
+router.post('/api/admin/export/volunteer', async (ctx) => {
   try {
     const { password, config } = ctx.request.body as {
       password: string

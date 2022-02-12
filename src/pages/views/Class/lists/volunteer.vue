@@ -10,6 +10,7 @@ import sucfuc from '../../../modules/sucfuc'
 import VolunteerDescription from '../../../components/lists/VolunteerDescription.vue'
 import createYearTransformer from '../../../../modules/utils/transform-date'
 import dayjs from 'dayjs'
+import { v4 } from 'uuid'
 
 const { gradeid, classid, password } = JSON.parse(window.atob(String(localStorage.getItem('classLoginInfo'))))
 let basicnum = ref(0)
@@ -59,6 +60,13 @@ const createRegistry = async () => {
     isSubmiting.value = false
     if (response.data.status == 'ok') {
       sucfuc()
+      volunteerData.person = []
+      volunteerData.duration = 0
+      volunteerData.createId = v4()
+      volunteerData.place = ''
+      volunteerData.project = ''
+      volunteerData.time = dayjs().toJSON()
+      refresh()
     } else {
       failfuc(response.data.reason, response.data.text)
     }
@@ -90,6 +98,18 @@ const createRegistry = async () => {
               <el-table-column label="义工时长">
                 <template #default="props"> {{ props.row.duration }}小时 </template>
               </el-table-column>
+              <el-table-column label="登记状态">
+                <template #default="props">
+                  <el-tag v-if="props.row.status === 'done'" type="success">已完成</el-tag>
+                  <el-tag v-else-if="props.row.status === 'planning'" type="warning">计划中</el-tag>
+                  <el-tag v-else type="error">已错过</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column align="right" fixed="right">
+                <template #header>
+                  <el-button type="text" @click="isRegistingVolunteer = true"> 义工登记 </el-button>
+                </template>
+              </el-table-column>
             </el-table>
           </el-card>
         </template>
@@ -118,6 +138,9 @@ const createRegistry = async () => {
             <el-slider v-model="volunteerData.duration" :step="0.5" :min="0" :max="3"></el-slider>
             <!-- 一次登记不得超过3小时 -->
             <el-input-number v-model="volunteerData.duration" style="width: 100%" :step="0.5" />
+          </el-form-item>
+          <el-form-item label="创建ID">
+            <el-input v-model="volunteerData.createId" readonly></el-input>
           </el-form-item>
         </el-form>
         <template #footer>

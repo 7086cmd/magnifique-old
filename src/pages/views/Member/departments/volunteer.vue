@@ -9,6 +9,7 @@ import failfuc from '../../../modules/failfuc'
 import sucfuc from '../../../modules/sucfuc'
 import VolunteerDescription from '../../../components/lists/VolunteerDescription.vue'
 import dayjs from 'dayjs'
+import { v4 } from 'uuid'
 
 const { number, password } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
 let isSubmiting = ref(false)
@@ -20,7 +21,7 @@ let loading = ref(true)
 let volunteerDetail = ref([])
 const refresh = () => {
   loading.value = true
-  axios(`${baseurl}/member/${number}/volunteer/get?password=${password}`).then((response) => {
+  axios(`${baseurl}member/${number}/volunteer/get?password=${password}`).then((response) => {
     loading.value = false
     if (response.data.status == 'ok') {
       volunteerDetail.value = response.data.details as VolunteerList[]
@@ -48,6 +49,12 @@ const createRegistry = async () => {
     isSubmiting.value = false
     if (response.data.status == 'ok') {
       sucfuc()
+      volunteerData.time = dayjs().toJSON()
+      volunteerData.createId = v4()
+      volunteerData.person = []
+      volunteerData.project = ''
+      volunteerData.place = ''
+      refresh()
     } else {
       failfuc(response.data.reason, response.data.text)
     }
@@ -71,13 +78,20 @@ const createRegistry = async () => {
               </el-table-column>
               <el-table-column label="参与者">
                 <template #default="props">
-                  <el-tag v-if="typeof props.row.person === 'number'" type="success" v-text="props.row.person" />
+                  <el-tag v-if="['number', 'string'].includes(typeof props.row.person)" type="success" v-text="props.row.person" />
                   <el-tag v-for="item in props.row.person" v-else :key="item" type="success" v-text="item" />
                 </template>
               </el-table-column>
               <el-table-column prop="project" label="义工项目" />
               <el-table-column label="义工时长">
                 <template #default="props"> {{ props.row.duration }}小时 </template>
+              </el-table-column>
+              <el-table-column label="登记状态">
+                <template #default="props">
+                  <el-tag v-if="props.row.status === 'done'" type="success">已完成</el-tag>
+                  <el-tag v-else-if="props.row.status === 'planning'" type="warning">计划中</el-tag>
+                  <el-tag v-else type="error">已错过</el-tag>
+                </template>
               </el-table-column>
               <el-table-column align="right" fixed="right">
                 <template #header>
@@ -104,6 +118,9 @@ const createRegistry = async () => {
             <el-slider v-model="volunteerData.duration" :step="0.5" :min="0" :max="3"></el-slider>
             <!-- 一次登记不得超过3小时 -->
             <el-input-number v-model="volunteerData.duration" style="width: 100%" :step="0.5" />
+          </el-form-item>
+          <el-form-item label="创建ID">
+            <el-input v-model="volunteerData.createId" readonly></el-input>
           </el-form-item>
         </el-form>
         <template #footer>

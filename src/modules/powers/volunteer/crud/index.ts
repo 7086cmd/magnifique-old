@@ -8,6 +8,7 @@ import getVolunteerAsAll from './read/get-all'
 import getVolunteerAsClass from './read/get-class'
 import getVolunteerAsOwn from './read/get-own'
 import getVolunteerAsDepartment from './read/get-department'
+import getVolunteerAsCore from './read/get-core'
 
 export {
   editVolunteerStatusMulti,
@@ -20,4 +21,5 @@ export {
   getVolunteerAsOwn,
   createVolunteerMulti,
   deleteVolunteerMulti,
+  getVolunteerAsCore,
 }

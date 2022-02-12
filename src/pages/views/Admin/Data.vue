@@ -3,6 +3,7 @@
 import { ref } from 'vue'
 import Deduction from './data/deduction.vue'
 import Post from './data/post.vue'
+import Volunteer from './data/volunteer.vue'
 let nativeName = ref('')
 </script>
 
@@ -15,6 +16,9 @@ let nativeName = ref('')
         </el-tab-pane>
         <el-tab-pane label="稿件" name="post">
           <post />
+        </el-tab-pane>
+        <el-tab-pane label="义工" name="volunteer">
+          <volunteer />
         </el-tab-pane>
       </el-tabs>
     </div>
