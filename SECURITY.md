@@ -7,8 +7,7 @@ currently being supported with security updates.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.0.x   | :x:                 |
-| 0.1.0   | :white_check_mark:  |
+| 0.0.0   | :white_check_mark:  |
 
 > Something you must know: this application can run in anywhere if it connects. Please config your `fire-wall` strictly to aviod attacks.
 ## Reporting a Vulnerability

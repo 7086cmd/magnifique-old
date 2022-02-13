@@ -1,7 +1,7 @@
 name: Future Request
 description: Create a imagine for this project.
 title: '[Future Request]: '
-label: ['sparkles']
+labels: ['sparkles']
 body:
   - type: checkboxes
     attributes:
@@ -16,7 +16,7 @@ body:
           required: true
   - type: textarea
     attributes:
-      value: What is the reference you want?
+      label: What is the reference you want?
   - type: input
     attributes:
       label: Contact Details
