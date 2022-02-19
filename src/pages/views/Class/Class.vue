@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { ref, inject } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import baseurl from '../../modules/baseurl'
@@ -15,7 +14,6 @@ setInterval(() => {
 
 let isClient = ref(false)
 const router = useRouter()
-const { t } = useI18n()
 const leftDrawerOpen = ref(true)
 let pageSelected = ref('1')
 
@@ -27,34 +25,18 @@ try {
 } catch (_e) {}
 
 if (localStorage.getItem('classLoginInfo') == undefined || localStorage.getItem('classLoginInfo') == null) {
-  if (inject('classLoginInfo') == undefined) {
-    router.push('/')
-  }
-}
-
-try {
-  window.atob(String(localStorage.getItem('classLoginInfo')))
-} catch (e) {
   router.push('/')
-  localStorage.removeItem('classLoginInfo')
 }
 
 const { gradeid, classid, password } = JSON.parse(window.atob(String(localStorage.getItem('classLoginInfo'))))
 
-const reqUrl = `${baseurl}class/${gradeid}/${classid}/login?password=${password}`
-axios({
-  url: reqUrl,
-  data: {
-    password: password,
-  },
-  method: 'get',
-}).then((response) => {
+axios(`${baseurl}class/${gradeid}/${classid}/login?password=${password}`).then((response) => {
   if (response.data.status !== 'ok') {
     localStorage.removeItem('classLoginInfo')
-    router.push('/class/login')
+    router.push('/')
   } else {
     if (isClient.value) {
-      window.magnifique.describeNotification(gradeid, classid)
+      // window.magnifique.describeNotification(gradeid, classid)
     }
   }
 })
@@ -68,31 +50,31 @@ axios({
             <el-icon>
               <Back />
             </el-icon>
-            <template #title>{{ t('class-home.menu.1') }}</template>
+            <template #title>返回</template>
           </el-menu-item>
           <el-menu-item index="/class/">
             <el-icon>
               <Home />
             </el-icon>
-            <template #title>{{ t('class-home.menu.2') }}</template>
+            <template #title>主页</template>
           </el-menu-item>
           <el-menu-item index="/class/list/">
             <el-icon>
               <List />
             </el-icon>
-            <template #title>{{ t('class-home.menu.3') }}</template>
+            <template #title>列表</template>
           </el-menu-item>
           <el-menu-item index="/class/chart/">
             <el-icon>
               <PieChart />
             </el-icon>
-            <template #title>{{ t('class-home.menu.4') }}</template>
+            <template #title>绘图</template>
           </el-menu-item>
           <el-menu-item index="/class/message/">
             <el-icon>
               <Box />
             </el-icon>
-            <template #title>{{ t('class-home.menu.6') }}</template>
+            <template #title>消息</template>
           </el-menu-item>
         </el-menu>
       </el-aside>

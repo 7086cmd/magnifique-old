@@ -15,7 +15,7 @@ let name = ref('')
 try {
   window.atob(String(sessionStorage.getItem('memberLoginInfo')))
 } catch (e) {
-  router.push('/class/member/')
+  router.push('/')
   sessionStorage.removeItem('memberLoginInfo')
 }
 
@@ -32,7 +32,7 @@ axios(`${baseurl}member/${number}/login?password=${password}`).then((response) =
       type: 'error',
       center: true,
     })
-    router.push('/class/member')
+    router.push('/')
   }
 })
 </script>

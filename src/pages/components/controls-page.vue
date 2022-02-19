@@ -88,11 +88,7 @@ const exit = () => {
     try {
       sessionStorage.removeItem(type?.value + 'LoginInfo')
       localStorage.removeItem(type?.value + 'LoginInfo')
-      if (type?.value === 'member') {
-        router.push('/class/list')
-      } else {
-        router.push('/' + type?.value + '/login')
-      }
+      router.push('/')
       // eslint-disable-next-line no-empty
     } catch (_e) {}
   }

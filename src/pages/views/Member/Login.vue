@@ -11,15 +11,6 @@ import getData from '../../components/get-data'
 import { encode } from '../../components/record-data'
 import failfuc from '../../modules/failfuc'
 
-const { gradeid, classid, password: passwordClass } = JSON.parse(window.atob(String(localStorage.getItem('classLoginInfo'))))
-
-let options = ref<member_processed[]>([])
-axios(`${baseurl}class/${gradeid}/${classid}/member/get?password=${passwordClass}`).then((response) => {
-  if (response.data.status == 'ok') {
-    options.value = response.data.details
-  }
-})
-
 let isClient = ref(false)
 
 try {
@@ -33,13 +24,19 @@ const router = useRouter()
 let number = ref('')
 let password = ref('')
 let name = ref('')
-
+let duty = ref('')
 watch(number, () => {
+  duty.value = ''
   if (number.value.split('').length === 8) {
     axios({
       url: `${baseurl}member/getinfo/${number.value}/`,
     }).then((response) => {
-      name.value = response.data.details.name
+      const data = response.data.details as member_processed
+      name.value = data.name
+      duty.value = data.do
+      if (data.do === '非正式成员') {
+        name.value = '非正式成员不可登录'
+      }
     })
   } else {
     name.value = '不存在'
@@ -47,8 +44,8 @@ watch(number, () => {
 })
 
 const login = () => {
-  if (name.value == '不存在' || name.value == '') {
-    ElMessageBox.alert('不存在登陆空气吗您', '登陆失败', {
+  if (['', '不存在', '非正式成员不可登录'].includes(name.value)) {
+    ElMessageBox.alert('输入有误', '登陆失败', {
       type: 'error',
       center: true,
     })
@@ -85,16 +82,14 @@ const login = () => {
 
 <template>
   <el-form>
-    <!-- <el-form-item label="学号">
+    <el-form-item label="学号">
       <el-input v-model="number" />
     </el-form-item>
     <el-form-item label="姓名">
       <el-input v-model="name" readonly />
-    </el-form-item> -->
-    <el-form-item label="姓名">
-      <el-select v-model="number" style="width: 100%">
-        <el-option v-for="item in options" :key="item.number" :value="item.number" :label="item.name"></el-option>
-      </el-select>
+    </el-form-item>
+    <el-form-item label="职位">
+      <el-input v-model="duty" readonly />
     </el-form-item>
     <el-form-item label="密码">
       <el-input v-model="password" type="password" />
