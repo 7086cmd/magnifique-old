@@ -20,7 +20,7 @@ platform === 'win32' && exec('taskkill /f /im electron.exe')
 
 const generate = async () => {
   build({
-    entryPoints: ['src/main.ts', 'src/preload.ts', 'src/client/main.ts', 'src/client/preload.ts'],
+    entryPoints: ['packages/server/src/main.ts', 'packages/server/src/preload.ts', 'packages/client/src/main.ts', 'packages/client/src/preload.ts'],
     outdir: 'dist',
     platform: 'node',
     format: 'cjs',

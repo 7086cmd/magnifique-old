@@ -8,7 +8,7 @@ import './lint.mjs'
 const main = async () => {
   await buildFrontEnd()
   await buildBackEnd({
-    entryPoints: ['src/main.ts'],
+    entryPoints: ['packages/server/src/main.ts'],
     outfile: 'dist/server.min.js',
     bundle: true,
     platform: 'node',
@@ -35,7 +35,7 @@ const main = async () => {
     metafile: true,
   })
   await buildBackEnd({
-    entryPoints: ['src/preload.ts'],
+    entryPoints: ['packages/server/src/preload.ts'],
     outfile: 'dist/server.preload.min.js',
     bundle: true,
     platform: 'node',
@@ -61,7 +61,7 @@ const main = async () => {
     external: ['electron'],
   })
   await buildBackEnd({
-    entryPoints: ['src/client/main.js'],
+    entryPoints: ['packages/client/src/main.js'],
     outfile: 'dist/client.min.js',
     bundle: true,
     platform: 'node',
@@ -87,7 +87,7 @@ const main = async () => {
     external: ['electron'],
   })
   await buildBackEnd({
-    entryPoints: ['src/client/preload.ts'],
+    entryPoints: ['packages/client/src/preload.ts'],
     outfile: 'dist/client.preload.min.js',
     bundle: true,
     platform: 'node',
