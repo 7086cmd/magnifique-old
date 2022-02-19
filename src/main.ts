@@ -1,41 +1,41 @@
 // import based-on dependences
-import { resolve } from 'path'
+import koaCors from '@koa/cors'
+import koaMulter, { diskStorage } from '@koa/multer'
+import KoaRouter from '@koa/router'
+import { app, BrowserWindow, ipcMain, Menu, screen, Tray } from 'electron'
 import { readFileSync } from 'fs'
-import { URLSearchParams } from 'url'
 import { createServer as createHttpServer } from 'http'
 import { createServer as createHttpsServer } from 'https'
-import { tmpdir } from 'os'
-import { v4 } from 'uuid'
 import { encode as encodeGBK } from 'iconv-lite'
-import { app, BrowserWindow, ipcMain, screen, Tray, Menu } from 'electron'
 // import server dependences
 import Koa from 'koa'
-import KoaRouter from '@koa/router'
-import koaCors from '@koa/cors'
-import koaStatic from 'koa-static'
 import koaBodyparser from 'koa-bodyparser'
-import koaMulter, { diskStorage } from '@koa/multer'
+import koaStatic from 'koa-static'
+import { tmpdir } from 'os'
+import { resolve } from 'path'
 import { Server } from 'socket.io'
-// import class productions
-import loginClass from './modules/class/login-class'
-import editPassword from './modules/class/edit-password'
+import { URLSearchParams } from 'url'
+import { v4 } from 'uuid'
 // import admin productions
 import loginAdmin from './modules/admin/login-admin'
 import resetPassword from './modules/admin/reset-password'
+import editPassword from './modules/class/edit-password'
+// import class productions
+import loginClass from './modules/class/login-class'
+import allowPowers from './modules/database/allow-powers'
+import { readData, writeData } from './modules/database/config'
+// import data
+import dbCreate from './modules/database/db-create'
+import getDepartmentData from './modules/database/get-department-data'
+import getPublicPower from './modules/database/get-public-power'
+import networks from './modules/database/networks'
 // import member productions
 import loginMember from './modules/member/login-member'
 import newPassword from './modules/member/new-password'
-// import data
-import dbCreate from './modules/database/db-create'
-import { writeData, readData } from './modules/database/config'
-import getDepartmentData from './modules/database/get-department-data'
-import networks from './modules/database/networks'
-import allowPowers from './modules/database/allow-powers'
-import getPublicPower from './modules/database/get-public-power'
-// Refactor: import uses
-import * as postActions from './modules/powers/post'
 import * as deductionActions from './modules/powers/deduction'
 import * as memberActions from './modules/powers/member'
+// Refactor: import uses
+import * as postActions from './modules/powers/post'
 import * as volunteerActions from './modules/powers/volunteer'
 import * as utils from './modules/utils'
 
@@ -101,6 +101,17 @@ const getPassword = (ctx: context) => {
     return password
   }
 }
+
+router.get('/api/admin/export/download/:token', async (ctx) => {
+  ctx.response.type = 'text/csv'
+  ctx.response.body = encodeGBK(csvTokens[ctx.params.token], 'gbk')
+  delete csvTokens[ctx.params.token]
+})
+router.get('/api/member/post/download/:id/:docName', async (ctx) => {
+  ctx.response.type = 'docx'
+  ctx.response.body = docTokens[ctx.params.id]
+  delete docTokens[ctx.params.id]
+})
 
 // Create Database(if not exists)
 dbCreate()
@@ -388,7 +399,7 @@ router.get('/api/member/getinfo/:person', async (ctx) => {
     const { person } = ctx.params
     ctx.response.body = {
       status: 'ok',
-      details: memberActions.singleProcess(memberActions.getSingleMemberAsRaw(parseInt(person)).details),
+      details: memberActions.singleProcess(memberActions.getSingleMemberAsRaw(parseInt(person)).details as member),
     }
   } catch (e) {
     ctx.response.body = {
@@ -933,7 +944,7 @@ router.post('/api/member/:id/workflow/quit', async (ctx) => {
 router.get('/api/member/:id/volunteer/get', async (ctx) => {
   try {
     const password = new URLSearchParams(ctx.querystring).get('password')
-    if (loginMember(Number(ctx.params.id), password).status == 'ok') {
+    if (loginMember(Number(ctx.params.id), password as string).status == 'ok') {
       ctx.response.body = volunteerActions.getVolunteerAsOwn(Number(ctx.params.id))
     } else {
       ctx.response.body = {
@@ -1365,12 +1376,6 @@ router.post('/api/member/admin/:id/download/post', async (ctx) => {
   }
 })
 
-router.get('/api/member/post/download/:id/:docName', async (ctx) => {
-  ctx.response.type = 'docx'
-  ctx.response.body = docTokens[ctx.params.id]
-  delete docTokens[ctx.params.id]
-})
-
 router.get('/api/member/post/:id/work/get/post', async (ctx) => {
   try {
     const password = getPassword(ctx)
@@ -1613,11 +1618,6 @@ router.get('/api/admin/get/core/member', async (ctx) => {
       text: new Error(<string>e).message,
     }
   }
-})
-router.get('/api/admin/export/download/:token', async (ctx) => {
-  ctx.response.type = 'text/csv'
-  ctx.response.body = encodeGBK(csvTokens[ctx.params.token], 'gbk')
-  delete csvTokens[ctx.params.token]
 })
 
 router.post('/api/admin/download/post', async (ctx) => {

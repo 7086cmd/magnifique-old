@@ -1,0 +1,17 @@
+name: Project Plans
+description: Plan for the contribution
+title: '[Project Plan]: '
+labels: ['sparkles']
+body:
+  - type: input
+    attributes:
+      label: The weeks we plan
+  - type: textarea
+    attributes:
+      label: Fixes
+  - type: textarea
+    attributes:
+      label: Features
+  - type: textarea
+    attributes:
+      label: Refactors

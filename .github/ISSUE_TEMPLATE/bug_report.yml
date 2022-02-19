@@ -29,6 +29,15 @@ body:
         - In the browser
         - In the application
         - 'In requesting("Reference Error")'
+  - type: dropdown
+    id: type
+    attributes:
+      label: The type of the bug?
+      options:
+        - Secure Problem
+        - 404 when use / "Uncaught Reference Error"
+        - Wrong / Troubles in working
+
   - type: textarea
     attributes:
       label: 'Thanks for reporting the bug. Please write the reference here.'
