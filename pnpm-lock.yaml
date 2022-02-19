@@ -22,7 +22,7 @@ specifiers:
   '@typescript-eslint/parser': 5.11.0
   '@vitejs/plugin-legacy': 1.7.1
   '@vitejs/plugin-vue': 2.2.2
-  '@vitejs/plugin-vue-jsx': 1.3.5
+  '@vitejs/plugin-vue-jsx': 1.3.7
   '@vue/compat': 3.2.31
   '@vue/runtime-dom': 3.2.31
   '@vue/shared': 3.2.31
@@ -135,7 +135,7 @@ devDependencies:
   '@typescript-eslint/parser': 5.11.0_eslint@8.9.0+typescript@4.5.5
   '@vitejs/plugin-legacy': 1.7.1_vite@2.7.10
   '@vitejs/plugin-vue': 2.2.2_vite@2.7.10+vue@3.2.31
-  '@vitejs/plugin-vue-jsx': 1.3.5
+  '@vitejs/plugin-vue-jsx': 1.3.7
   '@vue/compat': 3.2.31_vue@3.2.31
   '@vue/runtime-dom': 3.2.31
   '@vue/shared': 3.2.31
@@ -2758,8 +2758,8 @@ packages:
       vite: 2.7.10_less@4.1.2
     dev: true
 
-  /@vitejs/plugin-vue-jsx/1.3.5:
-    resolution: {integrity: sha512-iBxRQS8SOGxI4c8/cucgumD9a1SO4ngn91YbluyWe1L2k0D7+3v64XbjZxXX2O964LubY8Tehl3ihr0W7f3+/g==}
+  /@vitejs/plugin-vue-jsx/1.3.7:
+    resolution: {integrity: sha512-UH+lI/TtBQg1YZeOTBN5yEYvSDNcL2ei8ZgE+0ESX2ULg2xV7rxzw1TB1eHZiMGXOSR8h5AWp/6F1hCcaq8VYA==}
     engines: {node: '>=12.0.0'}
     dependencies:
       '@babel/core': 7.17.5
