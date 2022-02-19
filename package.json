@@ -71,7 +71,7 @@
         "@typescript-eslint/eslint-plugin": "5.11.0",
         "@typescript-eslint/parser": "5.11.0",
         "@vitejs/plugin-legacy": "1.7.1",
-        "@vitejs/plugin-vue": "2.2.0",
+        "@vitejs/plugin-vue": "2.2.2",
         "@vitejs/plugin-vue-jsx": "1.3.5",
         "@vue/compat": "3.2.31",
         "@vue/runtime-dom": "3.2.31",
