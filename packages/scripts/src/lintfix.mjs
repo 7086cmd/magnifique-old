@@ -5,7 +5,7 @@ const lintFile = async () => {
   const eslint = new ESLint({
     fix: true,
   })
-  const results = await eslint.lintFiles(['src/**/*.ts', 'src/*.ts', 'src/**/*.vue', 'scripts/*.mjs'])
+  const results = await eslint.lintFiles(['packages/**/*.ts', 'packages/**/*.vue', 'packages/**/*.mjs'])
   await ESLint.outputFixes(results)
   // console.log(JSON.stringify(results, '', 4))
   let tw = 0,

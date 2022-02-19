@@ -3,7 +3,7 @@ import { ESLint } from 'eslint'
 import chalk from 'chalk'
 const lintFile = async () => {
   const eslint = new ESLint()
-  const results = await eslint.lintFiles(['src/**/*.ts', 'src/*.ts', 'src/**/*.vue', 'scripts/*.mjs'])
+  const results = await eslint.lintFiles(['packages/**/*.ts', 'packages/**/*.vue', 'packages/**/*.mjs'])
   let tw = 0,
     te = 0
   let hasw = false
