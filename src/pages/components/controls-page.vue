@@ -65,12 +65,8 @@ const npd = () => {
 }
 const fbsub = async () => {
   isSubmitingFeedBack.value = true
-  const response = await axios({
-    url: `${baseurl}feed/back`,
+  const response = await axios(`${baseurl}feed/back`, {
     method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     data: feedbackin,
   })
   feedbackin.title = ''
