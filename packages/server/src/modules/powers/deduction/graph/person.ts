@@ -6,7 +6,7 @@ import { createYearTransformer } from '../../../utils'
 dayjs.extend(isBetween)
 
 export default (gradeid: number, classid: number, start: string, end: string) => {
-  const arrList = getClass([1, 2, 3].includes(gradeid) ? createYearTransformer(gradeid) : gradeid, classid)
+  const arrList = getClass([1, 2, 3].includes(gradeid) ? createYearTransformer(gradeid) : gradeid, classid).details as DeductionList[]
   const base: {
     columns: string[]
     rows: {
@@ -20,10 +20,10 @@ export default (gradeid: number, classid: number, start: string, end: string) =>
   let list = {}
   for (let i = 0; i in arrList; i++) {
     if (dayjs(arrList[i].time).isBetween(dayjs(start), dayjs(end))) {
-      if (list[<string>arrList[i].person] == undefined) {
-        list[<string>arrList[i].person] = 0
+      if (list[arrList[i].person] == undefined) {
+        list[arrList[i].person] = 0
       }
-      list[<string>arrList[i].person] += arrList[i].deduction
+      list[arrList[i].person] += arrList[i].deduction
     }
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

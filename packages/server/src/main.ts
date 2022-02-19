@@ -11,6 +11,7 @@ import { encode as encodeGBK } from 'iconv-lite'
 import Koa from 'koa'
 import koaBodyparser from 'koa-bodyparser'
 import koaStatic from 'koa-static'
+import koaSslify from 'koa-sslify'
 import { tmpdir } from 'os'
 import { resolve } from 'path'
 import { Server } from 'socket.io'
@@ -40,11 +41,17 @@ import * as volunteerActions from './modules/powers/volunteer'
 import * as utils from './modules/utils'
 
 // Generate Chart Base File
-const chartBase = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="shortcut icon" href="https://v-charts.js.org/favicon.ico" type="image/x-icon" /><title>Chart (type: <%=tit=>)</title><script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script><script src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css" /></head><body><div id="app"><ve-<%=tpe=> :data="cdata"></ve-<%=tpe=>></div><script>var vm=new Vue({el:'#app',data(){const data=JSON.parse('<%=dat=>');return {cdata:data}}})</script></body></html>`
-const nodataBase = `<!DOCTYPE html><html><head><meta charset="utf-8" /><title>没有数据</title><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-plus/dist/index.css" /></head><body><div id="app"><el-empty description="没有数据"></el-empty></div><script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script><script src="https://cdn.jsdelivr.net/npm/element-plus"></script><script type="text/javascript">let app=Vue.createApp({setup(){return {}}});app.use(ElementPlus);app.mount("#app");</script></body></html>`
+const chartBase = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="shortcut icon" href="https://v-charts.js.org/favicon.ico" type="image/x-icon" /><title>Chart (type: <%=tit=>)</title><script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js"></script><script src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css" /></head><body><div id="app"><ve-<%=tpe=> :data="cdata"></ve-<%=tpe=>></div><script>var vm=new Vue({el:'#app',data(){const data=JSON.parse('<%=dat=>');return {cdata:data}}})</script></body></html>`
 let tray: Tray
-let csvTokens = {}
-let docTokens = {}
+let csvTokens: Record<string, string> = {}
+let docTokens: Record<string, Buffer> = {}
+let graphTokens: Record<
+  string,
+  {
+    columns: string[]
+    rows: Record<string, number | string>[]
+  }
+> = {}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type context = Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext & KoaRouter.RouterParamContext<Koa.DefaultState, Koa.DefaultContext>, any>
@@ -102,24 +109,14 @@ const getPassword = (ctx: context) => {
   }
 }
 
-router.get('/api/admin/export/download/:token', async (ctx) => {
-  ctx.response.type = 'text/csv'
-  ctx.response.body = encodeGBK(csvTokens[ctx.params.token], 'gbk')
-  delete csvTokens[ctx.params.token]
-})
-router.get('/api/member/post/download/:id/:docName', async (ctx) => {
-  ctx.response.type = 'docx'
-  ctx.response.body = docTokens[ctx.params.id]
-  delete docTokens[ctx.params.id]
-})
-
 // Create Database(if not exists)
 dbCreate()
 writeData(networks())
 
 // Serve Static File(Front End)
-if (process.env.NODE_ENV == 'production') {
+if (process.env.NODE_ENV === 'production') {
   server.use(koaStatic(resolve(__dirname, './pages')))
+  server.use(koaSslify())
   router.get('/docs/:filename', async (ctx) => {
     ctx.response.body = readFileSync(resolve(__dirname, './docs/', ctx.params.filename)).toString()
   })
@@ -128,6 +125,43 @@ if (process.env.NODE_ENV == 'production') {
   server.use(koaCors({}))
 }
 
+router.get('/api/class/graph/:type/:token', async (ctx) => {
+  if (graphTokens[ctx.params.token] === undefined) {
+    ctx.response.type = 'html'
+    ctx.response.body = '<p>未找到</p>'
+    return
+  } else {
+    const { type, token } = ctx.params
+    ctx.response.body = chartBase
+      .split('<%=tit=>')
+      .join(type)
+      .split('<%=tpe=>')
+      .join(type)
+      .split('<%=dat=>')
+      .join(JSON.stringify(graphTokens[token as string]))
+  }
+})
+router.get('/api/admin/export/download/:token', async (ctx) => {
+  if (csvTokens[ctx.params.token] === undefined) {
+    ctx.response.type = 'html'
+    ctx.response.body = '<p>未找到</p>'
+    return
+  } else {
+    ctx.response.type = 'csv'
+    ctx.response.body = encodeGBK(csvTokens[ctx.params.token], 'gbk')
+    delete csvTokens[ctx.params.token]
+  }
+})
+router.get('/api/member/post/download/:id/:docName', async (ctx) => {
+  if (docTokens[ctx.params.id] === undefined) {
+    ctx.response.type = 'html'
+    ctx.response.body = '<p>未找到</p>'
+  } else {
+    ctx.response.type = 'docx'
+    ctx.response.body = docTokens[ctx.params.id]
+    delete docTokens[ctx.params.id]
+  }
+})
 // Class APIs
 router.get('/api/class/:gradeid/:classid/login', async (ctx) => {
   const params = new URLSearchParams(ctx.querystring)
@@ -222,13 +256,19 @@ router.post('/api/class/new/feedback', async (ctx) => {
 router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/person', async (ctx) => {
   try {
     const password = getPassword(ctx)
-    const { gradeid, classid, start, end, type } = ctx.params
+    const { gradeid, classid, start, end } = ctx.params
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
       const chartData = deductionActions.graphAsPerson(parseInt(gradeid), parseInt(classid), start, end)
-      ctx.response.type = 'plain'
-      ctx.response.body = chartBase.split('<%=tit=>').join(type).split('<%=tpe=>').join(type).split('<%=dat=>').join(JSON.stringify(chartData))
-      if (chartData.rows.length == 0) {
-        ctx.response.body = nodataBase
+      let id = v4()
+      while (graphTokens[id] !== undefined) {
+        id = v4()
+      }
+      graphTokens[id] = chartData
+      ctx.response.body = {
+        status: 'ok',
+        details: {
+          token: id,
+        },
       }
     } else {
       ctx.response.body = {
@@ -247,13 +287,19 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/person', async 
 router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/reason', async (ctx) => {
   try {
     const password = getPassword(ctx)
-    const { gradeid, classid, start, end, type } = ctx.params
+    const { gradeid, classid, start, end } = ctx.params
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
       const chartData = deductionActions.graphAsReason(parseInt(gradeid), parseInt(classid), start, end)
-      ctx.response.type = 'html'
-      ctx.response.body = chartBase.split('<%=tit=>').join(type).split('<%=tpe=>').join(type).split('<%=dat=>').join(JSON.stringify(chartData))
-      if (chartData.rows.length == 0) {
-        ctx.response.body = nodataBase
+      let id = v4()
+      while (graphTokens[id] !== undefined) {
+        id = v4()
+      }
+      graphTokens[id] = chartData
+      ctx.response.body = {
+        status: 'ok',
+        details: {
+          token: id,
+        },
       }
     } else {
       ctx.response.body = {
@@ -272,13 +318,19 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/reason', async 
 router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/date', async (ctx) => {
   try {
     const password = getPassword(ctx)
-    const { gradeid, classid, start, end, type } = ctx.params
+    const { gradeid, classid, start, end } = ctx.params
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
       const chartData = deductionActions.graphAsDate(parseInt(gradeid), parseInt(classid), start, end)
-      ctx.response.type = 'plain'
-      ctx.response.body = chartBase.split('<%=tit=>').join(type).split('<%=tpe=>').join(type).split('<%=dat=>').join(JSON.stringify(chartData))
-      if (chartData.rows.length == 0) {
-        ctx.response.body = nodataBase
+      let id = v4()
+      while (graphTokens[id] !== undefined) {
+        id = v4()
+      }
+      graphTokens[id] = chartData
+      ctx.response.body = {
+        status: 'ok',
+        details: {
+          token: id,
+        },
       }
     } else {
       ctx.response.body = {
@@ -1263,7 +1315,7 @@ router.post('/api/member/admin/export/deduction/detail', async (ctx) => {
         end,
       })
       const token = v4()
-      csvTokens[token] = data.details
+      csvTokens[token] = data.details as string
       ctx.response.body = {
         status: 'ok',
         details: {
@@ -1348,7 +1400,7 @@ router.post('/api/member/admin/:id/download/post', async (ctx) => {
         while (docTokens[index] !== undefined) {
           index = v4()
         }
-        docTokens[index] = postActions.downloadDocument(id, person)
+        docTokens[index] = postActions.downloadDocument(id, person) as Buffer
         ctx.response.body = {
           status: 'ok',
           details: {
@@ -1709,7 +1761,7 @@ router.post('/api/admin/export/deduction/detail', async (ctx) => {
         end,
       })
       const token = v4()
-      csvTokens[token] = data.details
+      csvTokens[token] = data.details as string
       ctx.response.body = {
         status: 'ok',
         details: {
@@ -2113,7 +2165,7 @@ app.setLoginItemSettings({
 })
 
 app.whenReady().then(() => {
-  tray = new Tray(process.env.NODE_ENV === 'development' ? resolve(__dirname, '../icons/server.ico') : resolve(__dirname, '../icons/server.ico'))
+  tray = new Tray(process.env.NODE_ENV === 'development' ? resolve(__dirname, '../../../icons/server.ico') : resolve(__dirname, '../icons/server.ico'))
   const generateTwoThirds = (val: number) => Math.floor((val * 2) / 3)
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   const mainWindow = new BrowserWindow({

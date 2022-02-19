@@ -8,7 +8,7 @@ import getClass from '../crud/read/get-class'
 dayjs.extend(isBetween)
 
 export default (gradeid: number, classid: number, start: string, end: string) => {
-  const arrList = getClass([1, 2, 3].includes(gradeid) ? createYearTransformer(gradeid) : gradeid, classid)
+  const arrList = getClass([1, 2, 3].includes(gradeid) ? createYearTransformer(gradeid) : gradeid, classid).details as DeductionList[]
   const base: {
     columns: string[]
     rows: {
