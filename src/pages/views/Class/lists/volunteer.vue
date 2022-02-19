@@ -26,7 +26,7 @@ axios(`${baseurl}class/${gradeid}/${classid}/member/get?password=${password}`).t
   persons.value.push(...response.data.details)
 })
 let loading = ref(true)
-let volunteerDetail = ref([])
+let volunteerDetail = ref<VolunteerQueryResult[]>([])
 const refresh = () => {
   loading.value = true
   axios(`${baseurl}class/${gradeid}/${classid}/get/volunteer?password=${password}`).then((response) => {

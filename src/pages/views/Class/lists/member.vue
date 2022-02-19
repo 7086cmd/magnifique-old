@@ -3,14 +3,12 @@ import { ref, reactive } from 'vue'
 import axios from 'axios'
 import { Refresh } from '@element-plus/icons-vue'
 import baseurl from '../../../modules/baseurl'
-import MemberLogin from '../../Member/Login.vue'
 import personExample from '../../../../examples/person'
 import failfuc from '../../../modules/failfuc'
 import sucfuc from '../../../modules/sucfuc'
 import MemberDescription from '../../../components/lists/MemberDescription.vue'
 import createYearTransformer from '../../../../modules/utils/transform-date'
 
-let isLoginingMember = ref(false)
 const { gradeid, classid, password } = JSON.parse(window.atob(String(localStorage.getItem('classLoginInfo'))))
 let basicnum = ref(0)
 ;(async () => {
@@ -100,7 +98,6 @@ const createRegistry = async () => {
               <el-table-column align="right" fixed="right">
                 <template #header>
                   <el-button type="text" @click="isRegistingMember = true"> 注册成员 </el-button>
-                  <el-button type="text" @click="isLoginingMember = true">成员登录</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -142,9 +139,6 @@ const createRegistry = async () => {
             <el-button color="#626aef" style="color: white" :loading="isSubmiting" @click="createRegistry"> 确定 </el-button>
           </span>
         </template>
-      </el-dialog>
-      <el-dialog v-model="isLoginingMember" title="成员登录" center>
-        <member-login></member-login>
       </el-dialog>
     </div>
   </transition>

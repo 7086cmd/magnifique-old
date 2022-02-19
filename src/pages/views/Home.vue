@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import controls from '../components/controls.vue'
+import MemberLogin from './Member/Login.vue'
 import ClassLogin from './Class/ClassLogin.vue'
 import { useRouter } from 'vue-router'
 import AdminLogin from './Admin/Login.vue'
@@ -27,11 +28,15 @@ const toTag = (tag: string) => {
             <el-tabs v-model="choice">
               <el-tab-pane name="class" label="班级登录">
                 <class-login></class-login>
-                <el-button style="width: 100%" plain @click="toTag('class')">直接进</el-button>
+                <el-button style="width: 100%" plain @click="toTag('class')">已登录</el-button>
+              </el-tab-pane>
+              <el-tab-pane name="member" label="成员登录">
+                <member-login></member-login>
+                <el-button style="width: 100%" plain @click="toTag('member')">已登录</el-button>
               </el-tab-pane>
               <el-tab-pane name="admin" label="管理员登录">
                 <admin-login></admin-login>
-                <el-button style="width: 100%" plain @click="toTag('admin')">直接进</el-button>
+                <el-button style="width: 100%" plain @click="toTag('admin')">已登录</el-button>
               </el-tab-pane>
             </el-tabs>
           </el-card>
