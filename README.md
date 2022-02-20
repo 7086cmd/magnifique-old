@@ -6,7 +6,7 @@
 
 It is a repo for a great platform we use. Here, you can see what you can do to use this app.
 
-1. Prepare a server runned `Windows 11` or `Windows Server 2022`. This app must have the latest system due to run `electron`
+1. Prepare a server runned `Windows 11` or `Windows Server 2022`. This app must have the latest system due to run `electron 17`
 2. Keep 8GB RAM and 16GB SSD. The database is in `${os.tmpdir()}/../magnifique`, and you must have storage to save the data.
 3. Prepare a domain, and get the `SSL` cert to enfore `https`. The domain should arrow to your ip.
 4. Save `SSL` cert to `${os.tmpdir()}/../magnifique/ssl/`, including `key` file and `pem` file.
