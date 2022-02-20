@@ -45,6 +45,7 @@ declare module 'vue' {
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTag: typeof import('element-plus/es')['ElTag']
+    ElTransfer: typeof import('element-plus/es')['ElTransfer']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     Loading: typeof import('element-plus/es')['ElLoadingDirective']
   }

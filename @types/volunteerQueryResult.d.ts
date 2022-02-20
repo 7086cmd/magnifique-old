@@ -7,4 +7,8 @@ declare interface VolunteerQueryResult {
   time: string
   createId: string
   idInUserData: string
+  records: {
+    person: number
+    status: 'planning' | 'done' | 'miss'
+  }[]
 }

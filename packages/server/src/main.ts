@@ -775,10 +775,10 @@ router.post('/api/member/admin/edit/volunteer', async (ctx) => {
       }
       number: number
     }
-    const { id, person, status } = volunteerInfo
+    const { id, person } = volunteerInfo
     if (loginMember(number, password).status == 'ok') {
       if (memberActions.memberAdminLimitCheckPower(number, 'member') || memberActions.memberAdminLimitCheckPower(number, 'volunteer')) {
-        ctx.response.body = volunteerActions.editVolunteerStatusMulti(person, id, status)
+        ctx.response.body = volunteerActions.editVolunteerStatusMulti(person, id)
       } else {
         ctx.response.body = {
           status: 'error',
@@ -2030,9 +2030,9 @@ router.post('/api/admin/edit/volunteer', async (ctx) => {
         status: volunteer['status']
       }
     }
-    const { id, person, status } = volunteerInfo
+    const { id, person } = volunteerInfo
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = volunteerActions.editVolunteerStatusMulti(person, id, status)
+      ctx.response.body = volunteerActions.editVolunteerStatusMulti(person, id)
     } else {
       ctx.response.body = {
         status: 'error',

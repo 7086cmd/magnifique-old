@@ -6,17 +6,13 @@ declare interface member {
     time: number
     details: Record<string, volunteer>
   }
-  deduction?: {
+  deduction: {
     total: number
     details: Record<string, deduction>
   }
   post?: {
     total: number
     details: Record<string, post>
-  }
-  radio?: {
-    total: number
-    details: Record<string, radio>
   }
   workflow: {
     total: number

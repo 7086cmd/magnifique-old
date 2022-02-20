@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 /* global VolunteerQueryResult, member_processed */
-import { ref, reactive } from 'vue'
+import { ref, reactive, Ref } from 'vue'
 import axios from 'axios'
 import { Refresh } from '@element-plus/icons-vue'
 import baseurl from '../../../modules/baseurl'
@@ -75,13 +75,14 @@ const createRegistry = async () => {
     }
   }
 }
-const editStatusVolunteer = (props: { row: VolunteerQueryResult }) => {
+let editId = ref<string>()
+const editStatusVolunteer = (number: number[]) => {
   axios(`${baseurl}admin/edit/volunteer`, {
     data: {
       password,
       volunteerInfo: {
-        person: props.row.person,
-        id: props.row.createId,
+        person: number,
+        id: editId.value,
         status: 'done',
       },
     },
@@ -150,6 +151,30 @@ const createExport = async () => {
     failfuc(response.data.reason, response.data.text)
   }
 }
+
+let isCheckin = ref(false)
+let doneMember = ref<number[]>([])
+interface options {
+  key: number
+  label: string
+  disabled: boolean
+}
+let waitForChoose: Ref<options[]> = ref([])
+const startPassing = (props: { row: VolunteerQueryResult }) => {
+  editId.value = props.row.createId
+  isCheckin.value = true
+  waitForChoose.value = persons.value
+    .filter((item) => props.row.person.includes(item.number))
+    .map(
+      (item) =>
+        ({
+          key: item.number,
+          label: item.name,
+          disabled: false,
+        } as options)
+    )
+  doneMember.value = props.row.records.filter((x) => x.status === 'done').map((x) => x.person)
+}
 </script>
 
 <template>
@@ -177,21 +202,14 @@ const createExport = async () => {
               <el-table-column label="义工时长">
                 <template #default="prop"> {{ prop.row.duration }}小时 </template>
               </el-table-column>
-              <el-table-column label="登记状态">
-                <template #default="prop">
-                  <el-tag v-if="prop.row.status === 'done'" type="success">已完成</el-tag>
-                  <el-tag v-else-if="prop.row.status === 'planning'" type="warning">计划中</el-tag>
-                  <el-tag v-else type="error">已错过</el-tag>
-                </template>
-              </el-table-column>
               <el-table-column align="right" fixed="right">
                 <template #header>
                   <el-button type="text" @click="startRegistVolunteer()"> 义工登记 </el-button>
                   <el-button type="text" @click="ExportStart()"> 导出 </el-button>
                 </template>
                 <template #default="prop">
-                  <el-button type="text" :disabled="prop.row.status === 'done'" @click="editStatusVolunteer(prop)">通过</el-button>
-                  <el-button type="text" :disabled="prop.row.status === 'miss'" @click="deleteVolunteer(prop)">删除</el-button>
+                  <el-button type="text" @click="startPassing(prop)">通过</el-button>
+                  <el-button type="text" @click="deleteVolunteer(prop)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -240,6 +258,10 @@ const createExport = async () => {
         <template #footer>
           <el-button color="#626aef" style="color: white; text-align: center" @click="createExport" v-text="'导出'" />
         </template>
+      </el-dialog>
+      <el-dialog v-model="isCheckin" title="登记义工/考勤情况">
+        <el-transfer v-model="doneMember" :titles="['缺勤成员', '实到成员']" :button-texts="['缺勤', '到勤']" :data="waitForChoose" />
+        <el-button color="#626aef" style="color: white" @click="editStatusVolunteer(doneMember)">登记</el-button>
       </el-dialog>
     </div>
   </transition>
