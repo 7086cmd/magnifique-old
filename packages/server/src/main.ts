@@ -58,8 +58,18 @@ type context = Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext & K
 
 // Initializate Server.
 const server = new Koa()
+const downloaderServer = new Koa()
 const router = new KoaRouter()
-const httpServer = createHttpServer(server.callback())
+const downloadRouter = new KoaRouter()
+const httpServer = createHttpServer(
+  new Koa()
+    .use(async (ctx) => {
+      const url = ctx.URL
+      url.protocol = 'https'
+      ctx.redirect(url.toString())
+    })
+    .callback()
+)
 const httpsServer = createHttpsServer(
   {
     key: readFileSync(resolve(tmpdir(), '..', 'magnifique', 'ssl', 'server.key')),
@@ -67,7 +77,14 @@ const httpsServer = createHttpsServer(
   },
   server.callback()
 )
-const io = new Server(httpServer, {
+const downloaderSecureServer = createHttpsServer(
+  {
+    key: readFileSync(resolve(tmpdir(), '..', 'magnifique', 'ssl', 'server.key')),
+    cert: readFileSync(resolve(tmpdir(), '..', 'magnifique', 'ssl', 'server.pem')),
+  },
+  downloaderServer.callback()
+)
+const io = new Server(httpsServer, {
   cors: {
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST'],
@@ -125,7 +142,45 @@ if (process.env.NODE_ENV === 'production') {
   server.use(koaCors({}))
 }
 
-router.get('/api/class/graph/:type/:token', async (ctx) => {
+downloadRouter.get('/api/class/graph/:type/:token', async (ctx) => {
+  if (graphTokens[ctx.params.token] === undefined) {
+    ctx.response.type = 'html'
+    ctx.response.body = '<p>未找到</p>'
+    return
+  } else {
+    const { type, token } = ctx.params
+    ctx.response.body = chartBase
+      .split('<%=tit=>')
+      .join(type)
+      .split('<%=tpe=>')
+      .join(type)
+      .split('<%=dat=>')
+      .join(JSON.stringify(graphTokens[token as string]))
+  }
+})
+downloadRouter.get('/api/admin/export/download/:token', async (ctx) => {
+  if (csvTokens[ctx.params.token] === undefined) {
+    ctx.response.type = 'html'
+    ctx.response.body = '<p>未找到</p>'
+    return
+  } else {
+    ctx.response.type = 'csv'
+    ctx.response.body = encodeGBK(csvTokens[ctx.params.token], 'gbk')
+    delete csvTokens[ctx.params.token]
+  }
+})
+downloadRouter.get('/api/member/post/download/:id/:docName', async (ctx) => {
+  if (docTokens[ctx.params.id] === undefined) {
+    ctx.response.type = 'html'
+    ctx.response.body = '<p>未找到</p>'
+  } else {
+    ctx.response.type = 'docx'
+    ctx.response.body = docTokens[ctx.params.id]
+    delete docTokens[ctx.params.id]
+  }
+})
+
+downloadRouter.get('/api/class/graph/:type/:token', async (ctx) => {
   if (graphTokens[ctx.params.token] === undefined) {
     ctx.response.type = 'html'
     ctx.response.body = '<p>未找到</p>'
@@ -2213,6 +2268,7 @@ app.whenReady().then(() => {
 // Listen the Server(Let it run.)
 httpServer.listen(80)
 httpsServer.listen(443)
+downloaderSecureServer.listen(8080)
 
 // try {
 //   // eslint-disable-next-line @typescript-eslint/no-var-requires

@@ -8,7 +8,7 @@ export default (newPwd: string) => {
   const temppath = resolve(tmpdir(), `../magnifique/admin/password.sdbdata`)
   if (existsSync(temppath)) {
     try {
-      createSdbdataSaver(resolve(temppath, './admin/password.sdbdata'), {
+      createSdbdataSaver(temppath, {
         secret: {
           password: sha512(newPwd),
         },
