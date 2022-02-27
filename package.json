@@ -9,7 +9,7 @@
     "dev": "node packages/scripts/src/serve.mjs",
     "serve": "node packages/scripts/src/serve.mjs",
     "build:win": "pnpm run build",
-    "build": "node packages/scripts/src/build.mjs",
+    "build": "node --max_old_space_size=6144 packages/scripts/src/build.mjs",
     "lint": "node packages/scripts/src/lint.mjs",
     "lint:fix": "node packages/scripts/src/lintfix.mjs",
     "prepare": "pnpm lint:fix",
