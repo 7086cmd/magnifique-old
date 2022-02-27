@@ -6,7 +6,7 @@ declare interface member {
     time: number
     details: Record<string, volunteer>
   }
-  deduction?: {
+  deduction: {
     total: number
     details: Record<string, deduction>
   }
@@ -14,14 +14,11 @@ declare interface member {
     total: number
     details: Record<string, post>
   }
-  radio?: {
-    total: number
-    details: Record<string, radio>
-  }
   workflow: {
     total: number
     details: Record<string, workflow>
   }
+  messageRooms: string[]
   union: {
     leader: boolean
     position: 'chairman' | 'vice-chairman' | 'minister' | 'vice-minister' | 'clerk' | 'registry' | 'none'

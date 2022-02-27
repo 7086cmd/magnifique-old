@@ -24,14 +24,14 @@ let departments = ref<
     value: string
   }[]
 >([])
-axios(`${baseurl}department/list`).then((response) => {
+axios(`${baseurl}department/list`).then(response => {
   departments.value.push(...response.data.details)
 })
 let loading = ref(true)
 let membersDetail = ref([])
 const refresh = () => {
   loading.value = true
-  axios(`${baseurl}class/${gradeid}/${classid}/member/get?password=${password}`).then((response) => {
+  axios(`${baseurl}class/${gradeid}/${classid}/member/get?password=${password}`).then(response => {
     loading.value = false
     if (response.data.status == 'ok') {
       membersDetail.value = response.data.details

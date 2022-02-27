@@ -15,7 +15,7 @@ let me = ref<member>(personExample())
 const loader = ElLoading.service({
   text: '获取信息中...',
 })
-axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
+axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
   me.value = response.data.details as member
   loader.close()
 })
@@ -24,7 +24,7 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
 <template>
   <div>
     <el-tabs v-model="choice" tab-position="left">
-      <el-tab-pane v-if="me.union.admin.includes('member')" label="成员" name="member">
+      <el-tab-pane v-if="['minister'].includes(me.union.position)" label="成员" name="member">
         <member-page />
       </el-tab-pane>
       <el-tab-pane v-if="me.union.admin.includes('deduction')" label="扣分" name="deduction">
@@ -33,7 +33,7 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
       <el-tab-pane v-if="me.union.admin.includes('post')" label="稿件" name="post">
         <post-page />
       </el-tab-pane>
-      <el-tab-pane v-if="me.union.admin.includes('member')" label="成员义工" name="member-volunteer">
+      <el-tab-pane v-if="['vice-minister', 'minister'].includes(me.union.position)" label="成员义工" name="member-volunteer">
         <volunteer-page type="member" />
       </el-tab-pane>
       <el-tab-pane v-if="me.union.admin.includes('volunteer')" label="义工" name="volunteer">

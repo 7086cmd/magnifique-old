@@ -4,7 +4,7 @@ import { ref, Ref } from 'vue'
 import { Refresh } from '@element-plus/icons-vue'
 import axios from 'axios'
 import baseurl from '../../../modules/baseurl'
-import postDescription from '../../../components/lists/postDescription.vue'
+import postDescription from '../../../components/lists/PostDescription.vue'
 import dayjs from 'dayjs'
 
 const { gradeid, classid, password } = JSON.parse(window.atob(String(localStorage.getItem('classLoginInfo'))))

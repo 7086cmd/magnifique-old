@@ -3,7 +3,7 @@ declare interface department {
     string,
     {
       name: string
-      duty: string[]
+      duty: Array<'deduction' | 'post' | 'volunteer'>
       classes?: {
         reason: string
         deduction: number

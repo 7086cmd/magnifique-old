@@ -38,7 +38,7 @@ let dets = ref<
     reason: string
     deduction: number
   }[]
-  typicals.value = typesOfDeduction.map((item) => item.reason) as string[]
+  typicals.value = typesOfDeduction.map(item => item.reason) as string[]
   dets.value = createArrayToObjectTramsformer('reason', typesOfDeduction) as Record<
     string,
     {
@@ -88,7 +88,7 @@ const turnDown = async (props: any) => {
     cancelButtonText: '取消',
     confirmButtonText: '确定',
     inputType: 'textarea',
-  }).then(async (result) => {
+  }).then(async result => {
     const delLoad = ElLoading.service({
       text: '正在驳回，请稍后',
     })

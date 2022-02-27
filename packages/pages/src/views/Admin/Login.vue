@@ -14,7 +14,7 @@ const router = useRouter()
 let password = ref('')
 
 const login = () => {
-  axios(`${baseurl}admin/login?password=${window.btoa(password.value)}`).then((response) => {
+  axios(`${baseurl}admin/login?password=${window.btoa(password.value)}`).then(response => {
     if (response.data.status == 'ok') {
       let timeOut = 3
       ElMessageBox.alert(`欢迎使用。` + t('class.status.jump', { sec: timeOut }), '登陆成功', {

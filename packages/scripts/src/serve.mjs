@@ -9,7 +9,7 @@ import { exec } from 'child_process'
 import { createServer } from 'vite'
 import { platform } from 'os'
 
-const getGlob = () => [...glob.sync('src/modules/**/*.*'), ...glob.sync('src/*.*'), ...glob.sync('src/examples/*.*'), ...glob.sync('src/client/*.*'), ...glob.sync('src/client/**/*.*')]
+const getGlob = () => [...glob.sync('packages/**/*.*')]
 
 const __dirname = resolve()
 const packageFile = JSON.parse(readFileSync(resolve(__dirname, './package.json')).toString())
@@ -49,10 +49,10 @@ const generate = async () => {
   console.log(chalk.green(`[Build] ${getGlob().length} files have built.`))
 }
 createServer()
-  .then((result) => {
+  .then(result => {
     return result.listen()
   })
-  .then((result) => {
+  .then(result => {
     console.log(chalk.green('Front End Server Started.'))
     console.log(chalk.blue('[Vite] ----- DEV --- SERVER --- URL -----'))
     result.printUrls()

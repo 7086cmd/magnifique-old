@@ -10,6 +10,7 @@ import baseurl from '../../../modules/baseurl'
 import DeductionDescription from '../../../components/lists/DeductionDescription.vue'
 import sucfuc from '../../../modules/sucfuc'
 import failfuc from '../../../modules/failfuc'
+import toPort from '../../../modules/to-port'
 
 let isClient = ref(false)
 
@@ -90,7 +91,7 @@ const createData = async () => {
   isSubmiting.value = false
   if (response.data.status == 'ok') {
     sucfuc()
-    window.open(`${baseurl}admin/export/download/${response.data.details.token}`, isClient.value ? '_self' : '_blank')
+    window.open(toPort(`${baseurl}admin/export/download/${response.data.details.token}`), isClient.value ? '_self' : '_blank')
   } else {
     failfuc(response.data.reason, response.data.text)
   }
@@ -144,8 +145,6 @@ const createData = async () => {
       </el-card>
       <el-dialog v-model="isExporting" title="导出数据">
         <el-form>
-          <el-alert v-if="isClient" :closable="false" title="提醒" description="使用应用导出时是保存形式" type="info" icon="info" center></el-alert>
-          <el-alert v-if="!isClient" :closable="false" title="提醒" description="使用浏览器导出时是下载形式" type="info" icon="info" center></el-alert>
           <el-form-item label="时间节点">
             <el-date-picker v-model="exportTime" type="datetimerange" style="width: 100%" range-separator="到" start-placeholder="开始日期" end-placeholder="结束日期"> </el-date-picker>
           </el-form-item>
