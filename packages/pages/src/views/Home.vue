@@ -44,5 +44,6 @@ const toTag = (tag: string) => {
         <el-aside width="30%"> </el-aside>
       </el-container>
     </el-container>
+    <image-reader></image-reader>
   </div>
 </template>
