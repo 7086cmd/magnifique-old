@@ -18,6 +18,7 @@ declare interface member {
     total: number
     details: Record<string, workflow>
   }
+  messageRooms: string[]
   union: {
     leader: boolean
     position: 'chairman' | 'vice-chairman' | 'minister' | 'vice-minister' | 'clerk' | 'registry' | 'none'

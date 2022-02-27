@@ -56,11 +56,11 @@ const panes = ref<
     value: 'core',
   },
 ])
-axios(`${baseurl}department/list`).then((response) => {
+axios(`${baseurl}department/list`).then(response => {
   departments.value.push(...response.data.details)
   panes.value.push(...response.data.details)
 })
-axios(`${baseurl}power/list`).then((response) => {
+axios(`${baseurl}power/list`).then(response => {
   vadmins.value.push(...response.data.details)
 })
 const startToTrue = (number: number) => {
@@ -135,7 +135,7 @@ const toTrueIt = () => {
       position: toTrueDo.value,
     },
     method: 'post',
-  }).then((response) => {
+  }).then(response => {
     if (response.data.status === 'ok') {
       sucfuc()
     } else {
@@ -212,7 +212,7 @@ const sendOutVolunteerTime = () => {
       password,
     },
     method: 'post',
-  }).then((response) => {
+  }).then(response => {
     loader.close()
     if (response.data.status === 'ok') {
       sucfuc()

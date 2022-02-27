@@ -61,15 +61,17 @@ const server = new Koa()
 const downloaderServer = new Koa()
 const router = new KoaRouter()
 const downloadRouter = new KoaRouter()
-const httpServer = createHttpServer(
-  new Koa()
-    .use(async (ctx) => {
-      const url = ctx.URL
-      url.protocol = 'https'
-      ctx.redirect(url.toString())
-    })
-    .callback()
-)
+let callBacks =
+  process.env.NODE_ENV === 'production'
+    ? new Koa()
+        .use(async ctx => {
+          const url = ctx.URL
+          url.protocol = 'https'
+          ctx.redirect(url.toString())
+        })
+        .callback()
+    : server.callback()
+const httpServer = createHttpServer(callBacks)
 const httpsServer = createHttpsServer(
   {
     key: readFileSync(resolve(tmpdir(), '..', 'magnifique', 'ssl', 'server.key')),
@@ -134,7 +136,7 @@ writeData(networks())
 if (process.env.NODE_ENV === 'production') {
   server.use(koaStatic(resolve(__dirname, './pages')))
   server.use(koaSslify())
-  router.get('/docs/:filename', async (ctx) => {
+  router.get('/docs/:filename', async ctx => {
     ctx.response.body = readFileSync(resolve(__dirname, './docs/', ctx.params.filename)).toString()
   })
 } else {
@@ -142,7 +144,7 @@ if (process.env.NODE_ENV === 'production') {
   server.use(koaCors({}))
 }
 
-downloadRouter.get('/api/class/graph/:type/:token', async (ctx) => {
+downloadRouter.get('/api/class/graph/:type/:token', async ctx => {
   if (graphTokens[ctx.params.token] === undefined) {
     ctx.response.type = 'html'
     ctx.response.body = '<p>未找到</p>'
@@ -158,7 +160,7 @@ downloadRouter.get('/api/class/graph/:type/:token', async (ctx) => {
       .join(JSON.stringify(graphTokens[token as string]))
   }
 })
-downloadRouter.get('/api/admin/export/download/:token', async (ctx) => {
+downloadRouter.get('/api/admin/export/download/:token', async ctx => {
   if (csvTokens[ctx.params.token] === undefined) {
     ctx.response.type = 'html'
     ctx.response.body = '<p>未找到</p>'
@@ -169,7 +171,7 @@ downloadRouter.get('/api/admin/export/download/:token', async (ctx) => {
     delete csvTokens[ctx.params.token]
   }
 })
-downloadRouter.get('/api/member/post/download/:id/:docName', async (ctx) => {
+downloadRouter.get('/api/member/post/download/:id/:docName', async ctx => {
   if (docTokens[ctx.params.id] === undefined) {
     ctx.response.type = 'html'
     ctx.response.body = '<p>未找到</p>'
@@ -180,7 +182,7 @@ downloadRouter.get('/api/member/post/download/:id/:docName', async (ctx) => {
   }
 })
 
-downloadRouter.get('/api/class/graph/:type/:token', async (ctx) => {
+downloadRouter.get('/api/class/graph/:type/:token', async ctx => {
   if (graphTokens[ctx.params.token] === undefined) {
     ctx.response.type = 'html'
     ctx.response.body = '<p>未找到</p>'
@@ -196,7 +198,7 @@ downloadRouter.get('/api/class/graph/:type/:token', async (ctx) => {
       .join(JSON.stringify(graphTokens[token as string]))
   }
 })
-router.get('/api/admin/export/download/:token', async (ctx) => {
+router.get('/api/admin/export/download/:token', async ctx => {
   if (csvTokens[ctx.params.token] === undefined) {
     ctx.response.type = 'html'
     ctx.response.body = '<p>未找到</p>'
@@ -207,7 +209,7 @@ router.get('/api/admin/export/download/:token', async (ctx) => {
     delete csvTokens[ctx.params.token]
   }
 })
-router.get('/api/member/post/download/:id/:docName', async (ctx) => {
+router.get('/api/member/post/download/:id/:docName', async ctx => {
   if (docTokens[ctx.params.id] === undefined) {
     ctx.response.type = 'html'
     ctx.response.body = '<p>未找到</p>'
@@ -218,14 +220,14 @@ router.get('/api/member/post/download/:id/:docName', async (ctx) => {
   }
 })
 // Class APIs
-router.get('/api/class/:gradeid/:classid/login', async (ctx) => {
+router.get('/api/class/:gradeid/:classid/login', async ctx => {
   const params = new URLSearchParams(ctx.querystring)
   const password = params.get('password')
   const { gradeid, classid } = ctx.params
   ctx.response.type = 'json'
   ctx.response.body = loginClass(parseInt(gradeid), parseInt(classid), String(password))
 })
-router.get('/api/class/:gradeid/:classid/member/get', async (ctx) => {
+router.get('/api/class/:gradeid/:classid/member/get', async ctx => {
   try {
     const password = getPassword(ctx)
     const { gradeid, classid } = ctx.params
@@ -249,7 +251,7 @@ router.get('/api/class/:gradeid/:classid/member/get', async (ctx) => {
     }
   }
 })
-router.get('/api/class/:gradeid/:classid/get/deduction', async (ctx) => {
+router.get('/api/class/:gradeid/:classid/get/deduction', async ctx => {
   const params = new URLSearchParams(ctx.querystring)
   const password = params.get('password')
   const { gradeid, classid } = ctx.params
@@ -262,7 +264,7 @@ router.get('/api/class/:gradeid/:classid/get/deduction', async (ctx) => {
     }
   }
 })
-router.get('/api/class/:gradeid/:classid/get/post', async (ctx) => {
+router.get('/api/class/:gradeid/:classid/get/post', async ctx => {
   const params = new URLSearchParams(ctx.querystring)
   const password = params.get('password')
   const { gradeid, classid } = ctx.params
@@ -275,7 +277,7 @@ router.get('/api/class/:gradeid/:classid/get/post', async (ctx) => {
     }
   }
 })
-router.get('/api/class/:gradeid/:classid/get/volunteer', async (ctx) => {
+router.get('/api/class/:gradeid/:classid/get/volunteer', async ctx => {
   const params = new URLSearchParams(ctx.querystring)
   const password = params.get('password')
   const { gradeid, classid } = ctx.params
@@ -288,7 +290,7 @@ router.get('/api/class/:gradeid/:classid/get/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/class/new/feedback', async (ctx) => {
+router.post('/api/class/new/feedback', async ctx => {
   try {
     const password = utils.createDEBase64(ctx.request.body.password)
     const { gradeid, classid } = ctx.request.body
@@ -308,7 +310,7 @@ router.post('/api/class/new/feedback', async (ctx) => {
     }
   }
 })
-router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/person', async (ctx) => {
+router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/person', async ctx => {
   try {
     const password = getPassword(ctx)
     const { gradeid, classid, start, end } = ctx.params
@@ -339,7 +341,7 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/person', async 
     }
   }
 })
-router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/reason', async (ctx) => {
+router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/reason', async ctx => {
   try {
     const password = getPassword(ctx)
     const { gradeid, classid, start, end } = ctx.params
@@ -370,7 +372,7 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/reason', async 
     }
   }
 })
-router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/date', async (ctx) => {
+router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/date', async ctx => {
   try {
     const password = getPassword(ctx)
     const { gradeid, classid, start, end } = ctx.params
@@ -401,7 +403,7 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/date', async (c
     }
   }
 })
-router.post('/api/class/member/regist', async (ctx) => {
+router.post('/api/class/member/regist', async ctx => {
   try {
     const { gradeid, classid, password, member } = ctx.request.body
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
@@ -420,7 +422,7 @@ router.post('/api/class/member/regist', async (ctx) => {
     }
   }
 })
-router.post('/api/class/edit/password', async (ctx) => {
+router.post('/api/class/edit/password', async ctx => {
   try {
     const password = ctx.request.body.password
     const { gradeid, classid, newp } = ctx.request.body
@@ -440,7 +442,7 @@ router.post('/api/class/edit/password', async (ctx) => {
     }
   }
 })
-router.post('/api/class/create/volunteer', async (ctx) => {
+router.post('/api/class/create/volunteer', async ctx => {
   try {
     const { password, gradeid, classid, volunteer } = ctx.request.body as {
       password: string
@@ -465,7 +467,7 @@ router.post('/api/class/create/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/class/export/volunteer', async (ctx) => {
+router.post('/api/class/export/volunteer', async ctx => {
   try {
     const { password, gradeid, classid, config } = ctx.request.body as {
       password: string
@@ -501,7 +503,7 @@ router.post('/api/class/export/volunteer', async (ctx) => {
 })
 
 // Member APIs
-router.get('/api/member/getinfo/:person', async (ctx) => {
+router.get('/api/member/getinfo/:person', async ctx => {
   try {
     const { person } = ctx.params
     ctx.response.body = {
@@ -516,7 +518,7 @@ router.get('/api/member/getinfo/:person', async (ctx) => {
     }
   }
 })
-router.get('/api/member/getinfo/:id/raw', async (ctx) => {
+router.get('/api/member/getinfo/:id/raw', async ctx => {
   try {
     const { id } = ctx.params
     ctx.response.body = memberActions.getSingleMemberAsRaw(parseInt(id))
@@ -528,7 +530,7 @@ router.get('/api/member/getinfo/:id/raw', async (ctx) => {
     }
   }
 })
-router.get('/api/member/:id/login', async (ctx) => {
+router.get('/api/member/:id/login', async ctx => {
   try {
     const password = getPassword(ctx)
     const { id } = ctx.params
@@ -543,7 +545,7 @@ router.get('/api/member/:id/login', async (ctx) => {
 })
 
 // 青志部管理义工可用
-router.get('/api/member/admin/:id/get/core/volunteer', async (ctx) => {
+router.get('/api/member/admin/:id/get/core/volunteer', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
@@ -569,7 +571,7 @@ router.get('/api/member/admin/:id/get/core/volunteer', async (ctx) => {
     }
   }
 })
-router.get('/api/member/admin/:id/get/core/member', async (ctx) => {
+router.get('/api/member/admin/:id/get/core/member', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
@@ -596,7 +598,7 @@ router.get('/api/member/admin/:id/get/core/member', async (ctx) => {
   }
 })
 // Member Admin API (Member)
-router.post('/api/member/admin/trans/member', async (ctx) => {
+router.post('/api/member/admin/trans/member', async ctx => {
   try {
     const { password, member, number, position } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
@@ -622,7 +624,7 @@ router.post('/api/member/admin/trans/member', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/del/member', async (ctx) => {
+router.post('/api/member/admin/del/member', async ctx => {
   try {
     const { password, person, number } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
@@ -648,7 +650,7 @@ router.post('/api/member/admin/del/member', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/vio/member', async (ctx) => {
+router.post('/api/member/admin/vio/member', async ctx => {
   try {
     const { password, person, number } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
@@ -675,7 +677,7 @@ router.post('/api/member/admin/vio/member', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/new/member', async (ctx) => {
+router.post('/api/member/admin/new/member', async ctx => {
   try {
     const { password, number, member } = ctx.request.body
     if (loginMember(parseInt(number), password).status == 'ok') {
@@ -701,7 +703,7 @@ router.post('/api/member/admin/new/member', async (ctx) => {
     }
   }
 })
-router.get('/api/member/admin/:id/get/:department/member', async (ctx) => {
+router.get('/api/member/admin/:id/get/:department/member', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
@@ -729,7 +731,7 @@ router.get('/api/member/admin/:id/get/:department/member', async (ctx) => {
 })
 
 // Admin Volunteer APIs.(Member-admin)
-router.get('/api/member/admin/:id/get/:department/volunteer', async (ctx) => {
+router.get('/api/member/admin/:id/get/:department/volunteer', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
@@ -755,7 +757,7 @@ router.get('/api/member/admin/:id/get/:department/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/create/volunteer', async (ctx) => {
+router.post('/api/member/admin/create/volunteer', async ctx => {
   try {
     const { password, number, volunteer } = ctx.request.body as {
       password: string
@@ -785,7 +787,7 @@ router.post('/api/member/admin/create/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/delete/volunteer', async (ctx) => {
+router.post('/api/member/admin/delete/volunteer', async ctx => {
   try {
     const { password, volunteerInfo, number } = ctx.request.body as {
       password: string
@@ -819,7 +821,7 @@ router.post('/api/member/admin/delete/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/edit/volunteer', async (ctx) => {
+router.post('/api/member/admin/edit/volunteer', async ctx => {
   try {
     const { password, volunteerInfo, number } = ctx.request.body as {
       password: string
@@ -854,7 +856,7 @@ router.post('/api/member/admin/edit/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/export/volunteer', async (ctx) => {
+router.post('/api/member/admin/export/volunteer', async ctx => {
   try {
     const { password, number, config, department, type } = ctx.request.body as {
       password: string
@@ -906,7 +908,7 @@ router.post('/api/member/admin/export/volunteer', async (ctx) => {
   }
 })
 
-router.post('/api/member/:id/edit/password', async (ctx) => {
+router.post('/api/member/:id/edit/password', async ctx => {
   try {
     const { password } = ctx.request.body
     const { id } = ctx.params
@@ -926,7 +928,7 @@ router.post('/api/member/:id/edit/password', async (ctx) => {
     }
   }
 })
-router.get('/api/member/:id/workflow/get', async (ctx) => {
+router.get('/api/member/:id/workflow/get', async ctx => {
   try {
     const password = getPassword(ctx)
     const { id } = ctx.params
@@ -946,7 +948,7 @@ router.get('/api/member/:id/workflow/get', async (ctx) => {
     }
   }
 })
-router.post('/api/member/:id/workflow/new', async (ctx) => {
+router.post('/api/member/:id/workflow/new', async ctx => {
   try {
     const { password } = ctx.request.body
     const { id } = ctx.params
@@ -968,7 +970,7 @@ router.post('/api/member/:id/workflow/new', async (ctx) => {
     }
   }
 })
-router.post('/api/member/:id/workflow/pause', async (ctx) => {
+router.post('/api/member/:id/workflow/pause', async ctx => {
   try {
     const { password, id } = ctx.request.body
     const { id: num } = ctx.params
@@ -988,7 +990,7 @@ router.post('/api/member/:id/workflow/pause', async (ctx) => {
     }
   }
 })
-router.post('/api/member/:id/workflow/finish', async (ctx) => {
+router.post('/api/member/:id/workflow/finish', async ctx => {
   try {
     const { password, id } = ctx.request.body
     const { id: num } = ctx.params
@@ -1008,7 +1010,7 @@ router.post('/api/member/:id/workflow/finish', async (ctx) => {
     }
   }
 })
-router.post('/api/member/:id/workflow/start', async (ctx) => {
+router.post('/api/member/:id/workflow/start', async ctx => {
   try {
     const { password, id } = ctx.request.body
     const { id: num } = ctx.params
@@ -1028,7 +1030,7 @@ router.post('/api/member/:id/workflow/start', async (ctx) => {
     }
   }
 })
-router.post('/api/member/:id/workflow/quit', async (ctx) => {
+router.post('/api/member/:id/workflow/quit', async ctx => {
   try {
     const { password, id } = ctx.request.body
     const { id: num } = ctx.params
@@ -1048,7 +1050,7 @@ router.post('/api/member/:id/workflow/quit', async (ctx) => {
     }
   }
 })
-router.get('/api/member/:id/volunteer/get', async (ctx) => {
+router.get('/api/member/:id/volunteer/get', async ctx => {
   try {
     const password = new URLSearchParams(ctx.querystring).get('password')
     if (loginMember(Number(ctx.params.id), password as string).status == 'ok') {
@@ -1067,7 +1069,7 @@ router.get('/api/member/:id/volunteer/get', async (ctx) => {
     }
   }
 })
-router.post('/api/member/:id/volunteer/create', async (ctx) => {
+router.post('/api/member/:id/volunteer/create', async ctx => {
   try {
     const { password, number, volunteer } = ctx.request.body as {
       password: string
@@ -1091,7 +1093,7 @@ router.post('/api/member/:id/volunteer/create', async (ctx) => {
     }
   }
 })
-router.post('/api/member/:id/volunteer/delete', async (ctx) => {
+router.post('/api/member/:id/volunteer/delete', async ctx => {
   try {
     const { password, id, number } = ctx.request.body as {
       password: string
@@ -1114,7 +1116,7 @@ router.post('/api/member/:id/volunteer/delete', async (ctx) => {
     }
   }
 })
-router.post('/api/member/:id/volunteer/export', async (ctx) => {
+router.post('/api/member/:id/volunteer/export', async ctx => {
   try {
     const { password, number, config } = ctx.request.body as {
       password: string
@@ -1149,7 +1151,7 @@ router.post('/api/member/:id/volunteer/export', async (ctx) => {
 })
 
 // 纪检部可用API
-router.get('/api/member/admin/:id/get/all/deduction', async (ctx) => {
+router.get('/api/member/admin/:id/get/all/deduction', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
@@ -1175,7 +1177,7 @@ router.get('/api/member/admin/:id/get/all/deduction', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/:id/del/deduction', async (ctx) => {
+router.post('/api/member/admin/:id/del/deduction', async ctx => {
   try {
     const { password } = ctx.request.body
     const { id } = ctx.params
@@ -1210,7 +1212,7 @@ router.post('/api/member/admin/:id/del/deduction', async (ctx) => {
   }
 })
 
-router.get('/api/member/deduction/:id/work/get/deduction', async (ctx) => {
+router.get('/api/member/deduction/:id/work/get/deduction', async ctx => {
   try {
     const password = getPassword(ctx)
     const { id } = ctx.params
@@ -1237,7 +1239,7 @@ router.get('/api/member/deduction/:id/work/get/deduction', async (ctx) => {
     }
   }
 })
-router.post('/api/member/deduction/:id/work/new/deduction', async (ctx) => {
+router.post('/api/member/deduction/:id/work/new/deduction', async ctx => {
   try {
     const { id } = ctx.params
     const { password, content } = ctx.request.body
@@ -1265,7 +1267,7 @@ router.post('/api/member/deduction/:id/work/new/deduction', async (ctx) => {
     }
   }
 })
-router.post('/api/member/deduction/:id/work/turnd/deduction', async (ctx) => {
+router.post('/api/member/deduction/:id/work/turnd/deduction', async ctx => {
   try {
     const { id: number } = ctx.params
     const { id, password, person, reason } = ctx.request.body
@@ -1293,7 +1295,7 @@ router.post('/api/member/deduction/:id/work/turnd/deduction', async (ctx) => {
     }
   }
 })
-router.post('/api/member/deduction/:id/work/del/deduction', async (ctx) => {
+router.post('/api/member/deduction/:id/work/del/deduction', async ctx => {
   try {
     const { id: number } = ctx.params
     const { id, password, person } = ctx.request.body
@@ -1321,7 +1323,7 @@ router.post('/api/member/deduction/:id/work/del/deduction', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/export/deduction/class', async (ctx) => {
+router.post('/api/member/admin/export/deduction/class', async ctx => {
   try {
     const { password, start, end, number } = ctx.request.body as {
       password: string
@@ -1356,7 +1358,7 @@ router.post('/api/member/admin/export/deduction/class', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/export/deduction/detail', async (ctx) => {
+router.post('/api/member/admin/export/deduction/detail', async ctx => {
   try {
     const { password, start, end, number } = ctx.request.body as {
       password: string
@@ -1393,7 +1395,7 @@ router.post('/api/member/admin/export/deduction/detail', async (ctx) => {
 })
 
 // 学习部可用API
-router.get('/api/member/admin/:id/get/all/post', async (ctx) => {
+router.get('/api/member/admin/:id/get/all/post', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
@@ -1419,7 +1421,7 @@ router.get('/api/member/admin/:id/get/all/post', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/:id/del/post', async (ctx) => {
+router.post('/api/member/admin/:id/del/post', async ctx => {
   try {
     const { password, person } = ctx.request.body
     const { id } = ctx.params
@@ -1446,7 +1448,7 @@ router.post('/api/member/admin/:id/del/post', async (ctx) => {
     }
   }
 })
-router.post('/api/member/admin/:id/download/post', async (ctx) => {
+router.post('/api/member/admin/:id/download/post', async ctx => {
   try {
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
@@ -1483,7 +1485,7 @@ router.post('/api/member/admin/:id/download/post', async (ctx) => {
   }
 })
 
-router.get('/api/member/post/:id/work/get/post', async (ctx) => {
+router.get('/api/member/post/:id/work/get/post', async ctx => {
   try {
     const password = getPassword(ctx)
     const { id } = ctx.params
@@ -1548,7 +1550,7 @@ router.post('/api/member/post/:id/work/upload/post', async (ctx, next) => {
     }
   }
 })
-router.post('/api/member/post/:id/work/download/post', async (ctx) => {
+router.post('/api/member/post/:id/work/download/post', async ctx => {
   try {
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
@@ -1584,7 +1586,7 @@ router.post('/api/member/post/:id/work/download/post', async (ctx) => {
     }
   }
 })
-router.post('/api/member/post/:id/work/new/post', async (ctx) => {
+router.post('/api/member/post/:id/work/new/post', async ctx => {
   try {
     const { id, password, content, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
@@ -1610,7 +1612,7 @@ router.post('/api/member/post/:id/work/new/post', async (ctx) => {
     }
   }
 })
-router.post('/api/member/post/:id/work/del/post', async (ctx) => {
+router.post('/api/member/post/:id/work/del/post', async ctx => {
   try {
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
@@ -1638,7 +1640,7 @@ router.post('/api/member/post/:id/work/del/post', async (ctx) => {
 })
 
 // Admin APIs (For School Leaders.)
-router.get('/api/admin/login', async (ctx) => {
+router.get('/api/admin/login', async ctx => {
   try {
     const password = getPassword(ctx)
     ctx.response.body = loginAdmin(password)
@@ -1650,7 +1652,7 @@ router.get('/api/admin/login', async (ctx) => {
     }
   }
 })
-router.get('/api/admin/get/all/deduction', async (ctx) => {
+router.get('/api/admin/get/all/deduction', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
@@ -1669,7 +1671,7 @@ router.get('/api/admin/get/all/deduction', async (ctx) => {
     }
   }
 })
-router.get('/api/admin/get/all/post', async (ctx) => {
+router.get('/api/admin/get/all/post', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
@@ -1688,7 +1690,7 @@ router.get('/api/admin/get/all/post', async (ctx) => {
     }
   }
 })
-router.get('/api/admin/get/all/member', async (ctx) => {
+router.get('/api/admin/get/all/member', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
@@ -1707,7 +1709,7 @@ router.get('/api/admin/get/all/member', async (ctx) => {
     }
   }
 })
-router.get('/api/admin/get/core/member', async (ctx) => {
+router.get('/api/admin/get/core/member', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
@@ -1727,7 +1729,7 @@ router.get('/api/admin/get/core/member', async (ctx) => {
   }
 })
 
-router.post('/api/admin/download/post', async (ctx) => {
+router.post('/api/admin/download/post', async ctx => {
   try {
     const { id, password, person } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1757,7 +1759,7 @@ router.post('/api/admin/download/post', async (ctx) => {
   }
 })
 
-router.post('/api/admin/edit/password', async (ctx) => {
+router.post('/api/admin/edit/password', async ctx => {
   try {
     const password = ctx.request.body.password
     const { newp } = ctx.request.body
@@ -1777,7 +1779,7 @@ router.post('/api/admin/edit/password', async (ctx) => {
     }
   }
 })
-router.post('/api/admin/export/deduction/class', async (ctx) => {
+router.post('/api/admin/export/deduction/class', async ctx => {
   try {
     const { password, start, end } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1807,7 +1809,7 @@ router.post('/api/admin/export/deduction/class', async (ctx) => {
     }
   }
 })
-router.post('/api/admin/export/deduction/detail', async (ctx) => {
+router.post('/api/admin/export/deduction/detail', async ctx => {
   try {
     const { password, start, end } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1837,7 +1839,7 @@ router.post('/api/admin/export/deduction/detail', async (ctx) => {
     }
   }
 })
-router.get('/api/admin/get/:department/member', async (ctx) => {
+router.get('/api/admin/get/:department/member', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
@@ -1856,7 +1858,7 @@ router.get('/api/admin/get/:department/member', async (ctx) => {
     }
   }
 })
-router.post('/api/admin/del/deduction', async (ctx) => {
+router.post('/api/admin/del/deduction', async ctx => {
   try {
     const { password } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1882,7 +1884,7 @@ router.post('/api/admin/del/deduction', async (ctx) => {
     }
   }
 })
-router.post('/api/admin/del/post', async (ctx) => {
+router.post('/api/admin/del/post', async ctx => {
   try {
     const { password } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1901,7 +1903,7 @@ router.post('/api/admin/del/post', async (ctx) => {
     }
   }
 })
-router.post('/api/admin/full/member', async (ctx) => {
+router.post('/api/admin/full/member', async ctx => {
   try {
     const { password, member, position } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1920,7 +1922,7 @@ router.post('/api/admin/full/member', async (ctx) => {
     }
   }
 })
-router.post('/api/admin/vio/member', async (ctx) => {
+router.post('/api/admin/vio/member', async ctx => {
   try {
     const { password, member } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1942,7 +1944,7 @@ router.post('/api/admin/vio/member', async (ctx) => {
     }
   }
 })
-router.post('/api/admin/new/member', async (ctx) => {
+router.post('/api/admin/new/member', async ctx => {
   try {
     const { password, member } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1961,7 +1963,7 @@ router.post('/api/admin/new/member', async (ctx) => {
     }
   }
 })
-router.post('/api/admin/del/member', async (ctx) => {
+router.post('/api/admin/del/member', async ctx => {
   try {
     const { password, person } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1980,12 +1982,12 @@ router.post('/api/admin/del/member', async (ctx) => {
     }
   }
 })
-router.post('/api/admin/volunteer/sendout', async (ctx) => {
+router.post('/api/admin/volunteer/sendout', async ctx => {
   try {
     const { password } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
       const members = memberActions.getAllAsRaw().details
-      members.forEach((item) => {
+      members.forEach(item => {
         memberActions.autoCalculateVolunteer(item.number)
       })
       if (members.length === 0) {
@@ -2008,7 +2010,7 @@ router.post('/api/admin/volunteer/sendout', async (ctx) => {
     }
   }
 })
-router.get('/api/admin/get/all/volunteer', async (ctx) => {
+router.get('/api/admin/get/all/volunteer', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
@@ -2027,7 +2029,7 @@ router.get('/api/admin/get/all/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/admin/create/volunteer', async (ctx) => {
+router.post('/api/admin/create/volunteer', async ctx => {
   try {
     const { password, volunteer } = ctx.request.body as {
       password: string
@@ -2049,7 +2051,7 @@ router.post('/api/admin/create/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/admin/delete/volunteer', async (ctx) => {
+router.post('/api/admin/delete/volunteer', async ctx => {
   try {
     const { password, volunteerInfo } = ctx.request.body as {
       password: string
@@ -2075,7 +2077,7 @@ router.post('/api/admin/delete/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/admin/edit/volunteer', async (ctx) => {
+router.post('/api/admin/edit/volunteer', async ctx => {
   try {
     const { password, volunteerInfo } = ctx.request.body as {
       password: string
@@ -2102,7 +2104,7 @@ router.post('/api/admin/edit/volunteer', async (ctx) => {
     }
   }
 })
-router.post('/api/admin/export/volunteer', async (ctx) => {
+router.post('/api/admin/export/volunteer', async ctx => {
   try {
     const { password, config } = ctx.request.body as {
       password: string
@@ -2136,7 +2138,7 @@ router.post('/api/admin/export/volunteer', async (ctx) => {
 })
 
 // All APIs
-router.post('/api/feed/back', async (ctx) => {
+router.post('/api/feed/back', async ctx => {
   // Here, it is no use to check the password
   try {
     ctx.response.body = utils.createFeedback(ctx.request.body)
@@ -2148,38 +2150,38 @@ router.post('/api/feed/back', async (ctx) => {
     }
   }
 })
-router.get('/api/department/', async (ctx) => {
+router.get('/api/department/', async ctx => {
   ctx.response.body = getDepartmentData() as status
 })
-router.get('/api/department/list', async (ctx) => {
+router.get('/api/department/list', async ctx => {
   const data = getDepartmentData()
   ctx.response.body = {
     status: 'ok',
     details: utils.createObjectToArrayTransformer('value', data.details.departments),
   }
 })
-router.get('/api/department/:department/duty', async (ctx) => {
+router.get('/api/department/:department/duty', async ctx => {
   ctx.response.body = {
     status: 'ok',
     details: allowPowers(ctx.params.department),
   }
 })
-router.get('/api/power/list', async (ctx) => {
+router.get('/api/power/list', async ctx => {
   ctx.response.body = {
     status: 'ok',
     details: utils.createObjectToArrayTransformer('value', getPublicPower().details.power),
   }
 })
-router.get('/api/power', async (ctx) => {
+router.get('/api/power', async ctx => {
   ctx.response.body = getPublicPower()
 })
-router.get('/config', async (ctx) => {
+router.get('/config', async ctx => {
   ctx.response.body = readData()
 })
 
 setInterval(() => {
   const members = memberActions.getAllAsRaw().details
-  members.forEach((item) => {
+  members.forEach(item => {
     memberActions.autoCalculateScore(item.number)
   })
 }, 10800000) // 每3小时计算一次素质分
@@ -2189,7 +2191,7 @@ server.use(router.routes())
 server.use(router.allowedMethods())
 
 // Redirect 404 pages(route)
-server.use(async (ctx) => {
+server.use(async ctx => {
   if (ctx.status == 404) {
     if (process.env.NODE_ENV == 'production') {
       ctx.response.body = readFileSync(resolve(__dirname, './pages/index.html')).toString()
@@ -2202,7 +2204,7 @@ server.use(async (ctx) => {
 
 // Socket.io Chat Product
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-io.on('connection', (socket) => {
+io.on('connection', socket => {
   // ...
   let query
   if (socket.handshake.query.type == 'class') {
@@ -2259,7 +2261,7 @@ app.whenReady().then(() => {
   ipcMain.on('close-main-window', () => mainWindow.hide())
   ipcMain.on('minimize-main-window', () => mainWindow.minimize())
   ipcMain.on('maximize-main-window', () => (mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize()))
-  mainWindow.on('close', (event) => {
+  mainWindow.on('close', event => {
     mainWindow.hide()
     event.preventDefault()
   })

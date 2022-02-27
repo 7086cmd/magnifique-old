@@ -21,7 +21,7 @@ volunteerData.status = 'planning'
 let persons = ref<member_processed[]>([])
 let loading = ref(true)
 let volunteerDetail = ref<VolunteerQueryResult[]>([])
-axios(`${baseurl}admin/get/all/member?password=${password}`).then((responser) => {
+axios(`${baseurl}admin/get/all/member?password=${password}`).then(responser => {
   persons.value = responser.data.details
 })
 const refresh = async () => {
@@ -38,7 +38,7 @@ const refresh = async () => {
 }
 refresh()
 const startRegistVolunteer = () => {
-  axios(`${baseurl}admin/get/all/member?password=${password}`).then((responser) => {
+  axios(`${baseurl}admin/get/all/member?password=${password}`).then(responser => {
     persons.value = responser.data.details
   })
   isRegistingVolunteer.value = true
@@ -87,7 +87,7 @@ const editStatusVolunteer = (number: number[]) => {
       },
     },
     method: 'post',
-  }).then((response) => {
+  }).then(response => {
     if (response.data.status == 'ok') {
       sucfuc()
       refresh()
@@ -106,7 +106,7 @@ const deleteVolunteer = (props: { row: VolunteerQueryResult }) => {
       },
     },
     method: 'post',
-  }).then((response) => {
+  }).then(response => {
     if (response.data.status === 'ok') {
       sucfuc()
       refresh()
@@ -164,16 +164,16 @@ const startPassing = (props: { row: VolunteerQueryResult }) => {
   editId.value = props.row.createId
   isCheckin.value = true
   waitForChoose.value = persons.value
-    .filter((item) => props.row.person.includes(item.number))
+    .filter(item => props.row.person.includes(item.number))
     .map(
-      (item) =>
+      item =>
         ({
-          key: item.number,
-          label: item.name,
+          key: Number(item.number),
+          label: String(item.name),
           disabled: false,
         } as options)
     )
-  doneMember.value = props.row.records.filter((x) => x.status === 'done').map((x) => x.person)
+  doneMember.value = props.row.records.filter(x => x.status === 'done').map(x => Number(x.person))
 }
 </script>
 

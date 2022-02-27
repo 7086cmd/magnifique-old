@@ -21,8 +21,8 @@ type middle = Record<string, VolunteerQueryResult>
 export default () => {
   const memberList = getCoreAsRaw().details as member[]
   let volList: middle = {}
-  memberList.forEach((item) => {
-    getOwn(item.number).details.forEach((volData) => {
+  memberList.forEach(item => {
+    getOwn(item.number).details.forEach(volData => {
       if (volList[volData.createId] === undefined) {
         let data: VolunteerWorking = {
           ...volData,

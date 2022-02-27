@@ -49,10 +49,10 @@ const generate = async () => {
   console.log(chalk.green(`[Build] ${getGlob().length} files have built.`))
 }
 createServer()
-  .then((result) => {
+  .then(result => {
     return result.listen()
   })
-  .then((result) => {
+  .then(result => {
     console.log(chalk.green('Front End Server Started.'))
     console.log(chalk.blue('[Vite] ----- DEV --- SERVER --- URL -----'))
     result.printUrls()

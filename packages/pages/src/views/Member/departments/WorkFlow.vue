@@ -48,7 +48,7 @@ const tableRowClassName = ({ row }) => {
 
 const refresh = () => {
   isFetchingWorkflows.value = true
-  axios(`${baseurl}member/${number}/workflow/get?password=${password}`).then((response) => {
+  axios(`${baseurl}member/${number}/workflow/get?password=${password}`).then(response => {
     workflows.value = response.data.details as any[]
     workflows.value.filter((item: any) => {
       item.deadline = dayjs(item.deadline).format('YYYY/MM/DD HH:mm:ss')

@@ -30,7 +30,7 @@ watch(number, () => {
   if (number.value.split('').length === 8) {
     axios({
       url: `${baseurl}member/getinfo/${number.value}/`,
-    }).then((response) => {
+    }).then(response => {
       const data = response.data.details as member_processed
       name.value = data.name
       duty.value = data.do
@@ -53,7 +53,7 @@ const login = () => {
     getData(`${baseurl}member/${number.value}/login`, 'get', {
       password: window.btoa(password.value),
     })
-    axios(`${baseurl}member/${number.value}/login?password=${window.btoa(password.value)}`).then((response) => {
+    axios(`${baseurl}member/${number.value}/login?password=${window.btoa(password.value)}`).then(response => {
       if (response.data.status == 'ok') {
         ElMessageBox.alert(`${name.value}，欢迎使用。`, '登陆成功', {
           type: 'success',

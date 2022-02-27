@@ -16,7 +16,7 @@ const loader = ElLoading.service({
 const { number } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
 let choice = ref('member')
 let me = ref<member>(personExample())
-axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
+axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
   me.value = response.data.details as member
   loader.close()
 })

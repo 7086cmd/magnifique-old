@@ -22,14 +22,14 @@ let isRegistingVolunteer = ref(false)
 let volunteerData = reactive(volunteerExample())
 volunteerData.status = 'planning'
 let persons = ref<member_processed[]>([])
-axios(`${baseurl}class/${gradeid}/${classid}/member/get?password=${password}`).then((response) => {
+axios(`${baseurl}class/${gradeid}/${classid}/member/get?password=${password}`).then(response => {
   persons.value.push(...response.data.details)
 })
 let loading = ref(true)
 let volunteerDetail = ref<VolunteerQueryResult[]>([])
 const refresh = () => {
   loading.value = true
-  axios(`${baseurl}class/${gradeid}/${classid}/get/volunteer?password=${password}`).then((response) => {
+  axios(`${baseurl}class/${gradeid}/${classid}/get/volunteer?password=${password}`).then(response => {
     loading.value = false
     if (response.data.status == 'ok') {
       volunteerDetail.value = response.data.details as VolunteerQueryResult[]

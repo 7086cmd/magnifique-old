@@ -30,6 +30,14 @@ const generateAdminFolder = (basep: string) => {
   return tpth
 }
 
+const generateIMRoomsFolder = (basep: string) => {
+  const tpth = resolve(basep, './im_rooms/')
+  if (!existsSync(tpth)) {
+    mkdirSync(tpth)
+  }
+  return tpth
+}
+
 const generateFeedbackFolder = (basep: string) => {
   const tpth = resolve(basep, './feedbacks/')
   if (!existsSync(tpth)) {
@@ -92,5 +100,6 @@ export default () => {
     }
   }
   generateAdminPassword(generateAdminFolder(rt))
+  generateIMRoomsFolder(rt)
   generateFeedbackFolder(rt)
 }

@@ -21,7 +21,7 @@ let loading = ref(true)
 let volunteerDetail = ref([])
 const refresh = () => {
   loading.value = true
-  axios(`${baseurl}member/${number}/volunteer/get?password=${password}`).then((response) => {
+  axios(`${baseurl}member/${number}/volunteer/get?password=${password}`).then(response => {
     loading.value = false
     if (response.data.status == 'ok') {
       volunteerDetail.value = response.data.details as VolunteerList[]

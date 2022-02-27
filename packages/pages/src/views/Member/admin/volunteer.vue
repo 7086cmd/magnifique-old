@@ -25,9 +25,9 @@ volunteerData.status = 'planning'
 let persons = ref<member_processed[]>([])
 let loading = ref(true)
 let volunteerDetail = ref<VolunteerQueryResult[]>([])
-axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
+axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
   aboutme.value = response.data.details as member
-  axios(`${baseurl}member/admin/${number}/get/${props.type === 'volunteer' ? 'core' : (aboutme.value as member).union.department}/member?password=${password}`).then((responser) => {
+  axios(`${baseurl}member/admin/${number}/get/${props.type === 'volunteer' ? 'core' : (aboutme.value as member).union.department}/member?password=${password}`).then(responser => {
     persons.value = responser.data.details
   })
   refresh()
@@ -35,7 +35,7 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
 })
 const refresh = () => {
   loading.value = true
-  axios(`${baseurl}member/admin/${number}/get/${props.type === 'volunteer' ? 'core' : (aboutme.value as member).union.department}/volunteer?password=${password}`).then((response) => {
+  axios(`${baseurl}member/admin/${number}/get/${props.type === 'volunteer' ? 'core' : (aboutme.value as member).union.department}/volunteer?password=${password}`).then(response => {
     loading.value = false
     if (response.data.status == 'ok') {
       volunteerDetail.value = response.data.details as VolunteerQueryResult[]
@@ -88,7 +88,7 @@ const editStatusVolunteer = (person: number[]) => {
       number,
     },
     method: 'post',
-  }).then((response) => {
+  }).then(response => {
     if (response.data.status == 'ok') {
       sucfuc()
     } else {
@@ -107,7 +107,7 @@ const deleteVolunteer = (props: { row: VolunteerQueryResult }) => {
       number,
     },
     method: 'post',
-  }).then((response) => {
+  }).then(response => {
     if (response.data.status === 'ok') {
       sucfuc()
     } else {
@@ -167,16 +167,16 @@ const startPassing = (props: { row: VolunteerQueryResult }) => {
   editId.value = props.row.createId
   isCheckin.value = true
   waitForChoose.value = persons.value
-    .filter((item) => props.row.person.includes(item.number))
+    .filter(item => props.row.person.includes(item.number))
     .map(
-      (item) =>
+      item =>
         ({
           key: item.number,
-          label: item.name,
+          label: String(item.name),
           disabled: false,
         } as options)
     )
-  doneMember.value = props.row.records.filter((x) => x.status === 'done').map((x) => x.person)
+  doneMember.value = props.row.records.filter(x => x.status === 'done').map(x => x.person)
 }
 </script>
 <template>

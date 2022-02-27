@@ -27,7 +27,7 @@ const tableRowClassName = (props: { row: DeductionList }) => {
 }
 const refresh = () => {
   loading.value = true
-  axios(`${baseurl}class/${gradeid}/${classid}/get/deduction?password=${password}`).then((response) => {
+  axios(`${baseurl}class/${gradeid}/${classid}/get/deduction?password=${password}`).then(response => {
     if (response.data.status == 'ok') {
       loading.value = false
       data.deduction = response.data.details
@@ -46,7 +46,7 @@ const callbackDeductions = (inf: DeductionList) => {
     cancelButtonText: '取消',
     confirmButtonText: '确定',
     inputType: 'textarea',
-  }).then((result) => {
+  }).then(result => {
     axios(`${baseurl}class/new/feedback`, {
       data: {
         gradeid,
@@ -56,7 +56,7 @@ const callbackDeductions = (inf: DeductionList) => {
         msg: result.value,
       },
       method: 'POST',
-    }).then((response) => {
+    }).then(response => {
       if (response.data.status == 'ok') {
         sucfuc()
         refresh()

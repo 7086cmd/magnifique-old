@@ -15,7 +15,7 @@ export default (Data: VolunteerMulti) => {
   if (!validate(Data.createId)) {
     Data.createId = v4()
   }
-  Data.person.forEach((item) => {
+  Data.person.forEach(item => {
     const volunteerForPerson = {
       ...(Data as VolunteerMultiMiddle),
       person: Number(item),

@@ -21,11 +21,11 @@ try {
 
 const { number, password } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
 
-axios(`${baseurl}member/getinfo/${number}/`).then((response) => {
+axios(`${baseurl}member/getinfo/${number}/`).then(response => {
   name.value = response.data.details.name
 })
 
-axios(`${baseurl}member/${number}/login?password=${password}`).then((response) => {
+axios(`${baseurl}member/${number}/login?password=${password}`).then(response => {
   if (response.data.status !== 'ok') {
     sessionStorage.removeItem('memberLoginInfo')
     ElMessageBox.alert('您的密码有误，已为您引导到班级界面，点击“成员登录”即可再次登录。', '密码错误', {

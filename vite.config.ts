@@ -8,6 +8,8 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import lagacy from '@vitejs/plugin-legacy'
 import { VitePWA as pwa } from 'vite-plugin-pwa'
 import { resolve } from 'path'
+import prismjs from 'vite-plugin-prismjs'
+import monacoEditor from 'vite-plugin-monaco-editor'
 
 export default defineConfig({
   plugins: [
@@ -59,10 +61,20 @@ export default defineConfig({
         ],
       },
     }),
+    prismjs({
+      languages: ['javascript', 'css', 'cpp', 'c', 'html', 'typescript', 'java', 'rust', 'go', 'python', 'json', 'yaml', 'graphql', 'markdown'],
+      plugins: ['line-numbers', 'copy-to-clipboard'],
+      theme: 'default',
+      css: true,
+    }),
+    monacoEditor(),
   ],
   server: {
     fs: {
       strict: false,
+    },
+    proxy: {
+      '/api': 'http://locahost/api',
     },
   },
   build: {
@@ -79,7 +91,7 @@ export default defineConfig({
         {
           postcssPlugin: 'internal:charset-removal',
           AtRule: {
-            charset: (atRule) => {
+            charset: atRule => {
               if (atRule.name === 'charset') {
                 atRule.remove()
               }

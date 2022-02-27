@@ -20,7 +20,7 @@ let whatdo = ref('')
 let aboutme = ref({})
 let loaded = ref(false)
 
-axios(`${baseurl}member/getinfo/${number}/`).then((response) => {
+axios(`${baseurl}member/getinfo/${number}/`).then(response => {
   aboutme.value = response.data.details
   loaded.value = true
   name.value = response.data.details.name

@@ -123,7 +123,7 @@ app.whenReady().then(() => {
     mainWindow.webContents.send('reload-page')
     mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize()
   })
-  mainWindow.on('close', (event) => {
+  mainWindow.on('close', event => {
     mainWindow.hide()
     event.preventDefault()
   })

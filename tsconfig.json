@@ -12,6 +12,8 @@
     "lib": [],
     "types": ["element-plus/global", "jest", "cypress"],
     "baseUrl": "./",
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true
   }
 }

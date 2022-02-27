@@ -6,4 +6,8 @@ declare interface VolunteerMulti {
   status: 'planning' | 'done' | 'miss'
   time: string
   createId: string
+  records: {
+    person: number
+    status: 'planning' | 'done' | 'miss'
+  }[]
 }

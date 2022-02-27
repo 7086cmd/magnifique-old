@@ -29,7 +29,7 @@ async function login() {
     return
   }
   createClassLoginer(Number(gradeid.value), Number(classid.value), window.btoa(password.value))
-    .then((response) => {
+    .then(response => {
       localStorage.setItem('classLoginInfo', response)
       provide('classLoginInfo', response)
       ElMessageBox.alert('成功登录', '成功', {

@@ -15,7 +15,7 @@ let me = ref<member>(personExample())
 const loader = ElLoading.service({
   text: '获取信息中...',
 })
-axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
+axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
   me.value = response.data.details as member
   loader.close()
 })
