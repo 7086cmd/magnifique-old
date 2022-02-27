@@ -14,6 +14,7 @@ import markdown from './modules/markdown/markdown.vue'
 import MonacoEditor from './modules/editor/index.vue'
 import ImageReader from './modules/image/upload.vue'
 import MarkdownEditor from './modules/message/index.vue'
+import MessageItem from './components/messages/components.vue'
 
 const app = createApp(App)
 
@@ -32,6 +33,7 @@ app.component('MonacoEditor', MonacoEditor)
 app.component('TagPurple', TagPurple)
 app.component('ImageReader', ImageReader)
 app.component('MarkdownEditor', MarkdownEditor)
+app.component('MessageItem', MessageItem)
 app.use(router)
 // app.use(store)
 app.use(i18n)
