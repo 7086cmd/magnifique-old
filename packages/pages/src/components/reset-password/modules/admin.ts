@@ -28,7 +28,7 @@ export default (
           center: true,
         }).then(() => {
           localStorage.removeItem('adminLoginInfo')
-          router.push('/admin/login')
+          router.push('/')
         })
       } else {
         ElMessageBox.alert(

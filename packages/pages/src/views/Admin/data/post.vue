@@ -7,8 +7,9 @@ import { ElLoading } from 'element-plus'
 import baseurl from '../../../modules/baseurl'
 import failfuc from '../../../modules/failfuc'
 import sucfuc from '../../../modules/sucfuc'
-import postDescription from '../../../components/lists/postDescription.vue'
+import postDescription from '../../../components/lists/PostDescription.vue'
 import dayjs from 'dayjs'
+import toPort from '../../../modules/to-port'
 
 const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
 
@@ -61,7 +62,7 @@ const download = async (props: { row: PostList }) => {
     },
   })
   if (response.data.status === 'ok') {
-    window.open(`${baseurl}member/post/download/${response.data.details.token}/${props.row.title}.docx`)
+    window.open(toPort(`${baseurl}member/post/download/${response.data.details.token}/${props.row.title}.docx`))
   } else {
     failfuc(response.data.reason, response.data.text)
   }

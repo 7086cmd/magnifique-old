@@ -165,7 +165,11 @@ const startPassing = (props: { row: VolunteerQueryResult }) => {
   editId.value = props.row.createId
   isCheckin.value = true
   waitForChoose.value = persons.value
-    .filter(item => props.row.person.includes(item.number))
+    .filter(item => {
+      const persons = props.row.person
+      const afterMap = persons.map(x => Number(x))
+      return afterMap.includes(Number(item.number))
+    })
     .map(
       item =>
         ({

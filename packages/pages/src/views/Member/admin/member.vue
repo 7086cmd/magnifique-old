@@ -179,7 +179,6 @@ const createMember = async () => {
 
 <template>
   <div>
-    <h4>成员管理</h4>
     <el-skeleton :loading="loading" animated :rows="10" :throttle="500">
       <template #default>
         <el-card shadow="never">

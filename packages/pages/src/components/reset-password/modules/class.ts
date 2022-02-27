@@ -41,7 +41,7 @@ export default (
           center: true,
         }).then(() => {
           localStorage.removeItem('classLoginInfo')
-          router.push('/class/login')
+          router.push('/')
         })
       } else {
         ElMessageBox.alert(

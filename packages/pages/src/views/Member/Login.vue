@@ -88,9 +88,6 @@ const login = () => {
     <el-form-item label="姓名">
       <el-input v-model="name" readonly />
     </el-form-item>
-    <el-form-item label="职位">
-      <el-input v-model="duty" readonly />
-    </el-form-item>
     <el-form-item label="密码">
       <el-input v-model="password" type="password" />
     </el-form-item>

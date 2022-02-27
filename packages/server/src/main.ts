@@ -768,7 +768,7 @@ router.post('/api/member/admin/create/volunteer', async ctx => {
       volunteer: VolunteerMulti
     }
     if (loginMember(number, password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(number, 'member') || memberActions.memberAdminLimitCheckPower(number, 'volunteer')) {
+      if (memberActions.memberAdminLimitCheckPower(number, 'member-volunteer') || memberActions.memberAdminLimitCheckPower(number, 'volunteer')) {
         ctx.response.body = volunteerActions.createVolunteerMulti(volunteer as VolunteerMulti)
       } else {
         ctx.response.body = {
@@ -802,7 +802,7 @@ router.post('/api/member/admin/delete/volunteer', async ctx => {
     }
     const { id, person } = volunteerInfo
     if (loginMember(number, password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(number, 'member') || memberActions.memberAdminLimitCheckPower(number, 'volunteer')) {
+      if (memberActions.memberAdminLimitCheckPower(number, 'member-volunteer') || memberActions.memberAdminLimitCheckPower(number, 'volunteer')) {
         ctx.response.body = volunteerActions.deleteVolunteerMulti(id, person)
       } else {
         ctx.response.body = {
@@ -837,7 +837,7 @@ router.post('/api/member/admin/edit/volunteer', async ctx => {
     }
     const { id, person } = volunteerInfo
     if (loginMember(number, password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(number, 'member') || memberActions.memberAdminLimitCheckPower(number, 'volunteer')) {
+      if (memberActions.memberAdminLimitCheckPower(number, 'member-volunteer') || memberActions.memberAdminLimitCheckPower(number, 'volunteer')) {
         ctx.response.body = volunteerActions.editVolunteerStatusMulti(person, id)
       } else {
         ctx.response.body = {
@@ -872,7 +872,7 @@ router.post('/api/member/admin/export/volunteer', async ctx => {
       type: 'department' | 'all'
     }
     if (loginMember(number, password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(number, 'member') || memberActions.memberAdminLimitCheckPower(number, 'volunteer')) {
+      if (memberActions.memberAdminLimitCheckPower(number, 'member-volunteer') || memberActions.memberAdminLimitCheckPower(number, 'volunteer')) {
         const token = v4()
         if (type === 'all') {
           if (memberActions.memberAdminLimitCheckPower(number, 'volunteer')) {

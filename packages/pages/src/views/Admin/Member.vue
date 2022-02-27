@@ -203,24 +203,6 @@ const createMember = async () => {
     refresh(choice.value)
   }
 }
-const sendOutVolunteerTime = () => {
-  const loader = ElLoading.service({
-    text: '正在发送义工时间，请稍后...',
-  })
-  axios(`${baseurl}admin/volunteer/sendout`, {
-    data: {
-      password,
-    },
-    method: 'post',
-  }).then(response => {
-    loader.close()
-    if (response.data.status === 'ok') {
-      sucfuc()
-    } else {
-      failfuc(response.data.reason, response.data.text)
-    }
-  })
-}
 </script>
 
 <template>
@@ -233,7 +215,6 @@ const sendOutVolunteerTime = () => {
             <el-card shadow="never">
               <template #header>
                 <el-button type="text" @click="isRegistingMember = true"> 添加成员 </el-button>
-                <el-button type="text" @click="sendOutVolunteerTime"> 发放义工时间 </el-button>
               </template>
               <el-table
                 :data="table.filter((data: any) => !search || data.number.toLowerCase().includes(search.toLowerCase()) || String(data.person).toLowerCase().includes(search.toLowerCase()))"

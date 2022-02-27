@@ -17,15 +17,12 @@ export default (
   if (newpwd.newpwd1 === newpwd.newpwd2) {
     axios({
       url: `${baseurl}member/${number}/edit/password`,
-      headers: {
-        'Content-Type': 'application/json',
-      },
       method: 'post',
-      data: JSON.stringify({
+      data: {
         id: number,
         newp: window.btoa(newpwd.newpwd1),
         password: window.btoa(newpwd.oldpwd),
-      }),
+      },
     }).then(response => {
       if (response.data.status == 'ok') {
         ElMessageBox.alert('成功', '修改密码', {
@@ -33,7 +30,7 @@ export default (
           center: true,
         }).then(() => {
           sessionStorage.removeItem('memberLoginInfo')
-          router.push('/member/login')
+          router.push('/')
         })
       } else {
         ElMessageBox.alert(

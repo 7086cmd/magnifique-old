@@ -40,7 +40,7 @@ axios(`${baseurl}member/${number}/login?password=${password}`).then(response => 
   <el-container>
     <el-aside width="12%">
       <el-menu v-model="pageSelected" default-active="/member/" :collapse="true" style="min-height: 1024px; padding-top: 2em" collapse-transition router>
-        <el-menu-item index="/class/">
+        <el-menu-item index="/">
           <el-icon>
             <Back />
           </el-icon>

@@ -23,7 +23,6 @@ const toTag = (tag: string) => {
       <el-container>
         <el-aside width="30%"></el-aside>
         <el-main style="padding-top: 15%">
-          <Particles id="tsparticles" />
           <el-card shadow="never">
             <el-tabs v-model="choice">
               <el-tab-pane name="class" label="班级登录">
@@ -44,7 +43,5 @@ const toTag = (tag: string) => {
         <el-aside width="30%"> </el-aside>
       </el-container>
     </el-container>
-    <image-reader></image-reader>
-    <markdown-editor></markdown-editor>
   </div>
 </template>

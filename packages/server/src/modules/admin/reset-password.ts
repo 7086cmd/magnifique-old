@@ -13,6 +13,9 @@ export default (newPwd: string) => {
           password: sha512(newPwd),
         },
       })
+      return {
+        status: 'ok',
+      }
     } catch (e) {
       return {
         status: 'error',
