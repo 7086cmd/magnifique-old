@@ -1,4 +1,4 @@
-html {
+export default `html {
   overflow-x: initial !important;
 }
 :root {
@@ -228,9 +228,9 @@ figure {
   max-width: calc(100% + 16px);
   padding: 0px;
 }
-/* figure > table {
+figure > table {
   margin: 0px;
-} */
+}
 tr {
   break-inside: avoid;
   break-after: auto;
@@ -238,7 +238,7 @@ tr {
 thead {
   display: table-header-group;
 }
-/* table {
+table {
   border-collapse: collapse;
   border-spacing: 0px;
   width: 100%;
@@ -248,7 +248,7 @@ thead {
 }
 table.md-table td {
   min-width: 32px;
-} */
+}
 .CodeMirror-gutters {
   border-right: 0px;
   background-color: inherit;
@@ -405,9 +405,9 @@ li > :first-child {
   .typora-export #write::after {
     height: 0px;
   }
-  /* .is-mac table {
+  .is-mac table {
     break-inside: avoid;
-  } */
+  }
   .typora-export-show-outline .typora-export-sidebar {
     display: none;
   }
@@ -609,9 +609,9 @@ a.md-print-anchor {
 [lang='mermaid'] .node text {
   font-size: 1rem;
 }
-/* table tr th {
+table tr th {
   border-bottom: 0px;
-} */
+}
 video {
   max-width: 100%;
   display: block;
@@ -1309,8 +1309,8 @@ p,
 blockquote,
 ul,
 ol,
-dl/*,
-table*/ {
+dl,
+table {
   margin: 0.8em 0;
 }
 
@@ -1396,7 +1396,7 @@ blockquote {
   color: #777;
   background-color: rgba(66, 185, 131, 0.1);
 }
-/* 
+
 table {
   padding: 0;
   word-break: initial;
@@ -1437,7 +1437,7 @@ table tr td:first-child {
 table tr th:last-child,
 table tr td:last-child {
   margin-bottom: 0;
-} */
+}
 
 #write strong {
   padding: 0 1px;
@@ -1446,10 +1446,10 @@ table tr td:last-child {
 #write em {
   padding: 0 5px 0 2px;
 }
-/* 
+
 #write table thead th {
   background-color: #f2f2f2;
-} */
+}
 
 #write .CodeMirror-gutters {
   border-right: none;
@@ -1523,7 +1523,7 @@ tt {
     font-size: 13px;
   }
 
-  /* table, */
+  table,
   pre {
     page-break-inside: avoid;
   }
@@ -1642,3 +1642,4 @@ footer {
 .html-for-mac .context-menu {
   --item-hover-bg-color: #e6f0fe;
 }
+` as string

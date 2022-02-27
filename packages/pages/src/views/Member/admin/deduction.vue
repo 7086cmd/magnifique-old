@@ -9,6 +9,7 @@ import baseurl from '../../../modules/baseurl'
 import sucfuc from '../../../modules/sucfuc'
 import failfuc from '../../../modules/failfuc'
 import DeductionDescription from '../../../components/lists/DeductionDescription.vue'
+import toPort from '../../../modules/to-port'
 
 let isClient = ref(false)
 
@@ -47,7 +48,7 @@ const createData = async () => {
   isSubmiting.value = false
   if (response.data.status == 'ok') {
     sucfuc()
-    window.open(`${baseurl}admin/export/download/${response.data.details.token}`, isClient.value ? '_self' : '_blank')
+    window.open(toPort(`${baseurl}admin/export/download/${response.data.details.token}`), isClient.value ? '_self' : '_blank')
   } else {
     failfuc(response.data.reason, response.data.text)
   }

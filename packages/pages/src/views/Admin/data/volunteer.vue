@@ -11,6 +11,7 @@ import VolunteerDescription from '../../../components/lists/VolunteerDescription
 import dayjs from 'dayjs'
 import { v4 } from 'uuid'
 import { ElLoading } from 'element-plus'
+import toPort from '../../../modules/to-port'
 
 const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
 
@@ -146,7 +147,7 @@ const createExport = async () => {
   isSubmiting.value = false
   if (response.data.status == 'ok') {
     sucfuc()
-    window.open(`${baseurl}admin/export/download/${response.data.details.token}`, isClient.value ? '_self' : '_blank')
+    window.open(toPort(`${baseurl}admin/export/download/${response.data.details.token}`), isClient.value ? '_self' : '_blank')
   } else {
     failfuc(response.data.reason, response.data.text)
   }

@@ -13,6 +13,7 @@ import TagPurple from './components/tags/tag.purple.vue'
 import markdown from './modules/markdown/markdown.vue'
 import MonacoEditor from './modules/editor/index.vue'
 import ImageReader from './modules/image/upload.vue'
+import MarkdownEditor from './modules/message/index.vue'
 
 const app = createApp(App)
 
@@ -30,6 +31,7 @@ app.component('Markdown', markdown)
 app.component('MonacoEditor', MonacoEditor)
 app.component('TagPurple', TagPurple)
 app.component('ImageReader', ImageReader)
+app.component('MarkdownEditor', MarkdownEditor)
 app.use(router)
 // app.use(store)
 app.use(i18n)

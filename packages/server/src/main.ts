@@ -86,6 +86,7 @@ const downloaderSecureServer = createHttpsServer(
   },
   downloaderServer.callback()
 )
+const downloaderUnSecureServer = createHttpServer(downloaderServer.callback())
 const io = new Server(httpsServer, {
   cors: {
     origin: 'http://localhost:3000',
@@ -143,7 +144,9 @@ if (process.env.NODE_ENV === 'production') {
   // For safety, we don't allow to use `koaCors` in production.
   server.use(koaCors({}))
 }
-
+downloadRouter.get('/', async ctx => {
+  ctx.response.body = ctx
+})
 downloadRouter.get('/api/class/graph/:type/:token', async ctx => {
   if (graphTokens[ctx.params.token] === undefined) {
     ctx.response.type = 'html'
@@ -2190,6 +2193,10 @@ setInterval(() => {
 server.use(router.routes())
 server.use(router.allowedMethods())
 
+// Use routes to register APIs.
+downloaderServer.use(downloadRouter.routes())
+downloaderServer.use(downloadRouter.allowedMethods())
+
 // Redirect 404 pages(route)
 server.use(async ctx => {
   if (ctx.status == 404) {
@@ -2271,6 +2278,7 @@ app.whenReady().then(() => {
 httpServer.listen(80)
 httpsServer.listen(443)
 downloaderSecureServer.listen(8080)
+downloaderUnSecureServer.listen(8081)
 
 // try {
 //   // eslint-disable-next-line @typescript-eslint/no-var-requires

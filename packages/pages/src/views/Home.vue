@@ -45,5 +45,6 @@ const toTag = (tag: string) => {
       </el-container>
     </el-container>
     <image-reader></image-reader>
+    <markdown-editor></markdown-editor>
   </div>
 </template>
