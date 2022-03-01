@@ -738,7 +738,7 @@ router.get('/api/member/admin/:id/get/:department/volunteer', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'member')) {
+      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'member-volunteer')) {
         ctx.response.body = volunteerActions.getVolunteerAsDepartment(ctx.params.department)
       } else {
         ctx.response.body = {

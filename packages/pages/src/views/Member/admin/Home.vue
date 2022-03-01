@@ -40,7 +40,7 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
         <volunteer-page type="volunteer" />
       </el-tab-pane>
     </el-tabs>
-    <el-card v-if="me.union.admin.length === 0" shadow="never">
+    <el-card v-if="me.union.position.includes('minister') || me.union.position.includes('chairman')" shadow="never">
       <el-result icon="error" title="不可使用" sub-title="不具有管理权限" />
     </el-card>
   </div>
