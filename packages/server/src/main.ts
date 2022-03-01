@@ -710,7 +710,7 @@ router.get('/api/member/admin/:id/get/:department/member', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'member')) {
+      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'member-volunteer')) {
         ctx.response.body = memberActions.multiProcess(memberActions.getDepartmentAsRaw(ctx.params.department))
       } else {
         ctx.response.body = {
