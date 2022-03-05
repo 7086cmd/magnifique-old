@@ -39,6 +39,7 @@ import * as memberActions from './modules/powers/member'
 import * as postActions from './modules/powers/post'
 import * as volunteerActions from './modules/powers/volunteer'
 import * as utils from './modules/utils'
+import getEmailConfig from './modules/database/get-email-config'
 
 // Generate Chart Base File
 const chartBase = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="shortcut icon" href="https://v-charts.js.org/favicon.ico" type="image/x-icon" /><title>Chart (type: <%=tit=>)</title><script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js"></script><script src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css" /></head><body><div id="app"><ve-<%=tpe=> :data="cdata"></ve-<%=tpe=>></div><script>var vm=new Vue({el:'#app',data(){const data=JSON.parse('<%=dat=>');return {cdata:data}}})</script></body></html>`
@@ -2187,7 +2188,11 @@ setInterval(() => {
   members.forEach(item => {
     memberActions.autoCalculateScore(item.number)
   })
-}, 10800000) // 每3小时计算一次素质分
+  const emailConfigs = getEmailConfig()
+  postActions.createAutoEmailPostDetector(emailConfigs.username, emailConfigs.password, emailConfigs.hosts).then(() => {
+    // Complete for detectment.
+  })
+}, 3600) // 每3小时计算一次素质分
 
 // Use routes to register APIs.
 server.use(router.routes())

@@ -10,3 +10,12 @@ declare interface mailPostTransfer extends mailContent {
   id: string
   from: string
 }
+
+declare interface emailConfig {
+  username: string
+  password: string
+  hosts: {
+    imap: string
+    smtp: string
+  }
+}
