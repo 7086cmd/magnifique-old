@@ -21,7 +21,8 @@ const createMailTransfer = async (
       },
       dayjs().subtract(3, 'month').format('YYYY-MM-DD')
     )
-    createMailToPostDataMulti(
+    // console.log(list)
+    await createMailToPostDataMulti(
       {
         host: hosts.smtp,
         secure: true,

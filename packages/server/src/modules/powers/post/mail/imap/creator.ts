@@ -39,7 +39,7 @@ const createImapReader = (
             try {
               let filter = imap.fetch(result, {
                 bodies: '',
-                // markSeen: true,
+                markSeen: true,
               })
               filter.on('message', msg => {
                 const mailContent = new MailParser()
