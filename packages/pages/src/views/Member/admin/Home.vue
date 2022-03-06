@@ -4,12 +4,12 @@ import { ref } from 'vue'
 import axios from 'axios'
 import baseurl from '../../../modules/baseurl'
 import MemberPage from './member.vue'
-import DeductionPage from './deduction.vue'
+import DeductionPage from '../../../components/powers/deduction/deduction.vue'
 import VolunteerPage from './volunteer.vue'
 import PostPage from './post.vue'
 import personExample from '../../../../examples/person'
 import { ElLoading } from 'element-plus'
-const { number } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
+const { number, password } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
 let choice = ref('')
 let me = ref<member>(personExample())
 const loader = ElLoading.service({
@@ -28,7 +28,7 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
         <member-page />
       </el-tab-pane>
       <el-tab-pane v-if="me.union.admin.includes('deduction')" label="扣分" name="deduction">
-        <deduction-page />
+        <deduction-page type="member_admin" :number="number" :password="password" />
       </el-tab-pane>
       <el-tab-pane v-if="me.union.admin.includes('post')" label="稿件" name="post">
         <post-page />
@@ -40,7 +40,7 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
         <volunteer-page type="volunteer" />
       </el-tab-pane>
     </el-tabs>
-    <el-card v-if="me.union.position.includes('minister') || me.union.position.includes('chairman')" shadow="never">
+    <el-card v-if="!me.union.position.includes('minister') && !me.union.position.includes('chairman')" shadow="never">
       <el-result icon="error" title="不可使用" sub-title="不具有管理权限" />
     </el-card>
   </div>
