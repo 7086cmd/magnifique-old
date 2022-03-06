@@ -40,6 +40,7 @@ import * as postActions from './modules/powers/post'
 import * as volunteerActions from './modules/powers/volunteer'
 import * as utils from './modules/utils'
 import getEmailConfig from './modules/database/get-email-config'
+import getOrigin from './modules/database/get-origin'
 
 // Generate Chart Base File
 const chartBase = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="shortcut icon" href="https://v-charts.js.org/favicon.ico" type="image/x-icon" /><title>Chart (type: <%=tit=>)</title><script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js"></script><script src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css" /></head><body><div id="app"><ve-<%=tpe=> :data="cdata"></ve-<%=tpe=>></div><script>var vm=new Vue({el:'#app',data(){const data=JSON.parse('<%=dat=>');return {cdata:data}}})</script></body></html>`
@@ -296,8 +297,7 @@ router.get('/api/class/:gradeid/:classid/get/volunteer', async ctx => {
 })
 router.post('/api/class/new/feedback', async ctx => {
   try {
-    const password = utils.createDEBase64(ctx.request.body.password)
-    const { gradeid, classid } = ctx.request.body
+    const { gradeid, classid, password } = ctx.request.body
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
       ctx.response.body = deductionActions.createCallback(ctx.request.body)
     } else {
@@ -1186,7 +1186,7 @@ router.post('/api/member/admin/:id/del/deduction', async ctx => {
     const { password } = ctx.request.body
     const { id } = ctx.params
     if (loginMember(parseInt(id), password).status == 'ok') {
-      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'deduction')) {
+      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'deduction')) {
         ctx.response.body = deductionActions.deleteDeduction(parseInt(ctx.request.body.person), ctx.request.body.id)
         io.emit(
           'del-deduc',
@@ -2268,8 +2268,10 @@ app.whenReady().then(() => {
       },
     ])
   )
+  const originer = new URL(getOrigin())
+  originer.href = '/server'
   tray.on('double-click', () => mainWindow.show())
-  mainWindow.loadURL(process.env.NODE_ENV == 'development' ? 'http://localhost:3000/server' : 'http://localhost/server')
+  mainWindow.loadURL(process.env.NODE_ENV == 'development' ? 'http://localhost:3000/server' : originer.toString())
   ipcMain.on('close-main-window', () => mainWindow.hide())
   ipcMain.on('minimize-main-window', () => mainWindow.minimize())
   ipcMain.on('maximize-main-window', () => (mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize()))

@@ -5,6 +5,7 @@ import MemberLogin from './Member/Login.vue'
 import ClassLogin from './Class/ClassLogin.vue'
 import { useRouter } from 'vue-router'
 import AdminLogin from './Admin/Login.vue'
+import deductionVue from '../components/powers/deduction/deduction.vue'
 
 const router = useRouter()
 const choice = ref('class')
@@ -16,6 +17,7 @@ const toTag = (tag: string) => {
 
 <template>
   <div className="background_must_be_gray">
+    <deduction-vue type="member_admin" :number="20201108" password="MjAyMDExMDg=" name="吴承宇"></deduction-vue>
     <el-container>
       <el-header style="text-align: right; height: 30%">
         <controls />
