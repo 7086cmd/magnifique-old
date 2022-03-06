@@ -2268,10 +2268,15 @@ app.whenReady().then(() => {
       },
     ])
   )
-  const originer = new URL(getOrigin())
-  originer.href = '/server'
   tray.on('double-click', () => mainWindow.show())
-  mainWindow.loadURL(process.env.NODE_ENV == 'development' ? 'http://localhost:3000/server' : originer.toString())
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.loadURL('http://localhost:3000/server')
+  } else {
+    const originer = new URL(getOrigin())
+    originer.href = '/server'
+    mainWindow.loadURL(originer.toString())
+  }
+  // mainWindow.loadURL(process.env.NODE_ENV === 'development' ? 'http://localhost:3000/server' : originer.toString())
   ipcMain.on('close-main-window', () => mainWindow.hide())
   ipcMain.on('minimize-main-window', () => mainWindow.minimize())
   ipcMain.on('maximize-main-window', () => (mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize()))
