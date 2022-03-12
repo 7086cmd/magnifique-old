@@ -59,13 +59,14 @@ class DeductionFetcher {
   }
 
   create = async (deductionCreatement: deduction) => {
-    if (this.options.deleter) {
+    if (this.options.creater && this.options.standardConfig.type === 'member') {
       return (
-        await axios(this.options.deleter, {
+        await axios(this.options.creater, {
           method: 'post',
           data: {
             ...this.options.standardConfig,
-            config: deductionCreatement,
+            id: Number(this.options.standardConfig.number),
+            content: JSON.parse(JSON.stringify(deductionCreatement)),
           },
         })
       ).data

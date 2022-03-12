@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /* global fetcherOptions, DeductionList, member */
 import { DeductionFetcher } from './fetcher'
-import { defineProps, reactive, ref } from 'vue'
+import { defineProps, reactive, ref, watch } from 'vue'
 import { Refresh, Box, CirclePlus, DeleteFilled, Close, Flag } from '@element-plus/icons-vue'
 import { ElLoading, ElMessageBox } from 'element-plus'
 import sucfuc from '../../../modules/sucfuc'
@@ -184,6 +184,7 @@ const submitDeduction = async () => {
         let data = deductionData
         data.reason = typs.value[i]
         data.deduction = dets.value[typs.value[i]].deduction
+        data.person = Number(data.person)
         const response = await fetcher.create(data)
         isFetching.value = false
         if (response.status !== 'ok') {
@@ -237,6 +238,13 @@ const submitDeduction = async () => {
       })
   }
 }
+watch(typs, () => {
+  let dtotal = 0
+  for (let i = 0; i in typs.value; i++) {
+    dtotal = Math.floor((dtotal + dets.value[typs.value[i]].deduction) * 100) / 100
+  }
+  deductionData.deduction = dtotal
+})
 const deleteDeduction = (prop: { row: DeductionList }) => {
   fetcher
     .delete({
@@ -274,6 +282,7 @@ const callbackDeductions = (inf: DeductionList) => {
       })
   })
 }
+fetching()
 </script>
 <template>
   <div>
@@ -303,7 +312,7 @@ const callbackDeductions = (inf: DeductionList) => {
                 <el-button v-if="props.type === 'member'" type="text" :icon="Flag" size="small" :disabled="proping.row.status !== 'processing'" @click="turnDown(proping)"></el-button>
                 <el-popconfirm title="确定删除？" @confirm="deleteDeduction(proping)">
                   <template #reference>
-                    <el-button v-if="['admin', 'member_admin'].includes(props.type)" type="text" :icon="DeleteFilled" size="small" :disabled="proping.row.status === 'failed'"></el-button>
+                    <el-button v-if="['admin', 'member_admin', 'member'].includes(props.type)" type="text" :icon="DeleteFilled" size="small" :disabled="proping.row.status === 'failed'"></el-button>
                   </template>
                 </el-popconfirm>
               </template>
