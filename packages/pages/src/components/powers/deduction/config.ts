@@ -1,6 +1,6 @@
 import baseurl from '../../../modules/baseurl'
 
-const createDeductionConfig = (fetcherInput: fetcherOptions): deductionFetcherConfig => {
+const createDeductionConfig = (fetcherInput: fetcherOptions): DeductionFetch.deductionFetcherConfig => {
   if (fetcherInput.type === 'admin') {
     return {
       type: 'admin',

@@ -2,7 +2,7 @@
 /* global fetcherOptions, DeductionList, member */
 import { DeductionFetcher } from './fetcher'
 import { defineProps, reactive, ref, watch } from 'vue'
-import { Refresh, Box, CirclePlus, DeleteFilled, Close, Flag } from '@element-plus/icons-vue'
+import { Refresh, Box, CirclePlus, DeleteFilled, QuestionFilled as q, Flag } from '@element-plus/icons-vue'
 import { ElLoading, ElMessageBox } from 'element-plus'
 import sucfuc from '../../../modules/sucfuc'
 import failfuc from '../../../modules/failfuc'
@@ -308,7 +308,7 @@ fetching()
                 <el-button v-if="props.type === 'member'" type="text" :icon="CirclePlus" @click="newDeduction = true"></el-button>
               </template>
               <template #default="proping">
-                <el-button v-if="props.type === 'class'" type="text" :icon="Close" size="small" :disabled="proping.row.status == 'processing'" @click="callbackDeductions(proping.row)"></el-button>
+                <el-button v-if="props.type === 'class'" type="text" :icon="q" size="small" :disabled="proping.row.status == 'processing'" @click="callbackDeductions(proping.row)"></el-button>
                 <el-button v-if="props.type === 'member'" type="text" :icon="Flag" size="small" :disabled="proping.row.status !== 'processing'" @click="turnDown(proping)"></el-button>
                 <el-popconfirm title="确定删除？" @confirm="deleteDeduction(proping)">
                   <template #reference>

@@ -5,8 +5,8 @@ import axios from 'axios'
 import baseurl from '../../../modules/baseurl'
 import MemberPage from './member.vue'
 import DeductionPage from '../../../components/powers/deduction/deduction.vue'
+import PostPage from '../../../components/powers/post/post.vue'
 import VolunteerPage from './volunteer.vue'
-import PostPage from './post.vue'
 import personExample from '../../../../examples/person'
 import { ElLoading } from 'element-plus'
 const { number, password } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
@@ -31,7 +31,7 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
         <deduction-page type="member_admin" :number="number" :password="password" />
       </el-tab-pane>
       <el-tab-pane v-if="me.union.admin.includes('post')" label="稿件" name="post">
-        <post-page />
+        <post-page type="member_admin" :number="number" :password="password" />
       </el-tab-pane>
       <el-tab-pane v-if="['vice-minister', 'minister'].includes(me.union.position)" label="成员义工" name="member-volunteer">
         <volunteer-page type="member" />

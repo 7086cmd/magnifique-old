@@ -1494,14 +1494,7 @@ router.get('/api/member/post/:id/work/get/post', async ctx => {
     const password = getPassword(ctx)
     const { id } = ctx.params
     if (loginMember(parseInt(id), password).status == 'ok') {
-      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'post')) {
-        ctx.response.body = postActions.getOwn(parseInt(id))
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
+      ctx.response.body = postActions.getOwn(parseInt(id))
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1522,15 +1515,7 @@ router.post('/api/member/post/:id/work/upload/post', async (ctx, next) => {
     try {
       const { password, person } = ctx.request.body
       if (loginMember(parseInt(person), password).status == 'ok') {
-        if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'post')) {
-          ctx.response.body = postActions.editLocation(parseInt(ctx.params.id), ctx.file)
-        } else {
-          ctx.response.status = 403
-          ctx.response.body = {
-            status: 'error',
-            reason: 'no-auth',
-          }
-        }
+        ctx.response.body = postActions.editLocation(parseInt(ctx.params.id), ctx.file)
       } else {
         ctx.response.status = 402
         ctx.response.body = {
@@ -1558,23 +1543,16 @@ router.post('/api/member/post/:id/work/download/post', async ctx => {
   try {
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
-      if (memberActions.memberDutyLimitCheckPower(person, 'post')) {
-        let index = v4()
-        while (docTokens[index] !== undefined) {
-          index = v4()
-        }
-        docTokens[index] = postActions.downloadDocument(id, person)
-        ctx.response.body = {
-          status: 'ok',
-          details: {
-            token: index,
-          },
-        }
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
+      let index = v4()
+      while (docTokens[index] !== undefined) {
+        index = v4()
+      }
+      docTokens[index] = postActions.downloadDocument(id, person)
+      ctx.response.body = {
+        status: 'ok',
+        details: {
+          token: index,
+        },
       }
     } else {
       ctx.response.body = {
@@ -1594,14 +1572,7 @@ router.post('/api/member/post/:id/work/new/post', async ctx => {
   try {
     const { id, password, content, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
-      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'post')) {
-        ctx.response.body = postActions.createPost(parseInt(person), id, content)
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
+      ctx.response.body = postActions.createPost(parseInt(person), id, content)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1620,14 +1591,7 @@ router.post('/api/member/post/:id/work/del/post', async ctx => {
   try {
     const { id, password, person } = ctx.request.body
     if (loginMember(parseInt(person), password).status == 'ok') {
-      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'post')) {
-        ctx.response.body = postActions.deletePost(parseInt(person), id)
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
+      ctx.response.body = postActions.deletePost(parseInt(person), id)
     } else {
       ctx.response.body = {
         status: 'error',

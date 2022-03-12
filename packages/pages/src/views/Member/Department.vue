@@ -3,11 +3,11 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import baseurl from '../../modules/baseurl'
-import postPage from './departments/post.vue'
 import volunteerPage from './departments/volunteer.vue'
 import WorkFlowPage from './departments/WorkFlow.vue'
 import personExample from '../../../examples/person'
 import DeductionPage from '../../components/powers/deduction/deduction.vue'
+import PostPage from '../../components/powers/post/post.vue'
 import { ElLoading } from 'element-plus'
 
 const loader = ElLoading.service({
@@ -34,8 +34,8 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
       <el-tab-pane v-if="me.union.duty.includes('deduction')" label="扣分" name="deduction">
         <deduction-page type="member" :number="number" :password="password" />
       </el-tab-pane>
-      <el-tab-pane v-if="me.union.duty.includes('post')" label="投稿" name="post">
-        <post-page />
+      <el-tab-pane label="投稿" name="post">
+        <post-page type="member" :number="number" :password="password" />
       </el-tab-pane>
     </el-tabs>
   </div>

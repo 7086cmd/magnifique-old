@@ -3,7 +3,7 @@ import deduction from '../../../../examples/deduction'
 import { createDeductionConfig } from './config'
 
 class DeductionFetcher {
-  options: deductionFetcherConfig
+  options: DeductionFetch.deductionFetcherConfig
 
   deductionExample: deduction
 

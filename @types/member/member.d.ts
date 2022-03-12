@@ -23,7 +23,7 @@ declare interface member {
     leader: boolean
     position: 'chairman' | 'vice-chairman' | 'minister' | 'vice-minister' | 'clerk' | 'registry' | 'none'
     duty: ('deduction' | 'post' | 'radio' | 'volunteer')[]
-    admin: ('deduction' | 'post' | 'radio' | 'volunteer' | 'member')[]
+    admin: ('deduction' | 'post' | 'radio' | 'volunteer' | 'member' | 'member-volunteer')[]
     view: ('deduction' | 'post' | 'radio' | 'volunteer' | 'member')[]
     department: string
     regist: {

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import deduction from '../../components/powers/deduction/deduction.vue'
+import post from '../../components/powers/post/post.vue'
 import member from './lists/member.vue'
-import post from './lists/post.vue'
 import volunteer from './lists/volunteer.vue'
 let page = ref('deduction')
 const { gradeid, classid, password } = JSON.parse(window.atob(String(localStorage.getItem('classLoginInfo'))))
@@ -18,7 +18,7 @@ const { gradeid, classid, password } = JSON.parse(window.atob(String(localStorag
           <deduction :gradeid="gradeid" :classid="classid" :password="password" type="class" />
         </el-tab-pane>
         <el-tab-pane label="稿件" name="post">
-          <post />
+          <post :gradeid="gradeid" :classid="classid" :password="password" type="class" />
         </el-tab-pane>
         <el-tab-pane label="义工" name="volunteer">
           <volunteer />

@@ -1,4 +1,4 @@
-declare namespace DeductionFetch {
+declare namespace PostFetch {
   export interface fetchAsClass {
     gradeid: number
     classid: number
@@ -26,14 +26,16 @@ declare namespace DeductionFetch {
 
   export type fetcherOptions = fetchAsAdmin | fetchAsClass | fetchAsMemberAdmin | fetchAsSingleMember
 
-  export interface deductionFetcherConfig {
+  export interface postFetcherConfig {
     type: fetcherOptions['type']
     getter: string
     deleter: false | string
     creater: false | string
-    callbacker: false | string
-    decliner: false | string
+    uploader: false | string
+    downloader: false | string
     standardConfig: fetcherOptions
     name?: string
   }
 }
+
+export { PostFetch }

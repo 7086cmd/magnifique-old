@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ref } from 'vue'
 import Deduction from '../../components/powers/deduction/deduction.vue'
-import Post from './data/post.vue'
+import PostDev from '../../components/powers/post/post.vue'
 import Volunteer from './data/volunteer.vue'
 let nativeName = ref('')
 const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
@@ -16,7 +16,7 @@ const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLo
           <deduction type="admin" :password="password" />
         </el-tab-pane>
         <el-tab-pane label="稿件" name="post">
-          <post />
+          <post-dev type="admin" :password="password" />
         </el-tab-pane>
         <el-tab-pane label="义工" name="volunteer">
           <volunteer />

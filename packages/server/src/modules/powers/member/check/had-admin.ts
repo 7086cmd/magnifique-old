@@ -6,9 +6,10 @@ export default (memberNumber: string | number, dutyWhichIsWaitingForCheck: 'post
     if (dutyWhichIsWaitingForCheck === 'member') {
       return (getSingleMemberAsRaw(Number(memberNumber)).details as unknown as member).union.position === 'minister'
     } else if (dutyWhichIsWaitingForCheck === 'member-volunteer') {
-      return (getSingleMemberAsRaw(Number(memberNumber)).details as unknown as member).union.position.includes('minister')
+      const unionConf = (getSingleMemberAsRaw(Number(memberNumber)).details as unknown as member).union
+      return unionConf.position.includes('minister') || unionConf.admin.includes('member-volunteer')
     } else {
-      return (getSingleMemberAsRaw(Number(memberNumber)).details as unknown as member).union.admin.includes(dutyWhichIsWaitingForCheck)
+      return getSingleMemberAsRaw(Number(memberNumber)).details?.union.admin.includes(dutyWhichIsWaitingForCheck)
     }
   }
 }
