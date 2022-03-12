@@ -1,6 +1,6 @@
 {
   "name": "magnifique",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A magnifique platform.",
   "main": "dist/main.js",
   "scripts": {
