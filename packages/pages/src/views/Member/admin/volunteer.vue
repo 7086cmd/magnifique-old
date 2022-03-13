@@ -256,7 +256,7 @@ const startPassing = (props: { row: VolunteerQueryResult }) => {
         <template #footer>
           <span>
             <el-button @click="isRegistingVolunteer = false"> 取消 </el-button>
-            <el-button color="#626aef" style="color: white" :loading="isSubmiting" @click="createRegistry"> 确定 </el-button>
+            <el-button type="primary" :loading="isSubmiting" @click="createRegistry"> 确定 </el-button>
           </span>
         </template>
       </el-dialog>
@@ -264,12 +264,12 @@ const startPassing = (props: { row: VolunteerQueryResult }) => {
         <el-date-picker v-model="exportTime" type="datetimerange" style="width: 100%" range-separator="到" start-placeholder="开始日期" end-placeholder="结束日期" />
         <br />
         <template #footer>
-          <el-button color="#626aef" style="color: white" @click="createExport" v-text="'导出'" />
+          <el-button type="primary" @click="createExport" v-text="'导出'" />
         </template>
       </el-dialog>
       <el-dialog v-model="isCheckin" title="登记义工/考勤情况">
         <el-transfer v-model="doneMember" :titles="['缺勤成员', '实到成员']" :button-texts="['缺勤', '到勤']" :data="waitForChoose" />
-        <el-button color="#626aef" style="color: white" @click="editStatusVolunteer(doneMember)">登记</el-button>
+        <el-button type="primary" @click="editStatusVolunteer(doneMember)">登记</el-button>
       </el-dialog>
     </div>
   </transition>

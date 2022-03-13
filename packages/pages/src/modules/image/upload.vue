@@ -27,7 +27,7 @@ const createData = () => null
       <template #footer>
         <span className="dialog-footer">
           <el-button @click="isConfirming = false"> 取消 </el-button>
-          <el-button color="#626aef" style="color: white" :loading="isSubmiting" @click="createData"> 确定发送 </el-button>
+          <el-button type="primary" :loading="isSubmiting" @click="createData"> 确定发送 </el-button>
         </span>
       </template>
     </el-dialog>

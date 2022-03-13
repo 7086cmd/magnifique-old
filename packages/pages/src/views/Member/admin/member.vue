@@ -249,7 +249,7 @@ const createMember = async () => {
       <template #footer>
         <span>
           <el-button @click="isRegistingMember = false"> 取消 </el-button>
-          <el-button color="#626aef" style="color: white" :loading="isSubmiting" @click="createMember"> 确定 </el-button>
+          <el-button type="primary" :loading="isSubmiting" @click="createMember"> 确定 </el-button>
         </span>
       </template>
     </el-dialog>
@@ -267,7 +267,7 @@ const createMember = async () => {
       <template #footer>
         <span>
           <el-button @click="toTrueDialog = false"> 取消 </el-button>
-          <el-button color="#626aef" style="color: white" :loading="isFulling" @click="toTrueIt()"> 确定 </el-button>
+          <el-button type="primary" :loading="isFulling" @click="toTrueIt()"> 确定 </el-button>
         </span>
       </template>
     </el-dialog>

@@ -149,7 +149,7 @@ const statusAction = async (props: any, action: string) => {
       </el-form>
       <template #footer>
         <span>
-          <el-button @click="newWorkFlow = false">取消</el-button><el-button color="#626aef" style="color: white" :loading="isSubmitingNewWorkFlow" @click="newWorkFlowAction">确定</el-button>
+          <el-button @click="newWorkFlow = false">取消</el-button><el-button type="primary" :loading="isSubmitingNewWorkFlow" @click="newWorkFlowAction">确定</el-button>
         </span>
       </template>
     </el-dialog>

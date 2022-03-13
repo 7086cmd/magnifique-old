@@ -186,7 +186,7 @@ const createExport = async () => {
         <template #footer>
           <span>
             <el-button @click="isRegistingVolunteer = false"> 取消 </el-button>
-            <el-button color="#626aef" style="color: white" :loading="isSubmiting" @click="createRegistry"> 确定 </el-button>
+            <el-button type="primary" :loading="isSubmiting" @click="createRegistry"> 确定 </el-button>
           </span>
         </template>
       </el-dialog>
@@ -194,7 +194,7 @@ const createExport = async () => {
         <el-date-picker v-model="exportTime" type="datetimerange" style="width: 100%" range-separator="到" start-placeholder="开始日期" end-placeholder="结束日期" />
         <br />
         <template #footer>
-          <el-button color="#626aef" style="color: white; text-align: center" @click="createExport" v-text="'导出'" />
+          <el-button type="primary" style="text-align: center" @click="createExport" v-text="'导出'" />
         </template>
       </el-dialog>
     </div>

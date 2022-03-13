@@ -348,7 +348,7 @@ fetching()
       <template #footer>
         <span>
           <el-button @click="newDeduction = false"> 取消 </el-button>
-          <el-button color="#626aef" style="color: white" :loading="isFetching" @click="submitDeduction"> 确定 </el-button>
+          <el-button type="primary" :loading="isFetching" @click="submitDeduction"> 确定 </el-button>
         </span>
       </template>
     </el-dialog>
@@ -368,8 +368,8 @@ fetching()
       <template #footer>
         <span className="dialog-footer">
           <el-button @click="isExporting = false"> 取消 </el-button>
-          <el-button v-if="props.type === 'admin'" color="#626aef" style="color: white" :loading="isSubmiting" @click="createDataAdmin"> 确定 </el-button>
-          <el-button v-if="props.type === 'member_admin'" color="#626aef" style="color: white" :loading="isSubmiting" @click="createDataMember"> 确定 </el-button>
+          <el-button v-if="props.type === 'admin'" type="primary" :loading="isSubmiting" @click="createDataAdmin"> 确定 </el-button>
+          <el-button v-if="props.type === 'member_admin'" type="primary" :loading="isSubmiting" @click="createDataMember"> 确定 </el-button>
         </span>
       </template>
     </el-dialog>

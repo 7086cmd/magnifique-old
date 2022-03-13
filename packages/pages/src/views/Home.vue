@@ -5,12 +5,27 @@ import MemberLogin from './Member/Login.vue'
 import ClassLogin from './Class/ClassLogin.vue'
 import { useRouter } from 'vue-router'
 import AdminLogin from './Admin/Login.vue'
+import { useWebNotification } from '@vueuse/core'
+import { ElMessageBox } from 'element-plus'
 
 const router = useRouter()
 const choice = ref('class')
 
 const toTag = (tag: string) => {
   router.push('/' + tag + '/')
+}
+
+const supportment = useWebNotification({
+  title: '欢迎使用Magnifique',
+  dir: 'auto',
+  lang: 'zh-cn',
+}).isSupported
+
+if (!supportment) {
+  ElMessageBox.alert('请开启通知', '未开启通知', {
+    center: true,
+    type: 'warning',
+  })
 }
 </script>
 
