@@ -5,6 +5,7 @@ import elementPlusLang from 'element-plus/es/locale/lang/zh-cn'
 import 'element-plus/dist/index.css'
 import './index.css'
 import 'nprogress/nprogress.css'
+import Vant from 'vant'
 import App from './App.vue'
 import router from './router'
 // import store from './store'
@@ -23,6 +24,7 @@ app.use(ElementPlus, {
   locale: elementPlusLang,
   size: 'default',
 })
+app.use(Vant)
 for (const iconName in ElIconModules) {
   if (Reflect.has(ElIconModules, iconName)) {
     const item = ElIconModules[iconName]

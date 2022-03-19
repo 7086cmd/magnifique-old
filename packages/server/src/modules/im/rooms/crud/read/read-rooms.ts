@@ -18,7 +18,7 @@ const getRecent = (messageFile: MessageFile) => {
   }
 }
 
-const readMyRoom = (user: string) => {
+const readMyRooms = (user: string) => {
   // createPath(user)
   const location = createRoomLocation(user)
   const roomIds = createSdbdataParser(location as string).messageRooms as string[]
@@ -29,4 +29,4 @@ const readMyRoom = (user: string) => {
   }))
 }
 
-export { readMyRoom }
+export { readMyRooms }
