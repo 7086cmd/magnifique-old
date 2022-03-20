@@ -33,7 +33,7 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
       <el-tab-pane v-if="me.union.admin.includes('post')" label="稿件" name="post">
         <post-page type="member_admin" :number="number" :password="password" />
       </el-tab-pane>
-      <el-tab-pane v-if="['vice-minister', 'minister'].includes(me.union.position)" label="成员义工" name="member-volunteer">
+      <el-tab-pane v-if="['vice-minister', 'minister'].includes(me.union.position) || me.union.admin.includes('member-volunteer')" label="成员义工" name="member-volunteer">
         <volunteer-page type="member" />
       </el-tab-pane>
       <el-tab-pane v-if="me.union.admin.includes('volunteer')" label="义工" name="volunteer">

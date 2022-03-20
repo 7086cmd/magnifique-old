@@ -125,6 +125,7 @@ let isRegi = ref(false)
 let toTrueNumber = ref(0)
 let isFulling = ref(false)
 let toTrueDialog = ref(false)
+let beTheViceMinisterInTheSameTime = ref(false)
 const toTrueIt = () => {
   isRegi.value = false
   isFulling.value = true
@@ -180,6 +181,9 @@ const createMember = async () => {
     }
     if (information.union.position === 'chairman') {
       information.union.admin = ['deduction', 'post', 'radio', 'volunteer']
+    }
+    if (beTheViceMinisterInTheSameTime.value) {
+      information.union.admin.push('member-volunteer')
     }
     const response = await axios(`${baseurl}admin/new/member`, {
       data: {
@@ -281,6 +285,7 @@ const createMember = async () => {
           <el-select v-model="information.union.admin" multiple collapse-tags style="width: 100%">
             <el-option v-for="item in vadmins" :key="item.value" :label="item.name" :value="item.value"></el-option>
           </el-select>
+          <el-checkbox v-if="information.union.department !== ''" v-model="beTheViceMinisterInTheSameTime" label="在部门内同时担任副部长职务"></el-checkbox>
         </el-form-item>
       </el-form>
       <template #footer>
