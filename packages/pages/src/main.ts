@@ -5,7 +5,7 @@ import elementPlusLang from 'element-plus/es/locale/lang/zh-cn'
 import 'element-plus/dist/index.css'
 import './index.css'
 import 'nprogress/nprogress.css'
-import Vant from 'vant'
+// import Vant from 'vant'
 import App from './App.vue'
 import router from './router'
 // import store from './store'
@@ -17,6 +17,9 @@ import MonacoEditor from './modules/editor/index.vue'
 import ImageReader from './modules/image/upload.vue'
 import MarkdownEditor from './modules/message/index.vue'
 import MessageItem from './components/messages/components.vue'
+import VueMarkdownEditor from '@kangc/v-md-editor'
+import VMdPreview from '@kangc/v-md-editor/lib/preview'
+import { installPlugin } from './plugins/markdown'
 
 const app = createApp(App)
 
@@ -24,7 +27,7 @@ app.use(ElementPlus, {
   locale: elementPlusLang,
   size: 'default',
 })
-app.use(Vant)
+// app.use(Vant)
 for (const iconName in ElIconModules) {
   if (Reflect.has(ElIconModules, iconName)) {
     const item = ElIconModules[iconName]
@@ -40,6 +43,8 @@ app.component('MessageItem', MessageItem)
 app.use(router)
 // app.use(store)
 app.use(i18n)
+app.use(installPlugin(VueMarkdownEditor))
+app.use(installPlugin(VMdPreview))
 app.mount('#app')
 
 if (window.matchMedia('(prefers-color-scheme: dark)').matches) {

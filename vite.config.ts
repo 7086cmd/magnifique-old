@@ -37,6 +37,10 @@ export default defineConfig({
     pwa({
       includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true,
+        /* other options */
+      },
       manifest: {
         name: 'Magnifique',
         short_name: 'Magn.',
