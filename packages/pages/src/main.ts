@@ -5,17 +5,13 @@ import elementPlusLang from 'element-plus/es/locale/lang/zh-cn'
 import 'element-plus/dist/index.css'
 import './index.css'
 import 'nprogress/nprogress.css'
-// import Vant from 'vant'
 import App from './App.vue'
 import router from './router'
-// import store from './store'
 import i18n from './i18n'
 import { ElMessageBox } from 'element-plus'
 import TagPurple from './components/tags/tag.purple.vue'
-import markdown from './modules/markdown/markdown.vue'
 import MonacoEditor from './modules/editor/index.vue'
 import ImageReader from './modules/image/upload.vue'
-import MarkdownEditor from './modules/message/index.vue'
 import MessageItem from './components/messages/components.vue'
 import VueMarkdownEditor from '@kangc/v-md-editor'
 import VMdPreview from '@kangc/v-md-editor/lib/preview'
@@ -34,11 +30,9 @@ for (const iconName in ElIconModules) {
     app.component(iconName, item)
   }
 }
-app.component('Markdown', markdown)
 app.component('MonacoEditor', MonacoEditor)
 app.component('TagPurple', TagPurple)
 app.component('ImageReader', ImageReader)
-app.component('MarkdownEditor', MarkdownEditor)
 app.component('MessageItem', MessageItem)
 app.use(router)
 // app.use(store)
