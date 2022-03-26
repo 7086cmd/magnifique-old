@@ -1,5 +1,5 @@
 import { createRoom } from 'packages/server/src/modules/im/rooms/crud/create/create-room'
-import { readMyRoom } from 'packages/server/src/modules/im/rooms/crud/read/read-rooms'
+import { readMyRooms } from 'packages/server/src/modules/im/rooms/crud/read/read-rooms'
 
 // createRoom({
 //   title: '你好',
@@ -7,4 +7,4 @@ import { readMyRoom } from 'packages/server/src/modules/im/rooms/crud/read/read-
 //   users: ['member/20201108', 'class/2/11'],
 // })
 
-console.log(readMyRoom('member/20201108'))
+console.log(readMyRooms('member/20201108'))

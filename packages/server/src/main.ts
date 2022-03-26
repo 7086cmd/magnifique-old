@@ -39,6 +39,7 @@ import * as memberActions from './modules/powers/member'
 import * as postActions from './modules/powers/post'
 import * as volunteerActions from './modules/powers/volunteer'
 import * as utils from './modules/utils'
+import * as connectionActions from './modules/im'
 import getEmailConfig from './modules/database/get-email-config'
 import getOrigin from './modules/database/get-origin'
 import createIndex from './modules/im/utils/create-index'
@@ -2150,6 +2151,20 @@ router.post('/api/admin/export/volunteer', async ctx => {
       status: 'error',
       reason: 'type-error',
       text: new Error(<string>e).message,
+    }
+  }
+})
+
+router.get('/api/message/get/rooms', async ctx => {
+  const params = new URLSearchParams(ctx.querystring)
+  const username = params.get('username') as string
+  const password = params.get('password') as string
+  if ((connectionActions.loginModule(username, password).status as string) === 'ok') {
+    ctx.response.body = connectionActions.roomActions.createRoomReader(username)
+  } else {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'password-wrong',
     }
   }
 })
