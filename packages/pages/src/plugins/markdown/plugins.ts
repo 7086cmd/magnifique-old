@@ -12,17 +12,17 @@ import type Module from 'module'
 import { extend } from './create-markdown-it'
 import { Plugin } from 'vue'
 
-export const installPlugin = (app: { use: (module: Module, options?: object) => void } & Plugin) => {
-  app.use(vuepressTheme, {
+export const installPlugin = (VueMarkdownEditor: { use: (module: Module, options?: object) => void } & Plugin) => {
+  VueMarkdownEditor.use(vuepressTheme, {
     Prism,
     extend,
   })
-  app.use(createEmojiPlugin)
-  app.use(createKatexPlugin)
-  app.use(createTodoListPlugin)
-  app.use(createCopyCodePlugin)
-  app.use(createMermaidPlugin)
-  app.use(createAlignPlugin)
-  app.use(createLineNumbertPlugin)
-  return app
+  VueMarkdownEditor.use(createEmojiPlugin)
+  VueMarkdownEditor.use(createKatexPlugin)
+  VueMarkdownEditor.use(createTodoListPlugin)
+  VueMarkdownEditor.use(createCopyCodePlugin)
+  VueMarkdownEditor.use(createMermaidPlugin)
+  VueMarkdownEditor.use(createAlignPlugin)
+  VueMarkdownEditor.use(createLineNumbertPlugin)
+  return VueMarkdownEditor
 }
