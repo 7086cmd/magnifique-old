@@ -21,6 +21,7 @@ const createRoom = (config: { title: string; description: string; users: Array<s
   })
   return {
     status: 'ok',
+    details: id,
   }
 }
 

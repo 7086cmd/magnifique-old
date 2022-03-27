@@ -2171,6 +2171,12 @@ router.get('/api/message/get/rooms', async ctx => {
     }
   }
 })
+router.get('/api/message/get/fulllist', async ctx => {
+  ctx.response.body = {
+    status: 'ok',
+    details: connectionActions.createMemberMap(),
+  }
+})
 router.get('/api/message/get/messages', async ctx => {
   const params = new URLSearchParams(ctx.querystring)
   const username = params.get('username') as string
@@ -2194,6 +2200,24 @@ router.post('/api/message/create/message', async ctx => {
   }
   if ((connectionActions.loginModule(username, password).status as string) === 'ok') {
     ctx.response.body = connectionActions.messageActions.createTextMessageCreation(roomId, messageContent)
+  } else {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'password-wrong',
+    }
+  }
+})
+router.post('/api/message/create/room', async ctx => {
+  const roomConfig = ctx.request.body as {
+    title: string
+    description: string
+    users: string[]
+    username: string
+    password: string
+  }
+  const { username, password } = roomConfig
+  if ((connectionActions.loginModule(username, password).status as string) === 'ok') {
+    ctx.response.body = connectionActions.roomActions.createRoom(roomConfig)
   } else {
     ctx.response.body = {
       status: 'error',
