@@ -100,4 +100,16 @@ export class MessageClient {
       })
     ).data
   }
+  getFullList = async () => (await axios(baseurl + 'message/get/fulllist')).data.details
+  createRoom = async (content: { users: string[]; title: string; description: string }) => {
+    const result = await axios(baseurl + 'message/create/room', {
+      data: {
+        ...content,
+        username: this.userId,
+        password: this.password,
+      },
+      method: 'post',
+    })
+    return result.data
+  }
 }
