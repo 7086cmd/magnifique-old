@@ -129,11 +129,57 @@ const createEdition = async (messageId: string) => {
   getRoomMsg(roomId)
   NProgress.done()
 }
+
+interface option {
+  value: string
+  label: string
+  children?: option[]
+}
+
+let fullList = ref<option[]>([])
+
+let isCreatingRoom = ref(false)
+
+const fullListLoad = async () => {
+  NProgress.start()
+  fullList.value = await client.getFullList()
+  isCreatingRoom.value = true
+  NProgress.done()
+}
+
+const proping = ref({
+  multiple: true,
+})
+
+const roomc = ref({
+  title: '',
+  description: '',
+  users: [] as string[][] | string[],
+})
+
+const createRoom = async () => {
+  NProgress.start()
+  const users = roomc.value.users.map((item: string[] | string) => {
+    item = (item as string[]).reverse()[0]
+    return item
+  })
+  !users.includes(client.userId) && users.push(client.userId)
+  roomc.value.users = users as string[]
+  client.createRoom(
+    roomc.value as {
+      title: string
+      description: string
+      users: string[]
+    }
+  )
+  NProgress.done()
+}
 </script>
 
 <template>
   <div>
     <el-input v-model="searcher" size="large" placeholder="输入以检索" :prefix-icon="Search"></el-input>
+    <el-button @click="fullListLoad">新建聊天组</el-button>
     <el-scrollbar max-height="720px">
       <el-divider />
       <div v-for="item in items" :key="item.id">
@@ -213,5 +259,20 @@ const createEdition = async (messageId: string) => {
         </el-timeline>
       </el-scrollbar>
     </el-drawer>
+    <el-dialog v-model="isCreatingRoom" title="新建聊天组" center>
+      <el-form :model="roomc">
+        <el-form-item label="成员">
+          <el-cascader v-model="roomc.users" filterable :options="fullList" :props="proping" :show-all-levels="false" collapse-tags clearable style="width: 100%"></el-cascader>
+        </el-form-item>
+        <el-form-item label="标题">
+          <el-input v-model="roomc.title"></el-input>
+        </el-form-item>
+        <el-form-item label="介绍">
+          <el-input v-model="roomc.description" type="textarea"></el-input>
+        </el-form-item>
+        <el-button @click="isCreatingRoom = false">取消</el-button>
+        <el-button type="primary" @click="createRoom">确定</el-button>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
