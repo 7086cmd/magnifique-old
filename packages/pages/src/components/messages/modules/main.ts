@@ -1,4 +1,5 @@
 import axios from 'axios'
+import dayjs from 'dayjs'
 import { ElMessageBox } from 'element-plus'
 import baseurl from '../../../modules/baseurl'
 import routeIndex from '../utils/route-index'
@@ -47,6 +48,28 @@ export class MessageClient {
           roomId: roomId,
         },
       })
-    ).data.details
+    ).data.details.map((x: MessageItem) => {
+      x.createDate = dayjs(x.createDate).format('YYYY/MM/DD HH:mm:ss')
+      return x
+    })
+  }
+  createMessage = async (roomId: string, messageContent: string, status: Record<string, boolean>) => {
+    return (
+      await axios(baseurl + 'message/create/message', {
+        data: {
+          username: this.userId,
+          password: this.password,
+          roomId,
+          messageContent: {
+            creator: this.userId,
+            createData: dayjs().toJSON(),
+            type: 'text',
+            content: messageContent,
+            status,
+          },
+        },
+        method: 'post',
+      })
+    ).data
   }
 }

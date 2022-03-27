@@ -2185,6 +2185,22 @@ router.get('/api/message/get/messages', async ctx => {
     }
   }
 })
+router.post('/api/message/create/message', async ctx => {
+  const { username, password, roomId, messageContent } = ctx.request.body as {
+    username: string
+    password: string
+    roomId: string
+    messageContent: message
+  }
+  if ((connectionActions.loginModule(username, password).status as string) === 'ok') {
+    ctx.response.body = connectionActions.messageActions.createTextMessageCreation(roomId, messageContent)
+  } else {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'password-wrong',
+    }
+  }
+})
 
 // All APIs
 router.post('/api/feed/back', async ctx => {

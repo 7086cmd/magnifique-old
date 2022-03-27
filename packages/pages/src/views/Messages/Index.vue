@@ -4,6 +4,10 @@ import { ref, defineProps, toRefs } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { MessageClient } from '../../components/messages/modules/main'
 import NProgress from 'nprogress'
+import dayjs from 'dayjs'
+import { ElNotification } from 'element-plus'
+import type { ElScrollbar } from 'element-plus'
+import failfuc from '../../modules/failfuc'
 
 const props = defineProps<{
   username: string
@@ -19,6 +23,10 @@ const items = ref<
     title: string
     id: string
     recent: string
+    members: {
+      id: string
+      name: string
+    }[]
   }[]
 >([])
 const msgs = ref<MessageItem[]>([])
@@ -29,15 +37,58 @@ const refresh = async () => {
   NProgress.done()
 }
 
+let isShown = ref(false)
+let roomData = ref({
+  title: '',
+  id: '',
+  recent: '',
+  members: [
+    {
+      id: '',
+      name: '',
+    },
+  ],
+})
+
+let createMsgData = ref('')
+
+const messageContent = ref<InstanceType<typeof ElScrollbar>>()
+
 const getRoomMsg = async (roomId: string) => {
+  createMsgData.value = ''
   NProgress.start()
   msgs.value = await client.getRoomMessages(roomId)
+  roomData.value = items.value.filter(x => x.id === roomId)[0]
   NProgress.done(true)
+  isShown.value = true
+  setTimeout(() => messageContent.value?.setScrollTop(2160), 100)
 }
 
 refresh()
 
 let searcher = ref('')
+
+const emit = async () => {
+  const roomId = roomData.value.id
+  NProgress.start()
+  const status: Record<string, boolean> = {}
+  items.value.filter(x => x.id === roomId)[0].members.forEach(x => (status[x.id] = false))
+  status[username.value] = true
+  if (createMsgData.value.split('\n').length >= 20) {
+    createMsgData.value = `::: details 由于本文过长，已将其包含在了该详细信息中，请点按展开\n${createMsgData.value}\n:::`
+  }
+  const result = await client.createMessage(roomId, createMsgData.value, status)
+  if (result.status === 'ok') {
+    ElNotification({
+      title: '消息发送成功',
+      type: 'success',
+    })
+  } else {
+    failfuc(result.reason, result.text)
+  }
+  getRoomMsg(roomId)
+  NProgress.done()
+}
 </script>
 
 <template>
@@ -48,14 +99,51 @@ let searcher = ref('')
       <div v-for="item in items" :key="item.id">
         <div v-if="item.title.includes(searcher)">
           <el-tooltip :content="'聊天组编号：' + item.id" placement="right" effect="light">
-            <el-link :underline="false" style="font-size: 20px" @click="getRoomMsg(item.id)">{{ item.title }}</el-link>
+            <el-link :underline="false" style="font-size: 20px" @click="getRoomMsg(item.id)">
+              {{ item.title }}
+              <el-tag v-for="member in item.members" :key="member.id" v-text="member.name"></el-tag>
+            </el-link>
           </el-tooltip>
-
           <br />
-          <span style="color: gray">{{ item.recent }}</span>
+          <span style="color: gray; font-size: 14px">{{ item.recent }}</span>
           <el-divider border-style="dashed" />
         </div>
       </div>
+      <div v-if="items.filter(item => item.title.includes(searcher)).length === 0">
+        <el-empty description="可是你还没有参与或者匹配到搜索的聊天组诶" />
+      </div>
     </el-scrollbar>
+    <el-drawer v-model="isShown" direction="btt" :title="roomData.title" size="100%">
+      <el-scrollbar ref="messageContent" max-height="960px">
+        <el-timeline>
+          <el-timeline-item v-for="msg in msgs" :key="msg.id" :timestamp="msg.createDate">
+            <el-card shadow="never">
+              <template #header>
+                <span style="font-size: 16px">
+                  <el-link :underline="false">
+                    {{ roomData.members.filter(x => x.id === msg.creator).map(x => x.name)[0] }}
+                  </el-link>
+                  发送
+                </span>
+              </template>
+              <template #default>
+                <v-md-editor v-model="msg.content" mode="preview"></v-md-editor>
+              </template>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item :timestamp="dayjs().format('YYYY/MM/DD HH:mm:ss')">
+            <v-md-editor
+              v-model="createMsgData"
+              height="480px"
+              left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
+              @save="emit"
+            ></v-md-editor>
+            <br />
+            <el-button type="primary" :disabled="createMsgData.length === 0" @click="emit">发送</el-button>
+            <el-button @click="isShown = false">关闭</el-button>
+          </el-timeline-item>
+        </el-timeline>
+      </el-scrollbar>
+    </el-drawer>
   </div>
 </template>
