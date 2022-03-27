@@ -27,16 +27,6 @@ if (!supportment) {
     type: 'warning',
   })
 }
-
-const txt = `
-# Hello, World!
-
-:::tip
-WARNING
-:::
-
-:greeting:
-`
 </script>
 
 <template>

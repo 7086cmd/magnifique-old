@@ -3,17 +3,16 @@
 import { ref, reactive, watch } from 'vue'
 import axios from 'axios'
 import { Refresh } from '@element-plus/icons-vue'
-import { ElMessageBox, ElLoading } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 import baseurl from '../../modules/baseurl'
 import personExample from '../../../examples/person'
 import sucfuc from '../../modules/sucfuc'
 import failfuc from '../../modules/failfuc'
 import MemberDescription from '../../components/lists/MemberDescription.vue'
 import positions from './positions'
+import nProgress from 'nprogress'
 
-let runner = ElLoading.service({
-  text: '获取信息中...',
-})
+nProgress.start()
 
 const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
 let isRegistingMember = ref(false)
@@ -68,9 +67,7 @@ const startToTrue = (number: number) => {
   toTrueNumber.value = number
 }
 const refresh = async (type: string) => {
-  runner = ElLoading.service({
-    text: '获取信息中...',
-  })
+  nProgress.start()
   loading.value = true
   const response = await axios(`${baseurl}admin/get/${type}/member?password=${password}`, {
     method: 'get',
@@ -79,7 +76,7 @@ const refresh = async (type: string) => {
   if (response.data.status === 'ok') {
     table.value = response.data.details
   }
-  runner.close()
+  nProgress.done()
 }
 refresh('all')
 watch(choice, () => {

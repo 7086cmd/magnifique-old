@@ -10,8 +10,8 @@ import sucfuc from '../../../modules/sucfuc'
 import VolunteerDescription from '../../../components/lists/VolunteerDescription.vue'
 import dayjs from 'dayjs'
 import { v4 } from 'uuid'
-import { ElLoading } from 'element-plus'
 import toPort from '../../../modules/to-port'
+import nProgress from 'nprogress'
 
 const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
 
@@ -26,16 +26,14 @@ axios(`${baseurl}admin/get/all/member?password=${password}`).then(responser => {
   persons.value = responser.data.details
 })
 const refresh = async () => {
-  const runner = ElLoading.service({
-    text: '获取信息中...',
-  })
+  nProgress.start()
   loading.value = true
   const response = await axios(`${baseurl}admin/get/all/volunteer?password=${password}`)
   loading.value = false
   if (response.data.status === 'ok') {
     volunteerDetail.value = response.data.details
   }
-  runner.close()
+  nProgress.done()
 }
 refresh()
 const startRegistVolunteer = () => {

@@ -2160,7 +2160,24 @@ router.get('/api/message/get/rooms', async ctx => {
   const username = params.get('username') as string
   const password = params.get('password') as string
   if ((connectionActions.loginModule(username, password).status as string) === 'ok') {
-    ctx.response.body = connectionActions.roomActions.createRoomReader(username)
+    ctx.response.body = {
+      status: 'ok',
+      details: connectionActions.roomActions.createRoomReader(username),
+    }
+  } else {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'password-wrong',
+    }
+  }
+})
+router.get('/api/message/get/messages', async ctx => {
+  const params = new URLSearchParams(ctx.querystring)
+  const username = params.get('username') as string
+  const password = params.get('password') as string
+  const room = params.get('roomId') as string
+  if ((connectionActions.loginModule(username, password).status as string) === 'ok') {
+    ctx.response.body = connectionActions.messageActions.createMessageReader(room, username)
   } else {
     ctx.response.body = {
       status: 'error',

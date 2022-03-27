@@ -19,7 +19,7 @@ const { content, creator, createDate } = toRefs(props)
       {{ dayjs(createDate).format('YYYY-MM-DD HH:mm:ss') }}
     </template>
     <template #default>
-      <v-md-preview :text="content"></v-md-preview>
+      <v-md-editor v-model="content" mode="preview"></v-md-editor>
     </template>
   </el-card>
 </template>
