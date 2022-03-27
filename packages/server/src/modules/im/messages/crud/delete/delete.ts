@@ -12,6 +12,9 @@ const createMessageDeletion = (roomId: string, messageId: string, actioner: stri
   }
   delete roomFileContent.details[messageId]
   createSdbdataSaver(createPath(roomId), roomFileContent)
+  return {
+    status: 'ok',
+  }
 }
 
 export { createMessageDeletion }

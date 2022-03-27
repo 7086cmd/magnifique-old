@@ -2201,6 +2201,39 @@ router.post('/api/message/create/message', async ctx => {
     }
   }
 })
+router.post('/api/message/delete/message', async ctx => {
+  const { username, password, roomId, messageId } = ctx.request.body as {
+    username: string
+    password: string
+    roomId: string
+    messageId: string
+  }
+  if ((connectionActions.loginModule(username, password).status as string) === 'ok') {
+    ctx.response.body = connectionActions.messageActions.createMessageDeletion(roomId, messageId, username)
+  } else {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'password-wrong',
+    }
+  }
+})
+router.post('/api/message/update/message', async ctx => {
+  const { username, password, roomId, messageId, updateContent } = ctx.request.body as {
+    username: string
+    password: string
+    roomId: string
+    messageId: string
+    updateContent: string
+  }
+  if ((connectionActions.loginModule(username, password).status as string) === 'ok') {
+    ctx.response.body = connectionActions.messageActions.createTextMessageUpdate(roomId, messageId, updateContent, username)
+  } else {
+    ctx.response.body = {
+      status: 'error',
+      reason: 'password-wrong',
+    }
+  }
+})
 
 // All APIs
 router.post('/api/feed/back', async ctx => {

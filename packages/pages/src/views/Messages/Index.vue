@@ -29,7 +29,7 @@ const items = ref<
     }[]
   }[]
 >([])
-const msgs = ref<MessageItem[]>([])
+const msgs = ref<(MessageItem & { editing: boolean })[]>([])
 
 const refresh = async () => {
   NProgress.start()
@@ -89,6 +89,46 @@ const emit = async () => {
   getRoomMsg(roomId)
   NProgress.done()
 }
+
+const deleteMessage = async (msgId: string) => {
+  NProgress.start()
+  const result = await client.deleteMessage(roomData.value.id, msgId)
+  if (result.status === 'ok') {
+    ElNotification({
+      title: '消息发送成功',
+      type: 'success',
+    })
+  } else {
+    failfuc(result.reason, result.text)
+  }
+  getRoomMsg(roomData.value.id)
+  NProgress.done()
+}
+
+let editContent = ref('')
+
+const startEdit = (messageId: string) => {
+  msgs.value.filter(x => x.id === messageId)[0].editing = true
+  editContent.value = msgs.value.filter(x => x.id === messageId)[0].content
+}
+
+const createEdition = async (messageId: string) => {
+  const roomId = roomData.value.id
+  NProgress.start()
+
+  msgs.value.filter(x => x.id === messageId)[0].editing = false
+  const result = await client.updateMessage(roomId, messageId, editContent.value)
+  if (result.status === 'ok') {
+    ElNotification({
+      title: '消息发送成功',
+      type: 'success',
+    })
+  } else {
+    failfuc(result.reason, result.text)
+  }
+  getRoomMsg(roomId)
+  NProgress.done()
+}
 </script>
 
 <template>
@@ -119,15 +159,43 @@ const emit = async () => {
           <el-timeline-item v-for="msg in msgs" :key="msg.id" :timestamp="msg.createDate">
             <el-card shadow="never">
               <template #header>
-                <span style="font-size: 16px">
-                  <el-link :underline="false">
-                    {{ roomData.members.filter(x => x.id === msg.creator).map(x => x.name)[0] }}
-                  </el-link>
-                  发送
-                </span>
+                <el-dropdown>
+                  <el-icon><More /></el-icon>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item @click="startEdit(msg.id)">
+                        <el-icon>
+                          <Edit />
+                        </el-icon>
+                        修改
+                      </el-dropdown-item>
+                      <el-dropdown-item divided @click="deleteMessage(msg.id)">
+                        <el-icon>
+                          <Delete />
+                        </el-icon>
+                        删除
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+                <span style="padding-left: 1em"></span>
+                <el-link :underline="false" style="font-size: 16px">
+                  {{ roomData.members.filter(x => x.id === msg.creator).map(x => x.name)[0] }}
+                </el-link>
               </template>
               <template #default>
-                <v-md-editor v-model="msg.content" mode="preview"></v-md-editor>
+                <v-md-editor v-if="!msg.editing" v-model="msg.content" mode="preview"></v-md-editor>
+                <v-md-editor
+                  v-if="msg.editing"
+                  v-model="editContent"
+                  height="480px"
+                  left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
+                  @save="createEdition(msg.id)"
+                ></v-md-editor>
+                <div v-if="msg.editing">
+                  <el-button type="primary" :disabled="editContent === msg.content || editContent === ''" @click="createEdition(msg.id)">保存</el-button>
+                  <el-button @click="msg.editing = false">取消</el-button>
+                </div>
               </template>
             </el-card>
           </el-timeline-item>

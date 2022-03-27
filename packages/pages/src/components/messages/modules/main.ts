@@ -48,8 +48,9 @@ export class MessageClient {
           roomId: roomId,
         },
       })
-    ).data.details.map((x: MessageItem) => {
+    ).data.details.map((x: MessageItem & { editing: boolean }) => {
       x.createDate = dayjs(x.createDate).format('YYYY/MM/DD HH:mm:ss')
+      x.editing = false
       return x
     })
   }
@@ -67,6 +68,33 @@ export class MessageClient {
             content: messageContent,
             status,
           },
+        },
+        method: 'post',
+      })
+    ).data
+  }
+  deleteMessage = async (roomId: string, messageId: string) => {
+    return (
+      await axios(baseurl + 'message/delete/message', {
+        data: {
+          username: this.userId,
+          password: this.password,
+          roomId,
+          messageId,
+        },
+        method: 'post',
+      })
+    ).data
+  }
+  updateMessage = async (roomId: string, messageId: string, updateContent: string) => {
+    return (
+      await axios(baseurl + 'message/update/message', {
+        data: {
+          username: this.userId,
+          password: this.password,
+          roomId,
+          messageId,
+          updateContent,
         },
         method: 'post',
       })
