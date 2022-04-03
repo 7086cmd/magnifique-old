@@ -7,6 +7,8 @@ specifiers:
   '@koa/cors': ^3.2.0
   '@koa/multer': ^3.0.0
   '@koa/router': ^10.1.1
+  '@tauri-apps/api': ^1.0.0-rc.2
+  '@tauri-apps/cli': ^1.0.0-rc.7
   '@types/eslint': 8.4.1
   '@types/imap': ^0.8.35
   '@types/jest': ^27.4.1
@@ -75,6 +77,9 @@ specifiers:
   lodash: 4.17.21
   mailparser: ^3.4.0
   markdown-it: ^12.3.2
+  markdown-it-abbr: ^1.0.4
+  markdown-it-footnote: ^3.0.3
+  markdown-it-ins: ^3.0.1
   markdown-it-mark: ^3.0.1
   markdown-it-mathtex: ^2.1.3
   markdown-it-sub: ^1.0.0
@@ -125,6 +130,7 @@ dependencies:
   '@koa/cors': 3.2.0
   '@koa/multer': 3.0.0_multer@1.4.4
   '@koa/router': 10.1.1
+  '@tauri-apps/api': 1.0.0-rc.2
   '@types/ua-parser-js': 0.7.36
   chalk: 5.0.1
   iconv-lite: 0.6.3
@@ -153,6 +159,7 @@ dependencies:
 devDependencies:
   '@element-plus/icons-vue': 0.2.7_vue@3.2.31
   '@kangc/v-md-editor': 2.3.14_b2cb006e88778a68aaadc0b54007dc5f
+  '@tauri-apps/cli': 1.0.0-rc.7
   '@types/eslint': 8.4.1
   '@types/imap': 0.8.35
   '@types/jest': 27.4.1
@@ -210,6 +217,9 @@ devDependencies:
   lodash: 4.17.21
   mailparser: 3.4.0
   markdown-it: 12.3.2
+  markdown-it-abbr: 1.0.4
+  markdown-it-footnote: 3.0.3
+  markdown-it-ins: 3.0.1
   markdown-it-mark: 3.0.1
   markdown-it-mathtex: 2.1.3
   markdown-it-sub: 1.0.0
@@ -2302,6 +2312,110 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       defer-to-connect: 2.0.1
+    dev: true
+
+  /@tauri-apps/api/1.0.0-rc.2:
+    resolution: {integrity: sha512-JhUDCJpfxmf/S1R+yHmJGsher4CGi07Qv4fYeucB7naeFZ7yTQe7S1CHKUZaRYpurGSdwOF3my9k0LyGmpAGYw==}
+    engines: {node: '>= 12.13.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
+    dependencies:
+      type-fest: 2.12.0
+    dev: false
+
+  /@tauri-apps/cli-darwin-arm64/1.0.0-rc.7:
+    resolution: {integrity: sha512-fb1plxZZHDG0KwZOoAl6tuisFU+oZFtNtqK3V2KL+4hz75DyH6BfsrgjyYSecJrtQejL2cHi8q7vUsU+EeLopw==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tauri-apps/cli-darwin-x64/1.0.0-rc.7:
+    resolution: {integrity: sha512-FOFPNsYUgCDaxEK+9oQ3vv9bMD3XVcOKdh1vo/DImzZNO6fQkcsDC8zlmA+Q4axd+X8kvu0iti1fK8Vl7HIUEA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tauri-apps/cli-linux-arm-gnueabihf/1.0.0-rc.7:
+    resolution: {integrity: sha512-tFzcJtNHy5AInU3E7kKDyhg4Qb7csu3uZ3FhGfORmGvQAiNQFpGV3ypC230RQYa3sxxRMbn8vjUAZMlU6JArbA==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tauri-apps/cli-linux-arm64-gnu/1.0.0-rc.7:
+    resolution: {integrity: sha512-QAoNUJMmoCv/mDZsfEZOOTeEPYuxtMgCgqTDqMd0H8S0Y3Cu2D/Q2fwVl0s9pMb6wLD2GJ2FEneySEMhMxt7Pg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tauri-apps/cli-linux-arm64-musl/1.0.0-rc.7:
+    resolution: {integrity: sha512-ieLyACtbY7ezReTnjWLw/kKDXRCbnbrUjQ+hltSmHaRuV51nX+I2rmFO5e7VPdj406jvyKwfSPuBC34bHxt3Og==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tauri-apps/cli-linux-x64-gnu/1.0.0-rc.7:
+    resolution: {integrity: sha512-wPAZctuFpurACxdCrjw+aaSuFReuIvv1nalVezfqA78AlsCk785yF2YVjoZr5bT8a9+6F+t8uNi3l6Vp5oNqwQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tauri-apps/cli-linux-x64-musl/1.0.0-rc.7:
+    resolution: {integrity: sha512-/AxuXFC2d1V8KpZJ6cFDcD5QqPFIZFXC/tAJlnTW75VnHgjat9TYP3BdSOuEA81ZLs9tV4PQF40tNnUSzfRYMg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tauri-apps/cli-win32-ia32-msvc/1.0.0-rc.7:
+    resolution: {integrity: sha512-C4M2rHXlYVPSHGl2Iax1rfiNM5GPSRP1JHxW7/4jH9FfW6mVFcjULZAyVMRfOMQEQ9bYXbVnSTPbhG2Fm0jPxQ==}
+    engines: {node: '>= 10'}
+    cpu: [ia32]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tauri-apps/cli-win32-x64-msvc/1.0.0-rc.7:
+    resolution: {integrity: sha512-lpstJKOtP+ahhjbutapA02TpvfNTZqXwhmA1fvqxDu6BYVezFn7ZiGG5HwdXlkiRDfbwZwBd1evdkV3MxwY1NQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tauri-apps/cli/1.0.0-rc.7:
+    resolution: {integrity: sha512-g7lUsI2iFiB2JuPFr209vWNqOnxCOGXN6yBttMRY+94UUXZOeWlKxYYpSabyjSr7EbfAUNzjITYmE4urdtmB+A==}
+    engines: {node: '>= 10'}
+    hasBin: true
+    optionalDependencies:
+      '@tauri-apps/cli-darwin-arm64': 1.0.0-rc.7
+      '@tauri-apps/cli-darwin-x64': 1.0.0-rc.7
+      '@tauri-apps/cli-linux-arm-gnueabihf': 1.0.0-rc.7
+      '@tauri-apps/cli-linux-arm64-gnu': 1.0.0-rc.7
+      '@tauri-apps/cli-linux-arm64-musl': 1.0.0-rc.7
+      '@tauri-apps/cli-linux-x64-gnu': 1.0.0-rc.7
+      '@tauri-apps/cli-linux-x64-musl': 1.0.0-rc.7
+      '@tauri-apps/cli-win32-ia32-msvc': 1.0.0-rc.7
+      '@tauri-apps/cli-win32-x64-msvc': 1.0.0-rc.7
     dev: true
 
   /@tootallnate/once/1.1.2:
@@ -10303,6 +10417,10 @@ packages:
       object-visit: 1.0.1
     dev: true
 
+  /markdown-it-abbr/1.0.4:
+    resolution: {integrity: sha1-1mtTZFIcuz3Yqlna37ovtoZcj9g=}
+    dev: true
+
   /markdown-it-anchor/5.3.0_markdown-it@8.4.2:
     resolution: {integrity: sha512-/V1MnLL/rgJ3jkMWo84UR+K+jF1cxNG1a+KwqeXqTIJ+jtA8aWSHuigx8lTzauiIjBDbwF3NcWQMotd0Dm39jA==}
     peerDependencies:
@@ -10336,6 +10454,14 @@ packages:
 
   /markdown-it-emoji/1.4.0:
     resolution: {integrity: sha1-m+4OmpkKljupbfaYDE/dsF37Tcw=}
+    dev: true
+
+  /markdown-it-footnote/3.0.3:
+    resolution: {integrity: sha512-YZMSuCGVZAjzKMn+xqIco9d1cLGxbELHZ9do/TSYVzraooV8ypsppKNmUJ0fVH5ljkCInQAtFpm8Rb3eXSrt5w==}
+    dev: true
+
+  /markdown-it-ins/3.0.1:
+    resolution: {integrity: sha512-32SSfZqSzqyAmmQ4SHvhxbFqSzPDqsZgMHDwxqPzp+v+t8RsmqsBZRG+RfRQskJko9PfKC2/oxyOs4Yg/CfiRw==}
     dev: true
 
   /markdown-it-mark/3.0.1:
@@ -13660,6 +13786,11 @@ packages:
     resolution: {integrity: sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==}
     engines: {node: '>=10'}
     dev: true
+
+  /type-fest/2.12.0:
+    resolution: {integrity: sha512-Qe5GRT+n/4GoqCNGGVp5Snapg1Omq3V7irBJB3EaKsp7HWDo5Gv2d/67gfNyV+d5EXD+x/RF5l1h4yJ7qNkcGA==}
+    engines: {node: '>=12.20'}
+    dev: false
 
   /type-is/1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}

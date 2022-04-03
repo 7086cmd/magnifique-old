@@ -6,8 +6,9 @@ import { MessageClient } from '../../components/messages/modules/main'
 import NProgress from 'nprogress'
 import dayjs from 'dayjs'
 import { ElNotification } from 'element-plus'
-import type { ElScrollbar } from 'element-plus'
+import type { ElScrollbar, ElInput } from 'element-plus'
 import failfuc from '../../modules/failfuc'
+import { onStartTyping } from '@vueuse/core'
 
 const props = defineProps<{
   username: string
@@ -174,16 +175,22 @@ const createRoom = async () => {
   )
   NProgress.done()
 }
+
+const inputRef = ref<InstanceType<typeof ElInput>>()
+
+onStartTyping(() => {
+  inputRef.value?.focus()
+})
 </script>
 
 <template>
   <div>
-    <el-input v-model="searcher" size="large" placeholder="输入以检索" :prefix-icon="Search"></el-input>
+    <el-input ref="inputRef" v-model="searcher" size="large" placeholder="输入以检索" :prefix-icon="Search"></el-input>
     <el-button @click="fullListLoad">新建聊天组</el-button>
     <el-scrollbar max-height="720px">
       <el-divider />
       <div v-for="item in items" :key="item.id">
-        <div v-if="item.title.includes(searcher)">
+        <div v-if="item.title.toLowerCase().includes(searcher.toLowerCase())">
           <el-tooltip :content="'聊天组编号：' + item.id" placement="right" effect="light">
             <el-link :underline="false" style="font-size: 20px" @click="getRoomMsg(item.id)">
               {{ item.title }}

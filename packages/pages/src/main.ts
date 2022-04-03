@@ -28,6 +28,10 @@ import createLineNumbertPlugin from '@kangc/v-md-editor/lib/plugins/line-number/
 import type MarkdownIt from 'markdown-it'
 import SubPlugin from 'markdown-it-sub'
 import SupPlugin from 'markdown-it-sup'
+import AbbrPlugin from 'markdown-it-abbr'
+import MarkPlugin from 'markdown-it-mark'
+import InsPlugin from 'markdown-it-ins'
+import FootnotePlugin from 'markdown-it-footnote'
 import '@kangc/v-md-editor/lib/style/base-editor.css'
 import '@kangc/v-md-editor/lib/theme/style/vuepress.css'
 import '@kangc/v-md-editor/lib/plugins/mermaid/mermaid.css'
@@ -65,6 +69,10 @@ VueMarkdownEditor.use(vuepressTheme, {
     })
     md.use(SubPlugin)
     md.use(SupPlugin)
+    md.use(FootnotePlugin)
+    md.use(InsPlugin)
+    md.use(MarkPlugin)
+    md.use(AbbrPlugin)
   },
 })
 VueMarkdownEditor.use(createEmojiPlugin())

@@ -65,6 +65,9 @@ export default defineConfig({
           },
         ],
       },
+      workbox: {
+        cleanupOutdatedCaches: false,
+      },
     }),
     prismjs({
       languages: ['javascript', 'css', 'cpp', 'c', 'html', 'typescript', 'java', 'rust', 'go', 'python', 'json', 'yaml', 'graphql', 'markdown'],
