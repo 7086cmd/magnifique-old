@@ -21,15 +21,6 @@ export default defineConfig({
     Components({
       resolvers: [ElementPlusResolver(), VantResolver()],
     }),
-    // styleImport({
-    //   libs: [
-    //     {
-    //       libraryName: 'vant',
-    //       esModule: true,
-    //       resolveStyle: (name) => `vant/es/${name}/style/index`,
-    //     },
-    //   ],
-    // }),
     lagacy({
       targets: ['defaults'],
       additionalLegacyPolyfills: ['regenerator-runtime/runtime'],

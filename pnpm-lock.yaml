@@ -41,6 +41,7 @@ specifiers:
   '@vue/runtime-dom': 3.2.31
   '@vue/shared': 3.2.31
   '@vueuse/core': ^8.2.0
+  '@vueuse/shared': ^8.2.3
   axios: 0.24.0
   chalk: ^5.0.1
   chokidar: 3.5.3
@@ -78,12 +79,14 @@ specifiers:
   mailparser: ^3.4.0
   markdown-it: ^12.3.2
   markdown-it-abbr: ^1.0.4
+  markdown-it-emoji: ^2.0.0
   markdown-it-footnote: ^3.0.3
   markdown-it-ins: ^3.0.1
   markdown-it-mark: ^3.0.1
   markdown-it-mathtex: ^2.1.3
   markdown-it-sub: ^1.0.0
   markdown-it-sup: ^1.0.0
+  markdown-it-texmath: ^0.9.7
   monaco-editor: 0.32.1
   multer: ^1.4.4
   node-fetch: 2.6.7
@@ -104,6 +107,7 @@ specifiers:
   ts-jest: 27.1.3
   ts-node: 10.5.0
   tslib: ^2.3.1
+  twemoji: ^14.0.2
   typescript: 4.5.5
   ua-parser-js: ^1.0.2
   unplugin-auto-import: 0.5.11
@@ -191,6 +195,7 @@ devDependencies:
   '@vue/runtime-dom': 3.2.31
   '@vue/shared': 3.2.31
   '@vueuse/core': 8.2.0_vue@3.2.31
+  '@vueuse/shared': 8.2.3_vue@3.2.31
   axios: 0.24.0
   chokidar: 3.5.3
   concurrently: 7.0.0
@@ -218,12 +223,14 @@ devDependencies:
   mailparser: 3.4.0
   markdown-it: 12.3.2
   markdown-it-abbr: 1.0.4
+  markdown-it-emoji: 2.0.0
   markdown-it-footnote: 3.0.3
   markdown-it-ins: 3.0.1
   markdown-it-mark: 3.0.1
   markdown-it-mathtex: 2.1.3
   markdown-it-sub: 1.0.0
   markdown-it-sup: 1.0.0
+  markdown-it-texmath: 0.9.7
   monaco-editor: 0.32.1
   nodemailer: 6.7.3
   nprogress: 0.2.0
@@ -234,6 +241,7 @@ devDependencies:
   spectron: 19.0.0_electron@17.0.0
   ts-jest: 27.1.3_345f4e1f2ef4cce30156902e4828bdb4
   ts-node: 10.5.0_241ff727c41c38f37d2c0695b583de34
+  twemoji: 14.0.2
   typescript: 4.5.5
   unplugin-auto-import: 0.5.11_68eeb099622281afeba61184808ed8c0
   unplugin-vue-components: 0.17.18_ec9dbca7bb658d2bfb721300c0724bb7
@@ -3363,6 +3371,21 @@ packages:
 
   /@vueuse/shared/8.2.0_vue@3.2.31:
     resolution: {integrity: sha512-dTw7EJZgZCgG9DoVAiz4LtmKnIFXuE/idUFzvqRAJLjbPiVJc+qQH5kDUdKHI3W1U9t//1mdasQEKONArburiQ==}
+    peerDependencies:
+      '@vue/composition-api': ^1.1.0
+      vue: ^2.6.0 || ^3.2.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+      vue:
+        optional: true
+    dependencies:
+      vue: 3.2.31
+      vue-demi: 0.12.4_vue@3.2.31
+    dev: true
+
+  /@vueuse/shared/8.2.3_vue@3.2.31:
+    resolution: {integrity: sha512-4Cd3s+x8ZwzzAf7o8jS7mEj9pQ1Zsf9aiNBAFg4rHcWeDY0S3XMgvN4ae2hBul7jmi+Ab4REAqiqYWyYqU86qg==}
     peerDependencies:
       '@vue/composition-api': ^1.1.0
       vue: ^2.6.0 || ^3.2.0
@@ -9794,6 +9817,14 @@ packages:
       graceful-fs: 4.2.9
     dev: true
 
+  /jsonfile/5.0.0:
+    resolution: {integrity: sha512-NQRZ5CRo74MhMMC3/3r5g2k4fjodJ/wh8MxjFbCViWKFjxrnudWSY5vomh+23ZaXzAS7J3fBZIR2dV6WbmfM0w==}
+    dependencies:
+      universalify: 0.1.2
+    optionalDependencies:
+      graceful-fs: 4.2.9
+    dev: true
+
   /jsonfile/6.1.0:
     resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
     dependencies:
@@ -10456,6 +10487,10 @@ packages:
     resolution: {integrity: sha1-m+4OmpkKljupbfaYDE/dsF37Tcw=}
     dev: true
 
+  /markdown-it-emoji/2.0.0:
+    resolution: {integrity: sha512-39j7/9vP/CPCKbEI44oV8yoPJTpvfeReTn/COgRhSpNrjWF3PfP/JUxxB0hxV6ynOY8KH8Y8aX9NMDdo6z+6YQ==}
+    dev: true
+
   /markdown-it-footnote/3.0.3:
     resolution: {integrity: sha512-YZMSuCGVZAjzKMn+xqIco9d1cLGxbELHZ9do/TSYVzraooV8ypsppKNmUJ0fVH5ljkCInQAtFpm8Rb3eXSrt5w==}
     dev: true
@@ -10486,6 +10521,10 @@ packages:
   /markdown-it-table-of-contents/0.4.4:
     resolution: {integrity: sha512-TAIHTHPwa9+ltKvKPWulm/beozQU41Ab+FIefRaQV1NRnpzwcV9QOe6wXQS5WLivm5Q/nlo0rl6laGkMDZE7Gw==}
     engines: {node: '>6.4.0'}
+    dev: true
+
+  /markdown-it-texmath/0.9.7:
+    resolution: {integrity: sha512-2oZ7WO+xQCvQpfCwxUsCzDpz5jRjiY+FbSJSVz+66+Z9NoPR7ljzUNaOp1CDHYj0JWx+drQLxO0XUjuSsuqc0A==}
     dev: true
 
   /markdown-it/12.3.2:
@@ -13747,6 +13786,19 @@ packages:
 
   /tweetnacl/0.14.5:
     resolution: {integrity: sha1-WuaBd/GS1EViadEIr6k/+HQ/T2Q=}
+
+  /twemoji-parser/14.0.0:
+    resolution: {integrity: sha512-9DUOTGLOWs0pFWnh1p6NF+C3CkQ96PWmEFwhOVmT3WbecRC+68AIqpsnJXygfkFcp4aXbOp8Dwbhh/HQgvoRxA==}
+    dev: true
+
+  /twemoji/14.0.2:
+    resolution: {integrity: sha512-BzOoXIe1QVdmsUmZ54xbEH+8AgtOKUiG53zO5vVP2iUu6h5u9lN15NcuS6te4OY96qx0H7JK9vjjl9WQbkTRuA==}
+    dependencies:
+      fs-extra: 8.1.0
+      jsonfile: 5.0.0
+      twemoji-parser: 14.0.0
+      universalify: 0.1.2
+    dev: true
 
   /type-check/0.3.2:
     resolution: {integrity: sha1-WITKtRLPHTVeP7eE8wgEsrUg23I=}

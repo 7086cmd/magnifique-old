@@ -1,14 +1,20 @@
 <script lang="ts" setup>
 /* global MessageItem */
-import { ref, defineProps, toRefs } from 'vue'
+import { ref, defineProps, toRefs, watch, h } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { MessageClient } from '../../components/messages/modules/main'
 import NProgress from 'nprogress'
 import dayjs from 'dayjs'
-import { ElNotification } from 'element-plus'
+import { ElMessageBox, ElNotification } from 'element-plus'
 import type { ElScrollbar, ElInput } from 'element-plus'
 import failfuc from '../../modules/failfuc'
 import { onStartTyping } from '@vueuse/core'
+import { ArrowLeft, More, Close } from '@element-plus/icons-vue'
+import { uniq } from 'lodash'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
 
 const props = defineProps<{
   username: string
@@ -65,7 +71,11 @@ const getRoomMsg = async (roomId: string) => {
   setTimeout(() => messageContent.value?.setScrollTop(2160), 100)
 }
 
-refresh()
+refresh().then(() => {
+  if (route.params.id !== undefined) {
+    getRoomMsg(route.params.id as string)
+  }
+})
 
 let searcher = ref('')
 
@@ -141,38 +151,39 @@ let fullList = ref<option[]>([])
 
 let isCreatingRoom = ref(false)
 
+let fullListFlatten = ref<option[]>([])
+
 const fullListLoad = async () => {
   NProgress.start()
-  fullList.value = await client.getFullList()
+  fullList.value = Object.assign([], await client.getFullList())
+  fullListFlatten.value = client.getFlatten(Object.assign([], await client.getFullList()))
+  // console.log(fullList.value, fullListFlatten.value)
+  fullList.value = fullList.value.filter(item => item.children?.filter(it => it.children).length !== 0)
   isCreatingRoom.value = true
   NProgress.done()
 }
 
 const proping = ref({
   multiple: true,
+  emitPath: false,
+  // checkStrictly: true,
+  expandTrigger: 'hover',
 })
 
 const roomc = ref({
   title: '',
   description: '',
-  users: [] as string[][] | string[],
+  users: [] as string[],
 })
 
 const createRoom = async () => {
   NProgress.start()
-  const users = roomc.value.users.map((item: string[] | string) => {
-    item = (item as string[]).reverse()[0]
-    return item
-  })
-  !users.includes(client.userId) && users.push(client.userId)
-  roomc.value.users = users as string[]
-  client.createRoom(
-    roomc.value as {
-      title: string
-      description: string
-      users: string[]
-    }
-  )
+  roomc.value.users.push(username.value)
+  roomc.value.users = uniq(roomc.value.users)
+  const id = (await client.createRoom(roomc.value)) as string
+  await refresh()
+  getRoomMsg(id)
+  isCreatingRoom.value = false
   NProgress.done()
 }
 
@@ -181,6 +192,49 @@ const inputRef = ref<InstanceType<typeof ElInput>>()
 onStartTyping(() => {
   inputRef.value?.focus()
 })
+
+watch(roomc.value, () => {
+  roomc.value.users = uniq(roomc.value.users)
+  // console.log(roomc.value)
+})
+
+watch(isShown, async () => {
+  if (isShown.value === false) {
+    NProgress.start()
+    items.value = await client.getLatestRooms()
+    if (username.value === 'admin') {
+      router.push('/admin/message')
+    } else {
+      router.push(`/${username.value.split('/')[0]}/message`)
+    }
+    NProgress.done()
+  } else if (isShown.value === true) {
+    if (username.value === 'admin') {
+      router.push('/admin/message/' + roomData.value.id)
+    } else {
+      router.push(`/${username.value.split('/')[0]}/message/${roomData.value.id}`)
+    }
+  }
+})
+
+let editingTitle = ref(false)
+
+const deleteGroup = async () => {
+  ElMessageBox.prompt(h('span', null, [h('b', null, '危险！此操作不可逆！'), '输入密码以继续']), 'Think Twice, Delete Once!', {
+    type: 'error',
+    center: true,
+    inputType: 'password',
+    roundButton: true,
+    inputValidator: val => (window.btoa(val) !== password.value ? '密码错误' : true),
+  }).then(async () => {
+    NProgress.start()
+    await client.deleteRoom(roomData.value.id)
+    editingTitle.value = false
+    isShown.value = false
+    await refresh()
+    NProgress.done()
+  })
+}
 </script>
 
 <template>
@@ -194,7 +248,8 @@ onStartTyping(() => {
           <el-tooltip :content="'聊天组编号：' + item.id" placement="right" effect="light">
             <el-link :underline="false" style="font-size: 20px" @click="getRoomMsg(item.id)">
               {{ item.title }}
-              <el-tag v-for="member in item.members" :key="member.id" v-text="member.name"></el-tag>
+              <span v-if="item.members.length > 2"><el-tag type="warning" v-text="'群组'" /><el-tag v-for="member in item.members" :key="member.id" v-text="member.name"></el-tag></span>
+              <span v-else-if="item.members.length === 2"><el-tag type="success" v-text="'单聊'" /></span>
             </el-link>
           </el-tooltip>
           <br />
@@ -206,11 +261,32 @@ onStartTyping(() => {
         <el-empty description="可是你还没有参与或者匹配到搜索的聊天组诶" />
       </div>
     </el-scrollbar>
-    <el-drawer v-model="isShown" direction="btt" :title="roomData.title" size="100%">
+    <el-drawer v-model="editingTitle" direction="rtl" size="30%" :title="'更多 | ' + roomData.title">
+      <van-cell title="群名" :value="roomData.title"></van-cell>
+      <el-popconfirm title="确定要解散吗？" icon-color="red" confirm-button-type="danger" @confirm="deleteGroup">
+        <template #reference>
+          <el-button type="danger" plain style="width: 100%">解散</el-button>
+        </template>
+      </el-popconfirm>
+    </el-drawer>
+    <el-drawer v-model="isShown" direction="btt" size="99%" :close-on-click-modal="false" :show-close="false" :model="false">
+      <template #title>
+        <el-page-header :icon="ArrowLeft" @back="isShown = false">
+          <template #content>
+            <span v-if="!editingTitle">{{ roomData.title }}</span>
+            <el-button v-if="!editingTitle && roomData.members.length > 2" type="text" :icon="More" @click="editingTitle = true" />
+            <el-row>
+              <el-col :span="16"><el-input v-if="editingTitle" v-model="roomData.title" /></el-col>
+              <el-col :span="4"><el-button v-if="editingTitle" type="text" :icon="Close" @click="editingTitle = false" /></el-col>
+            </el-row>
+          </template>
+          <template #title> <sub style="font-size: 14px">返回</sub> </template>
+        </el-page-header>
+      </template>
       <el-scrollbar ref="messageContent" max-height="960px">
         <el-timeline>
           <el-timeline-item v-for="msg in msgs" :key="msg.id" :timestamp="msg.createDate">
-            <el-card shadow="never">
+            <el-card v-if="!msg.editing" shadow="never">
               <template #header>
                 <el-dropdown>
                   <el-icon><More /></el-icon>
@@ -237,20 +313,20 @@ onStartTyping(() => {
                 </el-link>
               </template>
               <template #default>
-                <v-md-editor v-if="!msg.editing" v-model="msg.content" mode="preview"></v-md-editor>
-                <v-md-editor
-                  v-if="msg.editing"
-                  v-model="editContent"
-                  height="480px"
-                  left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
-                  @save="createEdition(msg.id)"
-                ></v-md-editor>
-                <div v-if="msg.editing">
-                  <el-button type="primary" :disabled="editContent === msg.content || editContent === ''" @click="createEdition(msg.id)">保存</el-button>
-                  <el-button @click="msg.editing = false">取消</el-button>
-                </div>
+                <v-md-editor v-model="msg.content" mode="preview"></v-md-editor>
               </template>
             </el-card>
+            <v-md-editor
+              v-if="msg.editing"
+              v-model="editContent"
+              height="480px"
+              left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
+              @save="createEdition(msg.id)"
+            ></v-md-editor>
+            <div v-if="msg.editing">
+              <el-button type="primary" :disabled="editContent === msg.content || editContent === ''" @click="createEdition(msg.id)">保存</el-button>
+              <el-button @click="msg.editing = false">取消</el-button>
+            </div>
           </el-timeline-item>
           <el-timeline-item :timestamp="dayjs().format('YYYY/MM/DD HH:mm:ss')">
             <v-md-editor
@@ -269,9 +345,13 @@ onStartTyping(() => {
     <el-dialog v-model="isCreatingRoom" title="新建聊天组" center>
       <el-form :model="roomc">
         <el-form-item label="成员">
-          <el-cascader v-model="roomc.users" filterable :options="fullList" :props="proping" :show-all-levels="false" collapse-tags clearable style="width: 100%"></el-cascader>
+          <el-cascader-panel v-model="roomc.users" filterable :options="fullList" :props="proping" :show-all-levels="false" collapse-tags clearable style="width: 100%"></el-cascader-panel>
         </el-form-item>
-        <el-form-item label="标题">
+        <el-form-item label="选中">
+          <!-- <el-tag v-for="item in roomc.users" :key="item" plain v-text="client.getName(fullListFlatten, item)"></el-tag> -->
+          <el-select-v2 v-model="roomc.users" :options="fullListFlatten" style="width: 100%" multiple></el-select-v2>
+        </el-form-item>
+        <el-form-item label="标题" :disable="roomc.users.length === 1 || (roomc.users.length === 2 && roomc.users.includes(username))">
           <el-input v-model="roomc.title"></el-input>
         </el-form-item>
         <el-form-item label="介绍">

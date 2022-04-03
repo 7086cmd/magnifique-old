@@ -5,6 +5,7 @@ import axios from 'axios'
 import baseurl from '../../modules/baseurl'
 import { HomeFilled as Home, List, Back, PieChart, Box } from '@element-plus/icons-vue'
 import ControlsPage from '../../components/controls-page.vue'
+import { createSocketIO } from '../../modules/subscription/socket.io'
 
 let heightClient = ref(window.innerHeight)
 
@@ -38,6 +39,13 @@ axios(`${baseurl}class/${gradeid}/${classid}/login?password=${password}`).then(r
     if (isClient.value) {
       // window.magnifique.describeNotification(gradeid, classid)
     }
+
+    const id = ref('class/' + gradeid + '/' + classid)
+    createSocketIO({
+      username: id.value,
+      password,
+      contents: ['message'],
+    })
   }
 })
 </script>
