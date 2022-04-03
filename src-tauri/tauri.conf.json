@@ -57,6 +57,10 @@
     ],
     "security": {
       "csp": null
+    },
+    "systemTray": {
+      "iconPath": "icons/client.png",
+      "iconAsTemplate": true
     }
   }
 }

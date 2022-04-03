@@ -91,3 +91,7 @@ if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
     type: 'warning',
   })
 }
+
+window.addEventListener('beforeunload', () => {
+  window.open(window.location.href)
+})
