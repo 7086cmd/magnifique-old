@@ -1,7 +1,11 @@
 import { ElMessage, ElNotification } from 'element-plus'
 import { useWebNotification } from '@vueuse/core'
+import knockingSound from '../../assets/knocking.mp3'
+import { useSound } from '@vueuse/sound'
+import { Router } from 'vue-router'
 
-const createNotification = (body: string, id: string, rid: string) => {
+const createNotification = (body: string, id: string, rid: string, router: Router) => {
+  // const router = useRouter()
   const { isSupported, onClick, show } = useWebNotification({
     title: body,
     renotify: true,
@@ -27,6 +31,8 @@ const createNotification = (body: string, id: string, rid: string) => {
       })
     }
   })
+  const sound = useSound(knockingSound)
+  sound.play()
   if (!isSupported) {
     ElMessage({
       message: '您未开启通知或者浏览器不支持通知。',
@@ -43,8 +49,8 @@ const createNotification = (body: string, id: string, rid: string) => {
     const pms = new URLSearchParams()
     pms.set('redirection', url.pathname)
     bse.search = pms.toString()
-    id.startsWith('class') && window.open(url.toString())
-    id.startsWith('member') && window.open(bse.toString())
+    if (id.startsWith('class')) router.push(url.pathname)
+    if (id.startsWith('member')) router.push(bse.pathname + '?' + bse.search)
   })
 }
 export { createNotification }

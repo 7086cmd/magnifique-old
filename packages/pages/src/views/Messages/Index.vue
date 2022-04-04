@@ -4,7 +4,7 @@ import { ref, defineProps, toRefs, watch, h } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { MessageClient } from '../../components/messages/modules/main'
 import NProgress from 'nprogress'
-import dayjs from 'dayjs'
+// import dayjs from 'dayjs'
 import { ElMessageBox, ElNotification } from 'element-plus'
 import type { ElScrollbar, ElInput } from 'element-plus'
 import failfuc from '../../modules/failfuc'
@@ -12,6 +12,7 @@ import { onStartTyping } from '@vueuse/core'
 import { ArrowLeft, More, Close } from '@element-plus/icons-vue'
 import { uniq } from 'lodash'
 import { useRoute, useRouter } from 'vue-router'
+import MessagePiece from '../../components/messages/piece.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -85,9 +86,6 @@ const emit = async () => {
   const status: Record<string, boolean> = {}
   items.value.filter(x => x.id === roomId)[0].members.forEach(x => (status[x.id] = false))
   status[username.value] = true
-  if (createMsgData.value.split('\n').length >= 20) {
-    createMsgData.value = `::: details 由于本文过长，已将其包含在了该详细信息中，请点按展开\n${createMsgData.value}\n:::`
-  }
   const result = await client.createMessage(roomId, createMsgData.value, status)
   if (result.status === 'ok') {
     ElNotification({
@@ -235,12 +233,14 @@ const deleteGroup = async () => {
     NProgress.done()
   })
 }
+
+let useRichTextEditor = ref(false)
 </script>
 
 <template>
   <div>
     <el-input ref="inputRef" v-model="searcher" size="large" placeholder="输入以检索" :prefix-icon="Search"></el-input>
-    <el-button @click="fullListLoad">新建聊天组</el-button>
+    <el-button round @click="fullListLoad">新建聊天组</el-button>
     <el-scrollbar max-height="720px">
       <el-divider />
       <div v-for="item in items" :key="item.id">
@@ -261,31 +261,31 @@ const deleteGroup = async () => {
         <el-empty description="可是你还没有参与或者匹配到搜索的聊天组诶" />
       </div>
     </el-scrollbar>
-    <el-drawer v-model="editingTitle" direction="rtl" size="30%" :title="'更多 | ' + roomData.title">
+    <el-drawer v-model="editingTitle" direction="ltr" size="25%" :title="'更多 | ' + roomData.title" :modal="false">
       <van-cell title="群名" :value="roomData.title"></van-cell>
       <el-popconfirm title="确定要解散吗？" icon-color="red" confirm-button-type="danger" @confirm="deleteGroup">
         <template #reference>
-          <el-button type="danger" plain style="width: 100%">解散</el-button>
+          <el-button round type="danger" plain style="width: 100%">解散</el-button>
         </template>
       </el-popconfirm>
     </el-drawer>
-    <el-drawer v-model="isShown" direction="btt" size="99%" :close-on-click-modal="false" :show-close="false" :model="false">
+    <el-drawer v-model="isShown" direction="rtl" size="70%" :close-on-click-modal="true" :show-close="false" :modal="true">
       <template #title>
         <el-page-header :icon="ArrowLeft" @back="isShown = false">
           <template #content>
             <span v-if="!editingTitle">{{ roomData.title }}</span>
-            <el-button v-if="!editingTitle && roomData.members.length > 2" type="text" :icon="More" @click="editingTitle = true" />
+            <el-button v-if="!editingTitle && roomData.members.length > 2" round type="text" :icon="More" @click="editingTitle = true" />
             <el-row>
               <el-col :span="16"><el-input v-if="editingTitle" v-model="roomData.title" /></el-col>
-              <el-col :span="4"><el-button v-if="editingTitle" type="text" :icon="Close" @click="editingTitle = false" /></el-col>
+              <el-col :span="4"><el-button v-if="editingTitle" round type="text" :icon="Close" @click="editingTitle = false" /></el-col>
             </el-row>
           </template>
           <template #title> <sub style="font-size: 14px">返回</sub> </template>
         </el-page-header>
       </template>
-      <el-scrollbar ref="messageContent" max-height="960px">
-        <el-timeline>
-          <el-timeline-item v-for="msg in msgs" :key="msg.id" :timestamp="msg.createDate">
+      <el-scrollbar ref="messageContent" max-height="480px" style="height: 60%">
+        <div v-for="msg in msgs" :key="msg.id">
+          <div v-if="msg.content.length > 50">
             <el-card v-if="!msg.editing" shadow="never">
               <template #header>
                 <el-dropdown>
@@ -324,23 +324,23 @@ const deleteGroup = async () => {
               @save="createEdition(msg.id)"
             ></v-md-editor>
             <div v-if="msg.editing">
-              <el-button type="primary" :disabled="editContent === msg.content || editContent === ''" @click="createEdition(msg.id)">保存</el-button>
-              <el-button @click="msg.editing = false">取消</el-button>
+              <el-button round type="primary" :disabled="editContent === msg.content || editContent === ''" @click="createEdition(msg.id)">保存</el-button>
+              <el-button round @click="msg.editing = false">取消</el-button>
             </div>
-          </el-timeline-item>
-          <el-timeline-item :timestamp="dayjs().format('YYYY/MM/DD HH:mm:ss')">
-            <v-md-editor
-              v-model="createMsgData"
-              height="480px"
-              left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
-              @save="emit"
-            ></v-md-editor>
-            <br />
-            <el-button type="primary" :disabled="createMsgData.length === 0" @click="emit">发送</el-button>
-            <el-button @click="isShown = false">关闭</el-button>
-          </el-timeline-item>
-        </el-timeline>
+          </div>
+          <p v-else style="padding-top: 8px"><message-piece :content="msg" :username="username" :client="client" :room-id="roomData.id"></message-piece></p>
+        </div>
       </el-scrollbar>
+      <v-md-editor
+        v-model="createMsgData"
+        height="30%"
+        style="padding-left: 3em; padding-right: 3em; height: 30%"
+        left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
+        @save="emit"
+      />
+      <br />
+      <el-button round type="primary" :disabled="createMsgData.length === 0" @click="emit">发送</el-button>
+      <el-button round @click="isShown = false">关闭</el-button>
     </el-drawer>
     <el-dialog v-model="isCreatingRoom" title="新建聊天组" center>
       <el-form :model="roomc">
@@ -357,8 +357,8 @@ const deleteGroup = async () => {
         <el-form-item label="介绍">
           <el-input v-model="roomc.description" type="textarea"></el-input>
         </el-form-item>
-        <el-button @click="isCreatingRoom = false">取消</el-button>
-        <el-button type="primary" @click="createRoom">确定</el-button>
+        <el-button round @click="isCreatingRoom = false">取消</el-button>
+        <el-button round type="primary" @click="createRoom">确定</el-button>
       </el-form>
     </el-dialog>
   </div>

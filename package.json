@@ -34,6 +34,7 @@
     "@koa/router": "^10.1.1",
     "@tauri-apps/api": "^1.0.0-rc.2",
     "@types/ua-parser-js": "^0.7.36",
+    "apexcharts": "^3.35.0",
     "chalk": "^5.0.1",
     "iconv-lite": "^0.6.3",
     "js-sha512": "^0.8.0",
@@ -56,6 +57,7 @@
     "tslib": "^2.3.1",
     "ua-parser-js": "^1.0.2",
     "uuid": "8.3.2",
+    "vue3-apexcharts": "^1.4.1",
     "yaml": "^1.10.2"
   },
   "devDependencies": {
@@ -83,6 +85,7 @@
     "@types/react": "17.0.39",
     "@types/remarkable": "2.0.3",
     "@types/uuid": "8.3.4",
+    "@types/xml2json": "^0.11.4",
     "@typescript-eslint/eslint-plugin": "5.11.0",
     "@typescript-eslint/parser": "5.11.0",
     "@vitejs/plugin-legacy": "1.7.1",
@@ -94,6 +97,7 @@
     "@vue/shared": "3.2.31",
     "@vueuse/core": "^8.2.0",
     "@vueuse/shared": "^8.2.3",
+    "@vueuse/sound": "^1.1.7",
     "axios": "0.24.0",
     "chokidar": "3.5.3",
     "concurrently": "7.0.0",
@@ -156,6 +160,8 @@
     "vue-i18n": "9.2.0-beta.30",
     "vue-router": "4.0.14",
     "vue-tsc": "0.31.2",
-    "vuex": "4.0.2"
+    "vue3-menus": "^1.1.2",
+    "vuex": "4.0.2",
+    "xml2json": "^0.12.0"
   }
 }

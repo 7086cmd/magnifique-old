@@ -32,6 +32,8 @@ import AbbrPlugin from 'markdown-it-abbr'
 import MarkPlugin from 'markdown-it-mark'
 import InsPlugin from 'markdown-it-ins'
 import FootnotePlugin from 'markdown-it-footnote'
+import ApexCharts from 'vue3-apexcharts'
+import Menus from 'vue3-menus'
 import '@kangc/v-md-editor/lib/style/base-editor.css'
 import '@kangc/v-md-editor/lib/theme/style/vuepress.css'
 import '@kangc/v-md-editor/lib/plugins/mermaid/mermaid.css'
@@ -83,6 +85,8 @@ VueMarkdownEditor.use(createMermaidPlugin())
 VueMarkdownEditor.use(createAlignPlugin())
 VueMarkdownEditor.use(createLineNumbertPlugin())
 app.use(VueMarkdownEditor)
+app.use(ApexCharts)
+app.use(Menus)
 app.mount('#app')
 
 if (window.matchMedia('(prefers-color-scheme: dark)').matches) {

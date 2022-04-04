@@ -1,5 +1,6 @@
 import { ElNotification } from 'element-plus'
 import { io } from 'socket.io-client'
+import { Router } from 'vue-router'
 import baseurl from '../baseurl'
 import { createYearTransformer } from '../utils'
 import { createNotification } from './notificate'
@@ -30,7 +31,7 @@ const createMessageContent = (opt: SubscribeContent) => {
   return methodsExpressions[opt.method]
 }
 
-const createSocketIO = (options: SubscribeOptions) => {
+const createSocketIO = (options: SubscribeOptions, router: Router) => {
   const params = new URLSearchParams()
   params.set('username', options.username)
   params.set('password', options.password)
@@ -48,21 +49,21 @@ const createSocketIO = (options: SubscribeOptions) => {
   socket.on('connect', () =>
     ElNotification({
       type: 'success',
-      title: '已连接服务器',
+      title: '已经连接到服务器',
     })
   )
   socket.on('message', (data: SubscribeContent) => {
     if (!data.receiver.includes('/')) return // admin, ignore.
     if (data.receiver.startsWith('class')) {
       if (data.receiver === options.username) {
-        createNotification(createMessageContent(data), options.username, data.id)
+        createNotification(createMessageContent(data), options.username, data.id, router)
       }
     } else {
       // member.
       const memberNum = Number(data.receiver.split('/')[1])
       const cid = createYearTransformer(Number(options.username.split('/')[1])) * 100 + Number(options.username.split('/')[2])
       if (Math.floor(memberNum / 100) === cid) {
-        createNotification(createMessageContent(data), data.receiver, data.id)
+        createNotification(createMessageContent(data), data.receiver, data.id, router)
       }
     }
   })

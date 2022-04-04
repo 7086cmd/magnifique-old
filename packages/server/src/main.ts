@@ -323,15 +323,10 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/person', async 
     const { gradeid, classid, start, end } = ctx.params
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
       const chartData = deductionActions.graphAsPerson(parseInt(gradeid), parseInt(classid), start, end)
-      let id = v4()
-      while (graphTokens[id] !== undefined) {
-        id = v4()
-      }
-      graphTokens[id] = chartData
       ctx.response.body = {
         status: 'ok',
         details: {
-          token: id,
+          token: chartData,
         },
       }
     } else {
@@ -354,16 +349,9 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/reason', async 
     const { gradeid, classid, start, end } = ctx.params
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
       const chartData = deductionActions.graphAsReason(parseInt(gradeid), parseInt(classid), start, end)
-      let id = v4()
-      while (graphTokens[id] !== undefined) {
-        id = v4()
-      }
-      graphTokens[id] = chartData
       ctx.response.body = {
         status: 'ok',
-        details: {
-          token: id,
-        },
+        details: chartData,
       }
     } else {
       ctx.response.body = {
@@ -385,15 +373,10 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/date', async ct
     const { gradeid, classid, start, end } = ctx.params
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
       const chartData = deductionActions.graphAsDate(parseInt(gradeid), parseInt(classid), start, end)
-      let id = v4()
-      while (graphTokens[id] !== undefined) {
-        id = v4()
-      }
-      graphTokens[id] = chartData
       ctx.response.body = {
         status: 'ok',
         details: {
-          token: id,
+          token: chartData,
         },
       }
     } else {

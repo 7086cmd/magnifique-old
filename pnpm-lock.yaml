@@ -31,6 +31,7 @@ specifiers:
   '@types/remarkable': 2.0.3
   '@types/ua-parser-js': ^0.7.36
   '@types/uuid': 8.3.4
+  '@types/xml2json': ^0.11.4
   '@typescript-eslint/eslint-plugin': 5.11.0
   '@typescript-eslint/parser': 5.11.0
   '@vitejs/plugin-legacy': 1.7.1
@@ -42,6 +43,8 @@ specifiers:
   '@vue/shared': 3.2.31
   '@vueuse/core': ^8.2.0
   '@vueuse/shared': ^8.2.3
+  '@vueuse/sound': ^1.1.7
+  apexcharts: ^3.35.0
   axios: 0.24.0
   chalk: ^5.0.1
   chokidar: 3.5.3
@@ -126,7 +129,10 @@ specifiers:
   vue-i18n: 9.2.0-beta.30
   vue-router: 4.0.14
   vue-tsc: 0.31.2
+  vue3-apexcharts: ^1.4.1
+  vue3-menus: ^1.1.2
   vuex: 4.0.2
+  xml2json: ^0.12.0
   yaml: ^1.10.2
 
 dependencies:
@@ -136,6 +142,7 @@ dependencies:
   '@koa/router': 10.1.1
   '@tauri-apps/api': 1.0.0-rc.2
   '@types/ua-parser-js': 0.7.36
+  apexcharts: 3.35.0
   chalk: 5.0.1
   iconv-lite: 0.6.3
   js-sha512: 0.8.0
@@ -158,6 +165,7 @@ dependencies:
   tslib: 2.3.1
   ua-parser-js: 1.0.2
   uuid: 8.3.2
+  vue3-apexcharts: 1.4.1_apexcharts@3.35.0+vue@3.2.31
   yaml: 1.10.2
 
 devDependencies:
@@ -185,6 +193,7 @@ devDependencies:
   '@types/react': 17.0.39
   '@types/remarkable': 2.0.3
   '@types/uuid': 8.3.4
+  '@types/xml2json': 0.11.4
   '@typescript-eslint/eslint-plugin': 5.11.0_15a231715447500ed5c06da64c8aef1c
   '@typescript-eslint/parser': 5.11.0_eslint@8.9.0+typescript@4.5.5
   '@vitejs/plugin-legacy': 1.7.1_vite@2.8.4
@@ -196,6 +205,7 @@ devDependencies:
   '@vue/shared': 3.2.31
   '@vueuse/core': 8.2.0_vue@3.2.31
   '@vueuse/shared': 8.2.3_vue@3.2.31
+  '@vueuse/sound': 1.1.7_vue@3.2.31
   axios: 0.24.0
   chokidar: 3.5.3
   concurrently: 7.0.0
@@ -258,7 +268,9 @@ devDependencies:
   vue-i18n: 9.2.0-beta.30_vue@3.2.31
   vue-router: 4.0.14_vue@3.2.31
   vue-tsc: 0.31.2_typescript@4.5.5
+  vue3-menus: 1.1.2
   vuex: 4.0.2_vue@3.2.31
+  xml2json: 0.12.0
 
 packages:
 
@@ -2886,6 +2898,12 @@ packages:
     resolution: {integrity: sha512-8oDqyLC7eD4HM307boe2QWKyuzdzWBj56xI/imSl2cpL+U3tCMaTAkMJ4ee5JBZ/FsOJlvRGeIShiZDAl1qERA==}
     dev: true
 
+  /@types/xml2json/0.11.4:
+    resolution: {integrity: sha512-8kJ61xI/G8r6aJZB1am4kCPZWNhNSU+wM8nNld4zBorlkFYPp2jikug4m07tVtEAm417hDvlVExL3Kmyf36zBQ==}
+    dependencies:
+      '@types/node': 17.0.17
+    dev: true
+
   /@types/yargs-parser/21.0.0:
     resolution: {integrity: sha512-iO9ZQHkZxHn4mSakYV0vFHAVDyEOIJQrV2uZ06HxEPcx+mt8swXoZHIbaaJ2crJYFfErySgktuTZ3BeLz+XmFA==}
 
@@ -3270,6 +3288,16 @@ packages:
       '@vue/shared': 3.2.31
     dev: true
 
+  /@vue/composition-api/1.4.9_vue@3.2.31:
+    resolution: {integrity: sha512-l6YOeg5LEXmfPqyxAnBaCv1FMRw0OGKJ4m6nOWRm6ngt5TuHcj5ZoBRN+LXh3J0u6Ur3C4VA+RiKT+M0eItr/g==}
+    requiresBuild: true
+    peerDependencies:
+      vue: '>= 2.5 < 3'
+    dependencies:
+      vue: 3.2.31
+    dev: true
+    optional: true
+
   /@vue/devtools-api/6.1.3:
     resolution: {integrity: sha512-79InfO2xHv+WHIrH1bHXQUiQD/wMls9qBk6WVwGCbdwP7/3zINtvqPNMtmSHXsIKjvUAHc8L0ouOj6ZQQRmcXg==}
 
@@ -3397,6 +3425,17 @@ packages:
     dependencies:
       vue: 3.2.31
       vue-demi: 0.12.4_vue@3.2.31
+    dev: true
+
+  /@vueuse/sound/1.1.7_vue@3.2.31:
+    resolution: {integrity: sha512-rn4uIeEz9SqZ82KroFQ4OGXRIZ8cLlvfk/CxfZBBkjfRjE1VpanzKYCAoN3dD716dBfLPsAa6Aq7VV6TpZCpVw==}
+    dependencies:
+      howler: 2.2.3
+      vue-demi: 0.12.5_ac2a42527c362575429f172d82b9d821
+    optionalDependencies:
+      '@vue/composition-api': 1.4.9_vue@3.2.31
+    transitivePeerDependencies:
+      - vue
     dev: true
 
   /@wdio/config/7.16.13:
@@ -3659,6 +3698,17 @@ packages:
       normalize-path: 3.0.0
       picomatch: 2.3.1
     dev: true
+
+  /apexcharts/3.35.0:
+    resolution: {integrity: sha512-oipJRkaxt8DPGRmn1kur6aPzML1JSpf2M3ecu+gyw+8xiNmT2C0p1uuuqPZrk+Lr2hmDxzNBPR7TvxwRl3ozgw==}
+    dependencies:
+      svg.draggable.js: 2.2.2
+      svg.easing.js: 2.0.0
+      svg.filter.js: 2.0.2
+      svg.pathmorphing.js: 0.1.3
+      svg.resize.js: 1.4.3
+      svg.select.js: 3.0.1
+    dev: false
 
   /app-builder-bin/3.7.1:
     resolution: {integrity: sha512-ql93vEUq6WsstGXD+SBLSIQw6SNnhbDEM0swzgugytMxLp3rT24Ag/jcC80ZHxiPRTdew1niuR7P3/FCrDqIjw==}
@@ -4143,7 +4193,6 @@ packages:
     dependencies:
       file-uri-to-path: 1.0.0
     dev: true
-    optional: true
 
   /bl/4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
@@ -7542,7 +7591,6 @@ packages:
     resolution: {integrity: sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==}
     requiresBuild: true
     dev: true
-    optional: true
 
   /filelist/1.0.2:
     resolution: {integrity: sha512-z7O0IS8Plc39rTCq6i6iHxk43duYOn8uFJiWSewIq0Bww1RNybVHSCjahmcC87ZqAm4OTvFzlzeGu3XAzG1ctQ==}
@@ -8226,6 +8274,23 @@ packages:
       minimalistic-crypto-utils: 1.0.1
     dev: true
 
+  /hoek/4.2.1:
+    resolution: {integrity: sha512-QLg82fGkfnJ/4iy1xZ81/9SIJiq1NGFUMGs6ParyjBZr6jW2Ufj/snDqTHixNlHdPNwN2RLVD0Pi3igeK9+JfA==}
+    engines: {node: '>=4.0.0'}
+    deprecated: This version has been deprecated in accordance with the hapi support policy (hapi.im/support). Please upgrade to the latest version to get the best features, bug fixes, and security patches. If you are unable to upgrade at this time, paid support is available for older versions (hapi.im/commercial).
+    dev: true
+
+  /hoek/5.0.4:
+    resolution: {integrity: sha512-Alr4ZQgoMlnere5FZJsIyfIjORBqZll5POhDsF4q64dPuJR6rNxXdDxtHSQq8OXRurhmx+PWYEE8bXRROY8h0w==}
+    engines: {node: '>=8.9.0'}
+    deprecated: This version has been deprecated in accordance with the hapi support policy (hapi.im/support). Please upgrade to the latest version to get the best features, bug fixes, and security patches. If you are unable to upgrade at this time, paid support is available for older versions (hapi.im/commercial).
+    dev: true
+
+  /hoek/6.1.3:
+    resolution: {integrity: sha512-YXXAAhmF9zpQbC7LEcREFtXfGq5K1fmd+4PHkBq8NUqmzW3G+Dq10bI/i0KucLRwss3YYFQ0fSfoxBZYiGUqtQ==}
+    deprecated: This module has moved and is now available at @hapi/hoek. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
+    dev: true
+
   /hooker/0.2.3:
     resolution: {integrity: sha1-uDT3I8xKJCqmWWNFnfbZhMXT2Vk=}
     dev: true
@@ -8239,6 +8304,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       lru-cache: 6.0.0
+    dev: true
+
+  /howler/2.2.3:
+    resolution: {integrity: sha512-QM0FFkw0LRX1PR8pNzJVAY25JhIWvbKMBFM4gqk+QdV+kPXOhleWGCB6AiAF/goGjIHK2e/nIElplvjQwhr0jg==}
     dev: true
 
   /html-encoding-sniffer/2.0.1:
@@ -9046,6 +9115,13 @@ packages:
     engines: {node: '>= 8.0.0'}
     dev: true
 
+  /isemail/3.2.0:
+    resolution: {integrity: sha512-zKqkK+O+dGqevc93KNsbZ/TqTUFd46MwWjYOoMrjIMZ51eU7DtQG3Wmd9SQQT7i7RVnuTPEiYEWHU3MSbxC1Tg==}
+    engines: {node: '>=4.0.0'}
+    dependencies:
+      punycode: 2.1.1
+    dev: true
+
   /isexe/2.0.0:
     resolution: {integrity: sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=}
     dev: true
@@ -9640,6 +9716,16 @@ packages:
       - supports-color
       - ts-node
       - utf-8-validate
+    dev: true
+
+  /joi/13.7.0:
+    resolution: {integrity: sha512-xuY5VkHfeOYK3Hdi91ulocfuFopwgbSORmIwzcwHKESQhC7w1kD5jaVSPnqDxS2I8t3RZ9omCKAxNwXN5zG1/Q==}
+    engines: {node: '>=8.9.0'}
+    deprecated: This version has been deprecated in accordance with the hapi support policy (hapi.im/support). Please upgrade to the latest version to get the best features, bug fixes, and security patches. If you are unable to upgrade at this time, paid support is available for older versions (hapi.im/commercial).
+    dependencies:
+      hoek: 5.0.4
+      isemail: 3.2.0
+      topo: 3.0.3
     dev: true
 
   /js-sha512/0.8.0:
@@ -10854,7 +10940,6 @@ packages:
     resolution: {integrity: sha512-8ZtvEnA2c5aYCZYd1cvgdnU6cqwixRoYg70xPLWUws5ORTa/lnw+u4amixRS/Ac5U5mQVgp9pnlSUnbNWFaWZQ==}
     requiresBuild: true
     dev: true
-    optional: true
 
   /nanoid/3.3.1:
     resolution: {integrity: sha512-n6Vs/3KGyxPQd6uO0eH4Bv0ojGSUvuLlIHtC3Y0kEO23YRge8H9x1GCzLn28YX0H66pMkxuaeESFq4tKISKwdw==}
@@ -10935,6 +11020,14 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /node-expat/2.4.0:
+    resolution: {integrity: sha512-X8Y/Zk/izfNgfayeOeUGqze7KlaOwVJ9SDTjHUMKd0hu0aFTRpLlLCBwmx79cTPiQWD24I1YOafF+U+rTvEMfQ==}
+    requiresBuild: true
+    dependencies:
+      bindings: 1.5.0
+      nan: 2.15.0
+    dev: true
 
   /node-fetch/2.6.7:
     resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
@@ -13378,6 +13471,60 @@ packages:
     resolution: {integrity: sha1-WPcc7jvVGbWdSyqEO2x95krAR2Q=}
     dev: true
 
+  /svg.draggable.js/2.2.2:
+    resolution: {integrity: sha512-JzNHBc2fLQMzYCZ90KZHN2ohXL0BQJGQimK1kGk6AvSeibuKcIdDX9Kr0dT9+UJ5O8nYA0RB839Lhvk4CY4MZw==}
+    engines: {node: '>= 0.8.0'}
+    dependencies:
+      svg.js: 2.7.1
+    dev: false
+
+  /svg.easing.js/2.0.0:
+    resolution: {integrity: sha1-iqmUawqOJ4V6XEChDrpAkeVpHxI=}
+    engines: {node: '>= 0.8.0'}
+    dependencies:
+      svg.js: 2.7.1
+    dev: false
+
+  /svg.filter.js/2.0.2:
+    resolution: {integrity: sha1-kQCOFROJ3ZIwd5/L5uLJo2LRwgM=}
+    engines: {node: '>= 0.8.0'}
+    dependencies:
+      svg.js: 2.7.1
+    dev: false
+
+  /svg.js/2.7.1:
+    resolution: {integrity: sha512-ycbxpizEQktk3FYvn/8BH+6/EuWXg7ZpQREJvgacqn46gIddG24tNNe4Son6omdXCnSOaApnpZw6MPCBA1dODA==}
+    dev: false
+
+  /svg.pathmorphing.js/0.1.3:
+    resolution: {integrity: sha512-49HWI9X4XQR/JG1qXkSDV8xViuTLIWm/B/7YuQELV5KMOPtXjiwH4XPJvr/ghEDibmLQ9Oc22dpWpG0vUDDNww==}
+    engines: {node: '>= 0.8.0'}
+    dependencies:
+      svg.js: 2.7.1
+    dev: false
+
+  /svg.resize.js/1.4.3:
+    resolution: {integrity: sha512-9k5sXJuPKp+mVzXNvxz7U0uC9oVMQrrf7cFsETznzUDDm0x8+77dtZkWdMfRlmbkEEYvUn9btKuZ3n41oNA+uw==}
+    engines: {node: '>= 0.8.0'}
+    dependencies:
+      svg.js: 2.7.1
+      svg.select.js: 2.1.2
+    dev: false
+
+  /svg.select.js/2.1.2:
+    resolution: {integrity: sha512-tH6ABEyJsAOVAhwcCjF8mw4crjXSI1aa7j2VQR8ZuJ37H2MBUbyeqYr5nEO7sSN3cy9AR9DUwNg0t/962HlDbQ==}
+    engines: {node: '>= 0.8.0'}
+    dependencies:
+      svg.js: 2.7.1
+    dev: false
+
+  /svg.select.js/3.0.1:
+    resolution: {integrity: sha512-h5IS/hKkuVCbKSieR9uQCj9w+zLHoPh+ce19bBYyqF53g6mnPB8sAtIbe1s9dh2S2fCmYX2xel1Ln3PJBbK4kw==}
+    engines: {node: '>= 0.8.0'}
+    dependencies:
+      svg.js: 2.7.1
+    dev: false
+
   /symbol-tree/3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
     dev: true
@@ -13628,6 +13775,13 @@ packages:
 
   /toml/3.0.0:
     resolution: {integrity: sha512-y/mWCZinnvxjTKYhJ+pYxwD0mRLVvOtdS2Awbgxln6iEnt4rk0yBxeSBHkGJcPucRiG0e55mwWp+g/05rsrd6w==}
+    dev: true
+
+  /topo/3.0.3:
+    resolution: {integrity: sha512-IgpPtvD4kjrJ7CRA3ov2FhWQADwv+Tdqbsf1ZnPUSAtCJ9e1Z44MmoSGDXGk4IppoZA7jd/QRkNddlLJWlUZsQ==}
+    deprecated: This module has moved and is now available at @hapi/topo. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
+    dependencies:
+      hoek: 6.1.3
     dev: true
 
   /tough-cookie/2.5.0:
@@ -14536,6 +14690,22 @@ packages:
     dependencies:
       vue: 3.2.31
 
+  /vue-demi/0.12.5_ac2a42527c362575429f172d82b9d821:
+    resolution: {integrity: sha512-BREuTgTYlUr0zw0EZn3hnhC3I6gPWv+Kwh4MCih6QcAeaTlaIX0DwOVN0wHej7hSvDPecz4jygy/idsgKfW58Q==}
+    engines: {node: '>=12'}
+    hasBin: true
+    requiresBuild: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+    dependencies:
+      '@vue/composition-api': 1.4.9_vue@3.2.31
+      vue: 3.2.31
+    dev: true
+
   /vue-eslint-parser/8.2.0_eslint@8.9.0:
     resolution: {integrity: sha512-hvl8OVT8imlKk/lQyhkshqwQQChzHETcBd5abiO4ePw7ib7QUZLfW+2TUrJHKUvFOCFRJrDin5KJO9OHzB5bRQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
@@ -14595,6 +14765,20 @@ packages:
       '@vue/runtime-dom': 3.2.31
       '@vue/server-renderer': 3.2.31_vue@3.2.31
       '@vue/shared': 3.2.31
+    dev: true
+
+  /vue3-apexcharts/1.4.1_apexcharts@3.35.0+vue@3.2.31:
+    resolution: {integrity: sha512-96qP8JDqB9vwU7bkG5nVU+E0UGQn7yYQVqUUCLQMYWDuQyu2vE77H/UFZ1yI+hwzlSTBKT9BqnNG8JsFegB3eg==}
+    peerDependencies:
+      apexcharts: '> 3.0.0'
+      vue: '> 3.0.0'
+    dependencies:
+      apexcharts: 3.35.0
+      vue: 3.2.31
+    dev: false
+
+  /vue3-menus/1.1.2:
+    resolution: {integrity: sha512-MoX87TH25fbKmmE8PwC+c2kJOSGJheP4pBR2we0RkOrfUDQg7sK+akAZSmQU8o+7dF+xVF2NfKPhoVHOhlX9wQ==}
     dev: true
 
   /vuex/4.0.2_vue@3.2.31:
@@ -15073,6 +15257,15 @@ packages:
 
   /xml-name-validator/3.0.0:
     resolution: {integrity: sha512-A5CUptxDsvxKJEU3yO6DuWBSJz/qizqzJKOMIfUJHETbBw/sFaDxgd6fxm1ewUaM0jZ444Fc5vC5ROYurg/4Pw==}
+    dev: true
+
+  /xml2json/0.12.0:
+    resolution: {integrity: sha512-EPJHRWJnJUYbJlzR4pBhZODwWdi2IaYGtDdteJi0JpZ4OD31IplWALuit8r73dJuM4iHZdDVKY1tLqY2UICejg==}
+    hasBin: true
+    dependencies:
+      hoek: 4.2.1
+      joi: 13.7.0
+      node-expat: 2.4.0
     dev: true
 
   /xmlbuilder/15.1.1:
