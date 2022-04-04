@@ -52,14 +52,16 @@
         "width": 960,
         "height": 1024,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "visible": false,
+        "url": ""
       }
     ],
     "security": {
       "csp": null
     },
     "systemTray": {
-      "iconPath": "icons/client.png",
+      "iconPath": "icons/icon.ico",
       "iconAsTemplate": true
     }
   }

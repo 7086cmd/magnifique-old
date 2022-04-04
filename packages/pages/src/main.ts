@@ -41,6 +41,7 @@ import '@kangc/v-md-editor/lib/plugins/copy-code/copy-code.css'
 import '@kangc/v-md-editor/lib/plugins/todo-list/todo-list.css'
 import '@kangc/v-md-editor/lib/plugins/emoji/emoji.css'
 import '@kangc/v-md-editor/lib/style/preview.css'
+import './tauri'
 
 const app = createApp(App)
 

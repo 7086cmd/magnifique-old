@@ -49,3 +49,5 @@ declare module 'markdown-it-abbr'
 declare module 'markdown-it-ins'
 declare module 'markdown-it-footnote'
 declare module 'markdown-it-emoji'
+
+// export type markdown = string
