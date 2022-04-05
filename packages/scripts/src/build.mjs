@@ -2,8 +2,6 @@
 import { build as buildFrontEnd } from 'vite'
 import { build as buildBackEnd } from 'esbuild'
 import { build as buildApp } from 'electron-builder'
-import { resolve } from 'path'
-import { mkdir } from 'fs/promises'
 import './lint.mjs'
 const main = async () => {
   await buildFrontEnd()
@@ -111,45 +109,6 @@ const main = async () => {
     },
     treeShaking: true,
     external: ['electron'],
-  })
-  await mkdir(resolve('dist', 'pages', 'app'))
-  await buildApp({
-    publish: 'never',
-    config: {
-      files: ['./dist/client.min.js', './dist/client.preload.min.js', './icons/client.ico'],
-      extraMetadata: {
-        main: 'dist/client.min.js',
-      },
-      directories: {
-        output: 'dist/pages/app',
-      },
-      asar: true,
-      extends: null,
-      appId: 'com.magnifique.client',
-      copyright: 'Copyright ©7086cmd 2021 GNU License',
-      productName: 'Magnifique Client',
-      win: {
-        icon: './icons/client.ico',
-        target: [
-          {
-            target: 'nsis',
-            arch: ['x64', 'ia32'],
-          },
-          {
-            target: 'zip',
-            arch: ['x64'],
-          },
-        ],
-        publish: undefined,
-      },
-      nsis: {
-        oneClick: false,
-        perMachine: false,
-        allowToChangeInstallationDirectory: true,
-        shortcutName: 'Magnifique Client',
-        menuCategory: 'Magnifique',
-      },
-    },
   })
   await buildApp({
     publish: 'always',

@@ -102,21 +102,13 @@ const io = new Server(httpServer, {
 })
 const uploader = koaMulter({
   storage: diskStorage({
-    destination: resolve(tmpdir(), '../magnifique/posts'),
+    destination: resolve(tmpdir(), '../magnifique/storage'),
     filename: (_ctx, file, cb) => {
-      cb(null, file.originalname)
+      cb(null, v4() + '.' + file.originalname.split('.').reverse()[0])
     },
   }),
-  fileFilter: (_ctx, file, cb) => {
-    const filename = file.originalname.split('.').reverse()
-    if (filename[0] == 'docx') {
-      cb(null, true)
-    } else {
-      cb(null, false)
-    }
-  },
   limits: {
-    fileSize: 30 * 1024 * 1024, // 30MB for limit.
+    fileSize: 80 * 1024 * 1024, // 80MB for limit.
     files: 1,
   },
 })
@@ -2325,6 +2317,29 @@ router.patch('/api/message/message', async ctx => {
       reason: 'password-wrong',
     }
   }
+})
+router.put('/api/message/upload', async (ctx, next) => {
+  await uploader.single('file')(ctx, next)
+  // const { auth, data } = ctx.request.body as {
+  //   auth: {
+  //     username: string
+  //     password: string
+  //   }
+  //   data: {
+  //     roomId: string
+  //   }
+  // }
+  // if (ctx.file !== undefined) {
+  // if ((connectionActions.loginModule(auth.username, auth.password).status as string) === 'ok') {
+  // Do
+  ctx.response.body = ctx.file
+  // } else {
+  // ctx.response.body = {
+  // status: 'error',
+  // reason: 'password-wrong',
+  // }
+  // }
+  // }
 })
 
 // All APIs

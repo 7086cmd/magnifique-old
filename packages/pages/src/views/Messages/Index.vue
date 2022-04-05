@@ -13,6 +13,8 @@ import { ArrowLeft, More, Close } from '@element-plus/icons-vue'
 import { uniq } from 'lodash'
 import { useRoute, useRouter } from 'vue-router'
 import MessagePiece from '../../components/messages/piece.vue'
+import { menusItemType } from 'vue3-menus'
+import { MessageRoomSubscribor } from '../../components/messages/socket/init'
 
 const route = useRoute()
 const router = useRouter()
@@ -146,6 +148,7 @@ interface option {
 }
 
 let fullList = ref<option[]>([])
+let fullListShown = ref<option[]>([])
 
 let isCreatingRoom = ref(false)
 
@@ -154,6 +157,7 @@ let fullListFlatten = ref<option[]>([])
 const fullListLoad = async () => {
   NProgress.start()
   fullList.value = Object.assign([], await client.getFullList())
+  fullListShown.value = Object.assign([], await client.getFullList())
   fullListFlatten.value = client.getFlatten(Object.assign([], await client.getFullList()))
   // console.log(fullList.value, fullListFlatten.value)
   fullList.value = fullList.value.filter(item => item.children?.filter(it => it.children).length !== 0)
@@ -196,9 +200,12 @@ watch(roomc.value, () => {
   // console.log(roomc.value)
 })
 
+const subscribor = ref<MessageRoomSubscribor>()
+
 watch(isShown, async () => {
   if (isShown.value === false) {
     NProgress.start()
+    subscribor.value?.unsubscribe()
     items.value = await client.getLatestRooms()
     if (username.value === 'admin') {
       router.push('/admin/message')
@@ -207,6 +214,13 @@ watch(isShown, async () => {
     }
     NProgress.done()
   } else if (isShown.value === true) {
+    subscribor.value = new MessageRoomSubscribor({
+      account: username.value,
+      password: password.value,
+      roomId: roomData.value.id,
+      refresher: getRoomMsg,
+    })
+    subscribor.value.subscribe()
     if (username.value === 'admin') {
       router.push('/admin/message/' + roomData.value.id)
     } else {
@@ -234,7 +248,44 @@ const deleteGroup = async () => {
   })
 }
 
-let useRichTextEditor = ref(false)
+// let useRichTextEditor = ref(false)
+
+const groupMenus = ref({
+  menus: [
+    {
+      label: '修改群名',
+      tip: '修改群的名字',
+    },
+    {
+      label: '其他',
+      tip: '成员管理、解散等',
+      click: () => (editingTitle.value = true),
+    },
+  ] as menusItemType[],
+  zIndex: 10000,
+})
+
+let useId = ref('')
+
+const blockMessageMenus = ref({
+  menus: [
+    {
+      label: '修改',
+      tip: '修改消息内容',
+      click: () => startEdit(useId.value),
+    },
+    {
+      label: '撤回',
+      tip: '撤回消息',
+      click: () => deleteMessage(useId.value),
+    },
+  ],
+  zIndex: 9000,
+})
+
+window.addEventListener('keydown', event => {
+  if (event.ctrlKey && event.keyCode === 13 && isShown.value) emit()
+})
 </script>
 
 <template>
@@ -263,6 +314,7 @@ let useRichTextEditor = ref(false)
     </el-scrollbar>
     <el-drawer v-model="editingTitle" direction="ltr" size="25%" :title="'更多 | ' + roomData.title" :modal="false">
       <van-cell title="群名" :value="roomData.title"></van-cell>
+      <el-tree-select></el-tree-select>
       <el-popconfirm title="确定要解散吗？" icon-color="red" confirm-button-type="danger" @confirm="deleteGroup">
         <template #reference>
           <el-button round type="danger" plain style="width: 100%">解散</el-button>
@@ -271,43 +323,19 @@ let useRichTextEditor = ref(false)
     </el-drawer>
     <el-drawer v-model="isShown" direction="rtl" size="70%" :close-on-click-modal="true" :show-close="false" :modal="true">
       <template #title>
-        <el-page-header :icon="ArrowLeft" @back="isShown = false">
+        <el-page-header v-menus:right="groupMenus" :icon="ArrowLeft" @back="isShown = false">
           <template #content>
-            <span v-if="!editingTitle">{{ roomData.title }}</span>
-            <el-button v-if="!editingTitle && roomData.members.length > 2" round type="text" :icon="More" @click="editingTitle = true" />
-            <el-row>
-              <el-col :span="16"><el-input v-if="editingTitle" v-model="roomData.title" /></el-col>
-              <el-col :span="4"><el-button v-if="editingTitle" round type="text" :icon="Close" @click="editingTitle = false" /></el-col>
-            </el-row>
+            <span>{{ roomData.title }}</span>
+            <el-button v-if="!editingTitle && roomData.members.length > 2" v-menus:left="groupMenus" :icon="More" round type="text" @click.stop />
           </template>
           <template #title> <sub style="font-size: 14px">返回</sub> </template>
         </el-page-header>
       </template>
       <el-scrollbar ref="messageContent" max-height="480px" style="height: 60%">
         <div v-for="msg in msgs" :key="msg.id">
-          <div v-if="msg.content.length > 50">
-            <el-card v-if="!msg.editing" shadow="never">
+          <div v-if="msg.content.length > 50" @mouseover="useId = msg.id">
+            <el-card v-if="!msg.editing" v-menus="blockMessageMenus" shadow="never">
               <template #header>
-                <el-dropdown>
-                  <el-icon><More /></el-icon>
-                  <template #dropdown>
-                    <el-dropdown-menu>
-                      <el-dropdown-item @click="startEdit(msg.id)">
-                        <el-icon>
-                          <Edit />
-                        </el-icon>
-                        修改
-                      </el-dropdown-item>
-                      <el-dropdown-item divided @click="deleteMessage(msg.id)">
-                        <el-icon>
-                          <Delete />
-                        </el-icon>
-                        删除
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
-                <span style="padding-left: 1em"></span>
                 <el-link :underline="false" style="font-size: 16px">
                   {{ roomData.members.filter(x => x.id === msg.creator).map(x => x.name)[0] }}
                 </el-link>
@@ -328,7 +356,7 @@ let useRichTextEditor = ref(false)
               <el-button round @click="msg.editing = false">取消</el-button>
             </div>
           </div>
-          <p v-else style="padding-top: 8px"><message-piece :content="msg" :username="username" :client="client" :room-id="roomData.id"></message-piece></p>
+          <p v-else style="padding-top: 8px"><message-piece :content="msg" :username="username" :client="client" :room-id="roomData.id" :rfmethod="getRoomMsg"></message-piece></p>
         </div>
       </el-scrollbar>
       <v-md-editor
@@ -348,14 +376,10 @@ let useRichTextEditor = ref(false)
           <el-cascader-panel v-model="roomc.users" filterable :options="fullList" :props="proping" :show-all-levels="false" collapse-tags clearable style="width: 100%"></el-cascader-panel>
         </el-form-item>
         <el-form-item label="选中">
-          <!-- <el-tag v-for="item in roomc.users" :key="item" plain v-text="client.getName(fullListFlatten, item)"></el-tag> -->
-          <el-select-v2 v-model="roomc.users" :options="fullListFlatten" style="width: 100%" multiple></el-select-v2>
+          <el-tree-select v-model="roomc.users" :data="fullList" style="width: 100%" multiple filterable />
         </el-form-item>
-        <el-form-item label="标题" :disable="roomc.users.length === 1 || (roomc.users.length === 2 && roomc.users.includes(username))">
+        <el-form-item label="标题">
           <el-input v-model="roomc.title"></el-input>
-        </el-form-item>
-        <el-form-item label="介绍">
-          <el-input v-model="roomc.description" type="textarea"></el-input>
         </el-form-item>
         <el-button round @click="isCreatingRoom = false">取消</el-button>
         <el-button round type="primary" @click="createRoom">确定</el-button>
