@@ -41,6 +41,11 @@ const getRecent = (messageFile: MessageFile) => {
   }
 }
 
+const messageUnreaded = (file: MessageFile, person: string) =>
+  Object.entries(file.details)
+    .map(x => x[1])
+    .filter(x => !x.status[person]).length
+
 const readMyRooms = (user: string) => {
   const roomIds = getAllRooms(user)
   if (typeof roomIds === 'undefined') {
@@ -56,6 +61,7 @@ const readMyRooms = (user: string) => {
         id: item,
         recent: getRecent(createSingleRoomItemGetter(item)),
         members: createSingleRoomItemGetter(item).config.users.map(x => ({ id: x, name: getPerson(x) })),
+        unreaded: messageUnreaded(roomInf, user),
       }
     })
     .sort((item1, item2) => {

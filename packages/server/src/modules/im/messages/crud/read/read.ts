@@ -1,4 +1,5 @@
 import { createObjectToArrayTransformer } from 'packages/server/src/modules/utils'
+import { recievementActions } from '..'
 import { createSingleRoomItemGetter } from '../../../rooms/crud'
 
 export const createMessageReader = (roomId: string, requester: string) => {
@@ -9,6 +10,7 @@ export const createMessageReader = (roomId: string, requester: string) => {
       reason: 'no-auth',
     }
   }
+  recievementActions.all(roomId, requester)
   return {
     status: 'ok',
     details: createObjectToArrayTransformer('id', messages.details) as MessageItem[],
