@@ -62,7 +62,7 @@ if ('classLoginInfo' in window.localStorage) {
 </script>
 
 <template>
-  <div>
+  <div @contextmenu.prevent>
     <el-alert v-if="!online" title="连接已断开" description="请检查网络连接" type="error" center show-icon />
     <router-view></router-view>
   </div>

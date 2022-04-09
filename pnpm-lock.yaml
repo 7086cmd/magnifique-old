@@ -45,6 +45,7 @@ specifiers:
   '@vueuse/core': ^8.2.0
   '@vueuse/shared': ^8.2.3
   '@vueuse/sound': ^1.1.7
+  animate.css: ^4.1.1
   apexcharts: ^3.35.0
   axios: 0.24.0
   chalk: ^5.0.1
@@ -209,6 +210,7 @@ devDependencies:
   '@vueuse/core': 8.2.0_vue@3.2.31
   '@vueuse/shared': 8.2.3_vue@3.2.31
   '@vueuse/sound': 1.1.7_vue@3.2.31
+  animate.css: 4.1.1
   axios: 0.24.0
   chokidar: 3.5.3
   concurrently: 7.0.0
@@ -3658,6 +3660,10 @@ packages:
       '@algolia/requester-common': 4.13.0
       '@algolia/requester-node-http': 4.13.0
       '@algolia/transporter': 4.13.0
+    dev: true
+
+  /animate.css/4.1.1:
+    resolution: {integrity: sha512-+mRmCTv6SbCmtYJCN4faJMNFVNN5EuCTTprDTAo7YzIGji2KADmakjVA3+8mVDkZ2Bf09vayB35lSQIex2+QaQ==}
     dev: true
 
   /ansi-align/3.0.1:

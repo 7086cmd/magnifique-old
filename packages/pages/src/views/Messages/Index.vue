@@ -9,7 +9,7 @@ import { ElMessageBox, ElNotification } from 'element-plus'
 import type { ElScrollbar, ElInput } from 'element-plus'
 import failfuc from '../../modules/failfuc'
 import { onStartTyping } from '@vueuse/core'
-import { ArrowLeft, More } from '@element-plus/icons-vue'
+import { ArrowLeft, More, Plus, Delete } from '@element-plus/icons-vue'
 import { uniq } from 'lodash'
 import { useRoute, useRouter } from 'vue-router'
 import MessagePiece from '../../components/messages/piece.vue'
@@ -216,7 +216,7 @@ watch(isShown, async () => {
 
 let editingTitle = ref(false)
 
-const deleteGroup = async () => {
+const deleteGroup = async (roomId?: string) => {
   ElMessageBox.prompt(h('span', null, [h('b', null, '危险！此操作不可逆！'), '输入密码以继续']), 'Think Twice, Delete Once!', {
     type: 'error',
     center: true,
@@ -225,7 +225,7 @@ const deleteGroup = async () => {
     inputValidator: val => (window.btoa(val) !== password.value ? '密码错误' : true),
   }).then(async () => {
     NProgress.start()
-    await client.deleteRoom(roomData.value.id)
+    await client.deleteRoom(roomId ?? roomData.value.id)
     editingTitle.value = false
     isShown.value = false
     await refresh()
@@ -271,18 +271,35 @@ const blockMessageMenus = ref({
 window.addEventListener('keydown', event => {
   if (event.ctrlKey && event.keyCode === 13 && isShown.value) emit()
 })
+
+let contexted = ref('')
+let showIt = ref(false)
 </script>
 
 <template>
-  <div>
+  <div @click="showIt = false" @contextmenu.prevent>
     <el-input ref="inputRef" v-model="searcher" size="large" placeholder="输入以检索" :prefix-icon="Search"></el-input>
-    <el-button round @click="fullListLoad">新建聊天组</el-button>
+    <el-divider />
+    <div>
+      <el-button round type="success" plain class="animate__animated animate__slideInTop" :icon="Plus" @click="fullListLoad">新建群组</el-button>
+      <el-button
+        v-if="showIt && items.filter(x => x.id === contexted)[0].members.length > 2"
+        class="animate__animated animate__zoomInRight"
+        round
+        type="danger"
+        plain
+        :icon="Delete"
+        @click="deleteGroup(contexted)"
+      >
+        删除群组
+      </el-button>
+    </div>
     <el-scrollbar max-height="720px">
       <el-divider />
       <div v-for="item in items" :key="item.id">
-        <div v-if="item.title.toLowerCase().includes(searcher.toLowerCase())">
+        <div v-if="item.title.toLowerCase().includes(searcher.toLowerCase())" className="animate__animated animate__slideInRight">
           <el-tooltip :content="'聊天组编号：' + item.id" placement="right" effect="light">
-            <el-link :underline="false" style="font-size: 20px" @click="getRoomMsg(item.id)">
+            <el-link :underline="false" style="font-size: 20px" @click="getRoomMsg(item.id)" @mouseover="contexted = item.id" @click.stop @contextmenu.prevent="showIt = true">
               {{ item.title }}
               <el-badge v-if="item.unreaded" :value="item.unreaded"></el-badge>
               <span v-if="item.members.length > 2"><el-tag type="warning" v-text="'群组'" /><el-tag v-for="member in item.members" :key="member.id" v-text="member.name"></el-tag></span>
@@ -318,7 +335,7 @@ window.addEventListener('keydown', event => {
         </el-page-header>
       </template>
       <el-scrollbar ref="messageContent" max-height="480px" style="height: 60%">
-        <div v-for="msg in msgs" :key="msg.id">
+        <div v-for="msg in msgs" :key="msg.id" className="animate__animated animate__slideInBottom">
           <div v-if="msg.content.length > 50" @mouseover="useId = msg.id">
             <el-card v-if="!msg.editing" v-menus="blockMessageMenus" shadow="never">
               <template #header>
@@ -327,7 +344,7 @@ window.addEventListener('keydown', event => {
                 </el-link>
               </template>
               <template #default>
-                <v-md-editor v-model="msg.content" mode="preview"></v-md-editor>
+                <v-md-editor v-model="msg.content" class="animate__animated animate__slideInBottom" mode="preview"></v-md-editor>
               </template>
             </el-card>
             <v-md-editor
@@ -336,13 +353,15 @@ window.addEventListener('keydown', event => {
               height="480px"
               left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
               @save="createEdition(msg.id)"
-            ></v-md-editor>
+            />
             <div v-if="msg.editing">
               <el-button round type="primary" :disabled="editContent === msg.content || editContent === ''" @click="createEdition(msg.id)">保存</el-button>
               <el-button round @click="msg.editing = false">取消</el-button>
             </div>
           </div>
-          <p v-else style="padding-top: 8px"><message-piece :content="msg" :username="username" :client="client" :room-id="roomData.id" :rfmethod="getRoomMsg"></message-piece></p>
+          <p v-else className="animate__animated animate__slideInBottom" style="padding-top: 8px">
+            <message-piece :content="msg" :username="username" :client="client" :room-id="roomData.id" :rfmethod="getRoomMsg"></message-piece>
+          </p>
         </div>
       </el-scrollbar>
       <v-md-editor

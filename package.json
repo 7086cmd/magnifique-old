@@ -99,6 +99,7 @@
     "@vueuse/core": "^8.2.0",
     "@vueuse/shared": "^8.2.3",
     "@vueuse/sound": "^1.1.7",
+    "animate.css": "^4.1.1",
     "axios": "0.24.0",
     "chokidar": "3.5.3",
     "concurrently": "7.0.0",
