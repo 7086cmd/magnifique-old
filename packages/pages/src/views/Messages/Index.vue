@@ -37,6 +37,7 @@ const items = ref<
       id: string
       name: string
     }[]
+    unreaded: number
   }[]
 >([])
 const msgs = ref<(MessageItem & { editing: boolean })[]>([])
@@ -287,6 +288,7 @@ window.addEventListener('keydown', event => {
           <el-tooltip :content="'聊天组编号：' + item.id" placement="right" effect="light">
             <el-link :underline="false" style="font-size: 20px" @click="getRoomMsg(item.id)">
               {{ item.title }}
+              <el-badge v-if="item.unreaded" :value="item.unreaded"></el-badge>
               <span v-if="item.members.length > 2"><el-tag type="warning" v-text="'群组'" /><el-tag v-for="member in item.members" :key="member.id" v-text="member.name"></el-tag></span>
               <span v-else-if="item.members.length === 2"><el-tag type="success" v-text="'单聊'" /></span>
             </el-link>

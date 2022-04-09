@@ -81,7 +81,7 @@ const login = () => {
       <el-input v-model="name" readonly :disabled="numberDef" />
     </el-form-item>
     <el-form-item label="密码">
-      <el-input v-model="password" type="password" />
+      <el-input v-model="password" type="password" @keydown.enter="login" />
     </el-form-item>
     <el-form-item>
       <el-button type="primary" style="width: 100%" plain round @click="login"> 确定 </el-button>
