@@ -4,7 +4,7 @@ import { createFileHash } from '../hash/hash'
 import { UploadFile } from './item'
 
 export const createItem = (options: UploadFile.CreateItemOptions): UploadFile.Item => ({
-  name: options.file.originalname,
+  name: options.filename ?? options.file.originalname,
   id: v1(),
   hash: createFileHash(options.file.path),
   location: options.file.path,

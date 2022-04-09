@@ -42,10 +42,9 @@ const createSocketIO = (options: SubscribeOptions, router: Router) => {
     url = baseurl
   }
   const URI = new URL(url)
-  URI.protocol = 'ws:'
   URI.pathname = '/'
   URI.search = params.toString()
-  const socket = io(URI.toString())
+  const socket = io(URI.toString(), { secure: true })
   socket.on('connect', () =>
     ElNotification({
       type: 'success',

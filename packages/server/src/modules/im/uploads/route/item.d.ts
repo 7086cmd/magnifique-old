@@ -14,6 +14,7 @@ export namespace UploadFile {
     file: File
     roomId: string
     username: string
+    filename?: string
   }
   export interface FileStruct {
     details: Record<string, Item>

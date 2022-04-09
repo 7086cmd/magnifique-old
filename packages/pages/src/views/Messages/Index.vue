@@ -9,7 +9,7 @@ import { ElMessageBox, ElNotification } from 'element-plus'
 import type { ElScrollbar, ElInput } from 'element-plus'
 import failfuc from '../../modules/failfuc'
 import { onStartTyping } from '@vueuse/core'
-import { ArrowLeft, More, Close } from '@element-plus/icons-vue'
+import { ArrowLeft, More } from '@element-plus/icons-vue'
 import { uniq } from 'lodash'
 import { useRoute, useRouter } from 'vue-router'
 import MessagePiece from '../../components/messages/piece.vue'
@@ -165,13 +165,6 @@ const fullListLoad = async () => {
   NProgress.done()
 }
 
-const proping = ref({
-  multiple: true,
-  emitPath: false,
-  // checkStrictly: true,
-  expandTrigger: 'hover',
-})
-
 const roomc = ref({
   title: '',
   description: '',
@@ -193,11 +186,6 @@ const inputRef = ref<InstanceType<typeof ElInput>>()
 
 onStartTyping(() => {
   inputRef.value?.focus()
-})
-
-watch(roomc.value, () => {
-  roomc.value.users = uniq(roomc.value.users)
-  // console.log(roomc.value)
 })
 
 const subscribor = ref<MessageRoomSubscribor>()
@@ -373,9 +361,6 @@ window.addEventListener('keydown', event => {
     <el-dialog v-model="isCreatingRoom" title="新建聊天组" center>
       <el-form :model="roomc">
         <el-form-item label="成员">
-          <el-cascader-panel v-model="roomc.users" filterable :options="fullList" :props="proping" :show-all-levels="false" collapse-tags clearable style="width: 100%"></el-cascader-panel>
-        </el-form-item>
-        <el-form-item label="选中">
           <el-tree-select v-model="roomc.users" :data="fullList" style="width: 100%" multiple filterable />
         </el-form-item>
         <el-form-item label="标题">

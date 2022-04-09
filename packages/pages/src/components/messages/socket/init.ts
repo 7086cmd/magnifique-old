@@ -42,10 +42,9 @@ export class MessageRoomSubscribor {
       url = baseurl
     }
     const URI = new URL(url)
-    URI.protocol = 'ws:'
     URI.pathname = '/'
     URI.search = params.toString()
-    const socket = io(URI.toString())
+    const socket = io(URI.toString(), { secure: true })
     this.socket = socket
     this.refresher = options.refresher
   }

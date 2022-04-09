@@ -16,7 +16,7 @@ import { tmpdir } from 'os'
 import { resolve } from 'path'
 import { Server } from 'socket.io'
 import { URLSearchParams } from 'url'
-import { v4 } from 'uuid'
+import { v1, v4 } from 'uuid'
 // import admin productions
 import loginAdmin from './modules/admin/login-admin'
 import resetPassword from './modules/admin/reset-password'
@@ -57,6 +57,7 @@ let graphTokens: Record<
     rows: Record<string, number | string>[]
   }
 > = {}
+let fileTokens: Record<string, { content: Buffer; mime: string }> = {}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type context = Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext & KoaRouter.RouterParamContext<Koa.DefaultState, Koa.DefaultContext>, any>
@@ -92,7 +93,7 @@ const downloaderSecureServer = createHttpsServer(
   downloaderServer.callback()
 )
 const downloaderUnSecureServer = createHttpServer(downloaderServer.callback())
-const io = new Server(httpServer, {
+const io = new Server(process.env.NODE_ENV === 'development' ? httpServer : httpsServer, {
   cors: {
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST'],
@@ -2320,26 +2321,65 @@ router.patch('/api/message/message', async ctx => {
 })
 router.put('/api/message/upload', async (ctx, next) => {
   await uploader.single('file')(ctx, next)
-  // const { auth, data } = ctx.request.body as {
-  //   auth: {
-  //     username: string
-  //     password: string
-  //   }
-  //   data: {
-  //     roomId: string
-  //   }
-  // }
-  // if (ctx.file !== undefined) {
-  // if ((connectionActions.loginModule(auth.username, auth.password).status as string) === 'ok') {
-  // Do
-  ctx.response.body = ctx.file
-  // } else {
-  // ctx.response.body = {
-  // status: 'error',
-  // reason: 'password-wrong',
-  // }
-  // }
-  // }
+  const { auth_username, auth_password, data_roomId } = ctx.request.body as {
+    auth_username: string
+    auth_password: string
+    data_roomId: string
+    data_filename: string
+  }
+  if (ctx.file !== undefined) {
+    if ((connectionActions.loginModule(auth_username, auth_password).status as string) === 'ok') {
+      ctx.response.body = connectionActions.uploadedFileHandler(ctx.file, auth_username, data_roomId)
+    } else {
+      ctx.response.body = {
+        status: 'error',
+        reason: 'password-wrong',
+      }
+    }
+  }
+})
+router.post('/api/message/upload', async ctx => {
+  const { auth, data } = ctx.request.body as { auth: { username: string; password: string }; data: { roomId: string; fileId: string } }
+  const { username, password } = auth
+  const { roomId, fileId } = data
+  if ((connectionActions.loginModule(username, password).status as string) === 'ok') {
+    const fileC = connectionActions.getUploadedFile(fileId, roomId, username)
+    if (fileC.status !== 'ok') {
+      ctx.response.body = fileC
+      return
+    }
+    let id = v1()
+    while (fileTokens[id] !== undefined) id = v1()
+    fileTokens[id] = fileC.details as { content: Buffer; mime: string }
+    ctx.response.body = {
+      status: 'ok',
+      details: { token: id },
+    }
+  } else return { status: 'error', reason: 'password-wrong' }
+})
+router.get('/api/file/download', async ctx => {
+  const query = new URLSearchParams(ctx.querystring).get('token')
+  if (fileTokens[query as string] === undefined) {
+    ctx.response.type = 'html'
+    ctx.response.body = '未找到'
+    return
+  }
+  ctx.response.type = fileTokens[query as string].mime
+  ctx.response.body = fileTokens[query as string].content
+  delete fileTokens[query as string]
+})
+router.get('/api/message/upload', async ctx => {
+  const query = new URLSearchParams(ctx.querystring)
+  const fileId = query.get('id')
+  ctx.response.body = connectionActions.createUploadedFileItemReader(fileId as string)
+})
+router.delete('/api/message/upload', async ctx => {
+  const { auth, data } = ctx.request.body as { auth: { username: string; password: string }; data: { roomId: string; fileId: string } }
+  const { username, password } = auth
+  const { roomId, fileId } = data
+  if ((connectionActions.loginModule(username, password).status as string) === 'ok') {
+    ctx.response.body = connectionActions.deleteFileHandler(fileId, roomId)
+  } else return { status: 'error', reason: 'password-wrong' }
 })
 
 // All APIs

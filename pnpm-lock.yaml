@@ -53,7 +53,7 @@ specifiers:
   cypress: 9.4.1
   dayjs: 1.10.7
   echarts: 5.3.0
-  electron: 17.0.0
+  electron: v18.0.1
   electron-builder: 22.14.13
   electron-reloader: 1.2.2
   element-plus: 2.1.8
@@ -215,7 +215,7 @@ devDependencies:
   cypress: 9.4.1
   dayjs: 1.10.7
   echarts: 5.3.0
-  electron: 17.0.0
+  electron: 18.0.1
   electron-builder: 22.14.13
   electron-reloader: 1.2.2
   element-plus: 2.1.8_vue@3.2.31
@@ -252,7 +252,7 @@ devDependencies:
   prettier: 2.5.1
   prismjs: 1.27.0
   remarkable: 2.0.1
-  spectron: 19.0.0_electron@17.0.0
+  spectron: 19.0.0_electron@18.0.1
   ts-jest: 27.1.3_345f4e1f2ef4cce30156902e4828bdb4
   ts-node: 10.5.0_241ff727c41c38f37d2c0695b583de34
   twemoji: 14.0.2
@@ -1718,12 +1718,12 @@ packages:
       - supports-color
     dev: true
 
-  /@electron/remote/2.0.4_electron@17.0.0:
+  /@electron/remote/2.0.4_electron@18.0.1:
     resolution: {integrity: sha512-8m2P/d2RH986PmMW5lKygbPEjEYJ7RgCe37Y8DQ1wujKMH6VjmLIB+Y+DP2SA611svCZc58TRSd8FraGvcfGZw==}
     peerDependencies:
       electron: '>= 13.0.0'
     dependencies:
-      electron: 17.0.0
+      electron: 18.0.1
     dev: true
 
   /@electron/universal/1.0.5:
@@ -2786,6 +2786,10 @@ packages:
 
   /@types/node/14.18.12:
     resolution: {integrity: sha512-q4jlIR71hUpWTnGhXWcakgkZeHa3CCjcQcnuzU8M891BAWA2jHiziiWEPEkdS5pFsz7H9HJiy8BrK7tBRNrY7A==}
+    dev: true
+
+  /@types/node/16.11.26:
+    resolution: {integrity: sha512-GZ7bu5A6+4DtG7q9GsoHXy3ALcgeIHP4NnL0Vv2wu0uUB/yQex26v0tf6/na1mm0+bS9Uw+0DFex7aaKr2qawQ==}
     dev: true
 
   /@types/node/17.0.17:
@@ -6625,14 +6629,14 @@ packages:
     resolution: {integrity: sha512-CoOKsuACoa0PAG3hQXxbh/XDiFcjGuSyGKUi09cjMHOt6RCi7/EXgXhaFF3I+aC89Omudqmkzd0YOQKxwtf/Bg==}
     dev: true
 
-  /electron/17.0.0:
-    resolution: {integrity: sha512-3UXcBQMwbMWdPvGHaSdPMluHrd+/bc+K143MyvE5zVZ+S1XCHt4sau7dj6svJHns5llN0YG/c6h/vRfadIp8Zg==}
+  /electron/18.0.1:
+    resolution: {integrity: sha512-8y3nxmK+v/tiuaR8yd4K83ApHxgomMIPAEl3J+2Jfv/D5G6M3KnvxNlNiNoTXI8uOegfmoqiDm5/2xlWFLzfLQ==}
     engines: {node: '>= 8.6'}
     hasBin: true
     requiresBuild: true
     dependencies:
       '@electron/get': 1.14.1
-      '@types/node': 14.18.12
+      '@types/node': 16.11.26
       extract-zip: 1.7.0
     transitivePeerDependencies:
       - supports-color
@@ -13158,12 +13162,12 @@ packages:
     resolution: {integrity: sha512-Ctl2BrFiM0X3MANYgj3CkygxhRmr9mi6xhejbdO960nF6EDJApTYpn0BQnDKlnNBULKiCN1n3w9EBkHK8ZWg+g==}
     dev: false
 
-  /spectron/19.0.0_electron@17.0.0:
+  /spectron/19.0.0_electron@18.0.1:
     resolution: {integrity: sha512-p8xWLCDjZstCTG+IzXURINZcvcwhKtnjN0JCEUuv6r6UzAi+pwfRye8Ww4xImknoN7gHhlgjvJthIbs3DuAnVg==}
     engines: {node: '>=12.20.0'}
     requiresBuild: true
     dependencies:
-      '@electron/remote': 2.0.4_electron@17.0.0
+      '@electron/remote': 2.0.4_electron@18.0.1
       dev-null: 0.1.1
       electron-chromedriver: 17.0.0
       got: 11.8.3

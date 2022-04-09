@@ -58,7 +58,6 @@ declare module 'vue' {
     ElUpload: typeof import('element-plus/es')['ElUpload']
     Loading: typeof import('element-plus/es')['ElLoadingDirective']
     VanCell: typeof import('vant/es')['Cell']
-    VanTag: typeof import('vant/es')['Tag']
   }
 }
 
