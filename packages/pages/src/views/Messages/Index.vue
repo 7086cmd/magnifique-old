@@ -5,7 +5,7 @@ import { Search } from '@element-plus/icons-vue'
 import { MessageClient } from '../../components/messages/modules/main'
 import NProgress from 'nprogress'
 // import dayjs from 'dayjs'
-import { ElMessageBox, ElNotification } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 import type { ElScrollbar, ElInput } from 'element-plus'
 import failfuc from '../../modules/failfuc'
 import { onStartTyping } from '@vueuse/core'
@@ -38,13 +38,18 @@ const items = ref<
       name: string
     }[]
     unreaded: number
+    className: string
   }[]
 >([])
 const msgs = ref<(MessageItem & { editing: boolean })[]>([])
 
 const refresh = async () => {
   NProgress.start()
-  items.value = await client.getLatestRooms()
+  const rangers = ['Down', 'Up', 'Left', 'Right']
+  items.value = (await client.getLatestRooms()).map((x: Record<string, unknown>) => {
+    x.className = 'animate__animated animate__fadeIn' + rangers[Math.round(Math.random() * 4)]
+    return x
+  })
   NProgress.done()
 }
 
@@ -65,11 +70,14 @@ let createMsgData = ref('')
 
 const messageContent = ref<InstanceType<typeof ElScrollbar>>()
 
+let memberIngroup = ref<string[]>([])
+
 const getRoomMsg = async (roomId: string) => {
   createMsgData.value = ''
   NProgress.start()
   msgs.value = await client.getRoomMessages(roomId)
   roomData.value = items.value.filter(x => x.id === roomId)[0]
+  memberIngroup.value = roomData.value.members.map(x => x.id)
   NProgress.done(true)
   isShown.value = true
   setTimeout(() => messageContent.value?.setScrollTop(2160), 100)
@@ -90,12 +98,7 @@ const emit = async () => {
   items.value.filter(x => x.id === roomId)[0].members.forEach(x => (status[x.id] = false))
   status[username.value] = true
   const result = await client.createMessage(roomId, createMsgData.value, status)
-  if (result.status === 'ok') {
-    ElNotification({
-      title: '消息发送成功',
-      type: 'success',
-    })
-  } else {
+  if (result.status !== 'ok') {
     failfuc(result.reason, result.text)
   }
   getRoomMsg(roomId)
@@ -105,12 +108,7 @@ const emit = async () => {
 const deleteMessage = async (msgId: string) => {
   NProgress.start()
   const result = await client.deleteMessage(roomData.value.id, msgId)
-  if (result.status === 'ok') {
-    ElNotification({
-      title: '消息发送成功',
-      type: 'success',
-    })
-  } else {
+  if (result.status !== 'ok') {
     failfuc(result.reason, result.text)
   }
   getRoomMsg(roomData.value.id)
@@ -130,12 +128,7 @@ const createEdition = async (messageId: string) => {
 
   msgs.value.filter(x => x.id === messageId)[0].editing = false
   const result = await client.updateMessage(roomId, messageId, editContent.value)
-  if (result.status === 'ok') {
-    ElNotification({
-      title: '消息发送成功',
-      type: 'success',
-    })
-  } else {
+  if (result.status !== 'ok') {
     failfuc(result.reason, result.text)
   }
   getRoomMsg(roomId)
@@ -149,14 +142,12 @@ interface option {
 }
 
 let fullList = ref<option[]>([])
-let fullListShown = ref<option[]>([])
 
 let isCreatingRoom = ref(false)
 
 const fullListLoad = async () => {
   NProgress.start()
   fullList.value = Object.assign([], await client.getFullList())
-  fullListShown.value = Object.assign([], await client.getFullList())
   fullList.value = fullList.value.filter(item => item.children?.filter(it => it.children).length !== 0)
   isCreatingRoom.value = true
   NProgress.done()
@@ -239,12 +230,17 @@ const groupMenus = ref({
   menus: [
     {
       label: '修改群名',
-      tip: '修改群的名字',
     },
     {
-      label: '其他',
-      tip: '成员管理、解散等',
-      click: () => (editingTitle.value = true),
+      label: '成员管理',
+      click: async () => {
+        fullList.value = Object.assign([], await client.getFullList())
+        editingTitle.value = true
+      },
+    },
+    {
+      label: '解散群组',
+      click: deleteGroup,
     },
   ] as menusItemType[],
   zIndex: 10000,
@@ -278,53 +274,68 @@ let showIt = ref(false)
 
 <template>
   <div @click="showIt = false" @contextmenu.prevent>
-    <el-input ref="inputRef" v-model="searcher" size="large" placeholder="输入以检索" :prefix-icon="Search"></el-input>
-    <el-divider />
-    <div>
-      <el-button round type="success" plain class="animate__animated animate__slideInTop" :icon="Plus" @click="fullListLoad">新建群组</el-button>
-      <el-button
-        v-if="showIt && items.filter(x => x.id === contexted)[0].members.length > 2"
-        class="animate__animated animate__zoomInRight"
-        round
-        type="danger"
-        plain
-        :icon="Delete"
-        @click="deleteGroup(contexted)"
-      >
-        删除群组
-      </el-button>
-    </div>
-    <el-scrollbar max-height="720px">
-      <el-divider />
-      <div v-for="item in items" :key="item.id">
-        <div v-if="item.title.toLowerCase().includes(searcher.toLowerCase())" className="animate__animated animate__slideInRight">
-          <el-tooltip :content="'聊天组编号：' + item.id" placement="right" effect="light">
-            <el-link :underline="false" style="font-size: 20px" @click="getRoomMsg(item.id)" @mouseover="contexted = item.id" @click.stop @contextmenu.prevent="showIt = true">
-              {{ item.title }}
-              <el-badge v-if="item.unreaded" :value="item.unreaded"></el-badge>
-              <span v-if="item.members.length > 2"><el-tag type="warning" v-text="'群组'" /><el-tag v-for="member in item.members" :key="member.id" v-text="member.name"></el-tag></span>
-              <span v-else-if="item.members.length === 2"><el-tag type="success" v-text="'单聊'" /></span>
-            </el-link>
-          </el-tooltip>
-          <br />
-          <span style="color: gray; font-size: 14px">{{ item.recent }}</span>
-          <el-divider border-style="dashed" />
+    <el-collapse-transition>
+      <div v-if="!isShown">
+        <el-input ref="inputRef" v-model="searcher" size="large" placeholder="输入以检索" :prefix-icon="Search"></el-input>
+        <el-divider />
+        <div>
+          <el-button round type="success" plain class="animate__animated animate__slideInUp" :icon="Plus" @click="fullListLoad">新建群组</el-button>
+          <el-button
+            v-if="showIt && items.filter(x => x.id === contexted)[0].members.length > 2"
+            class="animate__animated animate__zoomInRight"
+            round
+            type="danger"
+            plain
+            :icon="Delete"
+            @click="deleteGroup(contexted)"
+          >
+            删除群组
+          </el-button>
         </div>
+        <el-scrollbar max-height="720px">
+          <el-divider />
+          <div v-for="item in items" :key="item.id">
+            <div v-if="item.title.toLowerCase().includes(searcher.toLowerCase())" :className="item.className">
+              <el-tooltip :content="'聊天组编号：' + item.id" placement="right" effect="light">
+                <el-link :underline="false" style="font-size: 20px" @click="getRoomMsg(item.id)" @mouseover="contexted = item.id" @click.stop @contextmenu.prevent="showIt = true">
+                  {{ item.title }}
+                  <el-badge v-if="item.unreaded" :value="item.unreaded"></el-badge>
+                  <span v-if="item.members.length > 2"><el-tag type="warning" v-text="'群组'" /><el-tag v-for="member in item.members" :key="member.id" v-text="member.name"></el-tag></span>
+                  <span v-else-if="item.members.length === 2"><el-tag type="success" v-text="'单聊'" /></span>
+                </el-link>
+              </el-tooltip>
+              <br />
+              <span style="color: gray; font-size: 14px">{{ item.recent }}</span>
+              <el-divider border-style="dashed" />
+            </div>
+          </div>
+          <div v-if="items.filter(item => item.title.includes(searcher)).length === 0">
+            <el-empty description="可是你还没有参与或者匹配到搜索的聊天组诶" />
+          </div>
+        </el-scrollbar>
       </div>
-      <div v-if="items.filter(item => item.title.includes(searcher)).length === 0">
-        <el-empty description="可是你还没有参与或者匹配到搜索的聊天组诶" />
+    </el-collapse-transition>
+    <el-dialog v-model="editingTitle" direction="ltr" size="25%" :title="'成员管理 | ' + roomData.title" center>
+      <el-tree-select v-model="memberIngroup" :data="fullList" style="width: 100%" multiple filterable />
+      <el-divider />
+      <div style="text-align: center">
+        <el-button round @click="editingTitle = false">取消</el-button>
+        <el-button round type="primary">确定</el-button>
       </div>
-    </el-scrollbar>
-    <el-drawer v-model="editingTitle" direction="ltr" size="25%" :title="'更多 | ' + roomData.title" :modal="false">
-      <van-cell title="群名" :value="roomData.title"></van-cell>
-      <el-tree-select></el-tree-select>
-      <el-popconfirm title="确定要解散吗？" icon-color="red" confirm-button-type="danger" @confirm="deleteGroup">
-        <template #reference>
-          <el-button round type="danger" plain style="width: 100%">解散</el-button>
-        </template>
-      </el-popconfirm>
-    </el-drawer>
-    <el-drawer v-model="isShown" direction="rtl" size="100%" :close-on-click-modal="true" :show-close="false" :modal="true">
+    </el-dialog>
+    <el-dialog v-model="isCreatingRoom" title="新建聊天组" center>
+      <el-form :model="roomc">
+        <el-form-item label="成员">
+          <el-tree-select v-model="roomc.users" :data="fullList" style="width: 100%" multiple filterable />
+        </el-form-item>
+        <el-form-item label="标题">
+          <el-input v-model="roomc.title"></el-input>
+        </el-form-item>
+        <el-button round @click="isCreatingRoom = false">取消</el-button>
+        <el-button round type="primary" @click="createRoom">确定</el-button>
+      </el-form>
+    </el-dialog>
+    <el-drawer v-model="isShown" direction="btt" size="100%" :show-close="false">
       <template #title>
         <el-page-header v-menus:right="groupMenus" :icon="ArrowLeft" @back="isShown = false">
           <template #content>
@@ -334,8 +345,8 @@ let showIt = ref(false)
           <template #title> <sub style="font-size: 14px">返回</sub> </template>
         </el-page-header>
       </template>
-      <el-scrollbar ref="messageContent" max-height="480px" style="height: 60%">
-        <div v-for="msg in msgs" :key="msg.id" className="animate__animated animate__slideInBottom">
+      <el-scrollbar ref="messageContent" min-height="480px" style="height: 60%">
+        <div v-for="msg in msgs" :key="msg.id" className="animate__animated animate__slideInDown">
           <div v-if="msg.content.length > 50" @mouseover="useId = msg.id">
             <el-card v-if="!msg.editing" v-menus="blockMessageMenus" shadow="never">
               <template #header>
@@ -344,7 +355,7 @@ let showIt = ref(false)
                 </el-link>
               </template>
               <template #default>
-                <v-md-editor v-model="msg.content" class="animate__animated animate__slideInBottom" mode="preview"></v-md-editor>
+                <v-md-editor v-model="msg.content" class="animate__animated animate__slideInDown" mode="preview"></v-md-editor>
               </template>
             </el-card>
             <v-md-editor
@@ -359,7 +370,7 @@ let showIt = ref(false)
               <el-button round @click="msg.editing = false">取消</el-button>
             </div>
           </div>
-          <p v-else className="animate__animated animate__slideInBottom" style="padding-top: 8px">
+          <p v-else className="animate__animated animate__slideInDown" style="padding-top: 8px">
             <message-piece :content="msg" :username="username" :client="client" :room-id="roomData.id" :rfmethod="getRoomMsg"></message-piece>
           </p>
         </div>
@@ -375,17 +386,5 @@ let showIt = ref(false)
       <el-button round type="primary" :disabled="createMsgData.length === 0" @click="emit">发送</el-button>
       <el-button round @click="isShown = false">关闭</el-button>
     </el-drawer>
-    <el-dialog v-model="isCreatingRoom" title="新建聊天组" center>
-      <el-form :model="roomc">
-        <el-form-item label="成员">
-          <el-tree-select v-model="roomc.users" :data="fullList" style="width: 100%" multiple filterable />
-        </el-form-item>
-        <el-form-item label="标题">
-          <el-input v-model="roomc.title"></el-input>
-        </el-form-item>
-        <el-button round @click="isCreatingRoom = false">取消</el-button>
-        <el-button round type="primary" @click="createRoom">确定</el-button>
-      </el-form>
-    </el-dialog>
   </div>
 </template>

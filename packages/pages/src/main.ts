@@ -43,6 +43,7 @@ import '@kangc/v-md-editor/lib/plugins/emoji/emoji.css'
 import '@kangc/v-md-editor/lib/style/preview.css'
 import './tauri'
 import 'animate.css'
+import { ElCollapseTransition } from 'element-plus'
 
 const app = createApp(App)
 
@@ -61,6 +62,7 @@ app.component('MonacoEditor', MonacoEditor)
 app.component('TagPurple', TagPurple)
 app.component('ImageReader', ImageReader)
 app.component('MessageItem', MessageItem)
+app.component(ElCollapseTransition.name, ElCollapseTransition)
 app.use(router)
 // app.use(store)
 app.use(i18n)
