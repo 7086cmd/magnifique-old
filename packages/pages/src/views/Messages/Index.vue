@@ -153,14 +153,10 @@ let fullListShown = ref<option[]>([])
 
 let isCreatingRoom = ref(false)
 
-let fullListFlatten = ref<option[]>([])
-
 const fullListLoad = async () => {
   NProgress.start()
   fullList.value = Object.assign([], await client.getFullList())
   fullListShown.value = Object.assign([], await client.getFullList())
-  fullListFlatten.value = client.getFlatten(Object.assign([], await client.getFullList()))
-  // console.log(fullList.value, fullListFlatten.value)
   fullList.value = fullList.value.filter(item => item.children?.filter(it => it.children).length !== 0)
   isCreatingRoom.value = true
   NProgress.done()
