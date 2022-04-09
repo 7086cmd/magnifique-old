@@ -311,7 +311,7 @@ window.addEventListener('keydown', event => {
         </template>
       </el-popconfirm>
     </el-drawer>
-    <el-drawer v-model="isShown" direction="rtl" size="70%" :close-on-click-modal="true" :show-close="false" :modal="true">
+    <el-drawer v-model="isShown" direction="rtl" size="100%" :close-on-click-modal="true" :show-close="false" :modal="true">
       <template #title>
         <el-page-header v-menus:right="groupMenus" :icon="ArrowLeft" @back="isShown = false">
           <template #content>
