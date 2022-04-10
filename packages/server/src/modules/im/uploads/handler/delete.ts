@@ -22,6 +22,7 @@ export const deleteFileHandler = (fileId: string, roomId: string) => {
     }
   }
   delete index.details[fileId]
+  fileIndexActions.fileIndexDataExplorer.save(index)
   rmSync(item.location)
   return {
     status: 'ok',
