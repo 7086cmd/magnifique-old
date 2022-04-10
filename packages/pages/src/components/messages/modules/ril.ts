@@ -32,5 +32,6 @@ export const readMarkdown = (val: string) => {
   const ctx = fetchContent(val)
   useSpeechSynthesis(ctx, {
     lang: 'zh-CN',
+    volume: 100,
   }).speak()
 }

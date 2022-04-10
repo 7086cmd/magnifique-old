@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 /* global defineProps, MessageItem */
-import { renderMarkdownInline } from './modules/ril'
+import { readMarkdown, renderMarkdownInline } from './modules/ril'
 import { toRefs, ref, h } from 'vue'
 import type { MessageClient } from './modules/main'
-import { ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { useClipboard } from '@vueuse/core'
 
 const props = defineProps<{
   content: MessageItem
@@ -16,6 +17,8 @@ const props = defineProps<{
 const { content, username, client, roomId, rfmethod } = toRefs(props)
 
 const val = ref(renderMarkdownInline(content.value.content))
+
+const clipboard = useClipboard()
 
 const menus = ref({
   menus: [
@@ -42,6 +45,24 @@ const menus = ref({
       tip: '关闭菜单',
       click() {
         return true
+      },
+    },
+    {
+      label: '朗读',
+      tip: '朗读这些文字',
+      click() {
+        readMarkdown(content.value.content)
+      },
+    },
+    {
+      label: '复制文字',
+      tip: '文字长度: ' + content.value.content.length,
+      click() {
+        clipboard.copy(content.value.content)
+        ElMessage({
+          message: '复制成功，内容：' + content.value.content,
+          type: 'success',
+        })
       },
     },
   ],

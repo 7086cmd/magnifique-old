@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-/* global MessageItem */
-import { ref, defineProps, toRefs, watch, h } from 'vue'
+/* global MessageItem, defineProps */
+import { ref, toRefs, watch, h } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { MessageClient } from '../../components/messages/modules/main'
 import NProgress from 'nprogress'
@@ -8,8 +8,8 @@ import NProgress from 'nprogress'
 import { ElMessageBox } from 'element-plus'
 import type { ElScrollbar, ElInput } from 'element-plus'
 import failfuc from '../../modules/failfuc'
-import { onStartTyping } from '@vueuse/core'
-import { ArrowLeft, More, Plus, Delete } from '@element-plus/icons-vue'
+import { onStartTyping, useSpeechRecognition } from '@vueuse/core'
+import { ArrowLeft, More, Plus, Delete, ArrowRight, Close, Check, Upload, Microphone, Mic } from '@element-plus/icons-vue'
 import { uniq } from 'lodash'
 import { useRoute, useRouter } from 'vue-router'
 import MessagePiece from '../../components/messages/piece.vue'
@@ -270,51 +270,54 @@ window.addEventListener('keydown', event => {
 
 let contexted = ref('')
 let showIt = ref(false)
+
+const speechScanner = useSpeechRecognition({
+  lang: 'zh-CN',
+  interimResults: true,
+  continuous: true,
+})
+watch(speechScanner.result, () => {
+  createMsgData.value = speechScanner.result.value
+})
 </script>
 
 <template>
   <div @click="showIt = false" @contextmenu.prevent>
-    <el-collapse-transition>
-      <div v-if="!isShown">
-        <el-input ref="inputRef" v-model="searcher" size="large" placeholder="输入以检索" :prefix-icon="Search"></el-input>
-        <el-divider />
-        <div>
-          <el-button round type="success" plain class="animate__animated animate__slideInUp" :icon="Plus" @click="fullListLoad">新建群组</el-button>
-          <el-button
-            v-if="showIt && items.filter(x => x.id === contexted)[0].members.length > 2"
-            class="animate__animated animate__zoomInRight"
-            round
-            type="danger"
-            plain
-            :icon="Delete"
-            @click="deleteGroup(contexted)"
-          >
-            删除群组
-          </el-button>
-        </div>
-        <el-scrollbar max-height="720px">
+    <el-input ref="inputRef" v-model="searcher" size="large" placeholder="输入以检索" :prefix-icon="Search"></el-input>
+    <el-divider />
+    <div>
+      <el-button circle type="success" plain class="animate__animated animate__slideInUp" :icon="Plus" @click="fullListLoad" />
+      <el-button
+        v-if="showIt && items.filter(x => x.id === contexted)[0].members.length > 2"
+        class="animate__animated animate__zoomInRight"
+        circle
+        type="danger"
+        plain
+        :icon="Delete"
+        @click="deleteGroup(contexted)"
+      />
+    </div>
+    <el-divider />
+    <el-scrollbar max-height="480px">
+      <div v-for="item in items" :key="item.id">
+        <div v-if="item.title.toLowerCase().includes(searcher.toLowerCase())" :className="item.className">
+          <el-tooltip :content="'聊天组编号：' + item.id" placement="right" effect="light">
+            <el-link :underline="false" style="font-size: 20px" @click="getRoomMsg(item.id)" @mouseover="contexted = item.id" @click.stop @contextmenu.prevent="showIt = true">
+              {{ item.title }}
+              <el-badge v-if="item.unreaded" :value="item.unreaded"></el-badge>
+              <span v-if="item.members.length > 2"><el-tag type="warning" v-text="'群组'" /><el-tag v-for="member in item.members" :key="member.id" v-text="member.name"></el-tag></span>
+              <span v-else-if="item.members.length === 2"><el-tag type="success" v-text="'单聊'" /></span>
+            </el-link>
+          </el-tooltip>
+          <br />
+          <span style="color: gray; font-size: 14px">{{ item.recent }}</span>
           <el-divider />
-          <div v-for="item in items" :key="item.id">
-            <div v-if="item.title.toLowerCase().includes(searcher.toLowerCase())" :className="item.className">
-              <el-tooltip :content="'聊天组编号：' + item.id" placement="right" effect="light">
-                <el-link :underline="false" style="font-size: 20px" @click="getRoomMsg(item.id)" @mouseover="contexted = item.id" @click.stop @contextmenu.prevent="showIt = true">
-                  {{ item.title }}
-                  <el-badge v-if="item.unreaded" :value="item.unreaded"></el-badge>
-                  <span v-if="item.members.length > 2"><el-tag type="warning" v-text="'群组'" /><el-tag v-for="member in item.members" :key="member.id" v-text="member.name"></el-tag></span>
-                  <span v-else-if="item.members.length === 2"><el-tag type="success" v-text="'单聊'" /></span>
-                </el-link>
-              </el-tooltip>
-              <br />
-              <span style="color: gray; font-size: 14px">{{ item.recent }}</span>
-              <el-divider border-style="dashed" />
-            </div>
-          </div>
-          <div v-if="items.filter(item => item.title.includes(searcher)).length === 0">
-            <el-empty description="可是你还没有参与或者匹配到搜索的聊天组诶" />
-          </div>
-        </el-scrollbar>
+        </div>
       </div>
-    </el-collapse-transition>
+      <div v-if="items.filter(item => item.title.includes(searcher)).length === 0">
+        <el-empty description="可是你还没有参与或者匹配到搜索的聊天组诶" />
+      </div>
+    </el-scrollbar>
     <el-dialog v-model="editingTitle" direction="ltr" size="25%" :title="'成员管理 | ' + roomData.title" center>
       <el-tree-select v-model="memberIngroup" :data="fullList" style="width: 100%" multiple filterable />
       <el-divider />
@@ -348,27 +351,28 @@ let showIt = ref(false)
       <el-scrollbar ref="messageContent" min-height="480px" style="height: 60%">
         <div v-for="msg in msgs" :key="msg.id" className="animate__animated animate__slideInDown">
           <div v-if="msg.content.length > 50" @mouseover="useId = msg.id">
-            <el-card v-if="!msg.editing" v-menus="blockMessageMenus" shadow="never">
+            <el-card v-menus="blockMessageMenus" shadow="never">
               <template #header>
                 <el-link :underline="false" style="font-size: 16px">
                   {{ roomData.members.filter(x => x.id === msg.creator).map(x => x.name)[0] }}
                 </el-link>
               </template>
               <template #default>
-                <v-md-editor v-model="msg.content" class="animate__animated animate__slideInDown" mode="preview"></v-md-editor>
+                <v-md-editor v-if="!msg.editing" v-model="msg.content" class="animate__animated animate__slideInRight" mode="preview"></v-md-editor>
+                <v-md-editor
+                  v-if="msg.editing"
+                  v-model="editContent"
+                  height="480px"
+                  left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
+                  @save="createEdition(msg.id)"
+                />
+                <br />
+                <div v-if="msg.editing" style="text-align: right">
+                  <el-button circle type="danger" plain :icon="Close" @click="msg.editing = false" />
+                  <el-button circle type="success" plain :disabled="editContent === msg.content || editContent === ''" :icon="Check" @click="createEdition(msg.id)" />
+                </div>
               </template>
             </el-card>
-            <v-md-editor
-              v-if="msg.editing"
-              v-model="editContent"
-              height="480px"
-              left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
-              @save="createEdition(msg.id)"
-            />
-            <div v-if="msg.editing">
-              <el-button round type="primary" :disabled="editContent === msg.content || editContent === ''" @click="createEdition(msg.id)">保存</el-button>
-              <el-button round @click="msg.editing = false">取消</el-button>
-            </div>
           </div>
           <p v-else className="animate__animated animate__slideInDown" style="padding-top: 8px">
             <message-piece :content="msg" :username="username" :client="client" :room-id="roomData.id" :rfmethod="getRoomMsg"></message-piece>
@@ -383,8 +387,20 @@ let showIt = ref(false)
         @save="emit"
       />
       <br />
-      <el-button round type="primary" :disabled="createMsgData.length === 0" @click="emit">发送</el-button>
-      <el-button round @click="isShown = false">关闭</el-button>
+      <div style="text-align: right">
+        <el-tooltip content="语音输入" placement="top" effect="light">
+          <el-button circle type="primary" plain :disabled="!speechScanner.isSupported" :icon="Microphone" @click="speechScanner.toggle()" />
+        </el-tooltip>
+        <el-tooltip content="上传文件" placement="top" effect="light">
+          <el-button circle type="warning" plain :icon="Upload" />
+        </el-tooltip>
+        <el-tooltip content="关闭窗口" placement="top" effect="light">
+          <el-button circle type="danger" plain :icon="Close" @click="isShown = false" />
+        </el-tooltip>
+        <el-tooltip content="发送消息" placement="top" effect="light">
+          <el-button circle type="success" plain :disabled="createMsgData.length === 0" :icon="ArrowRight" @click="emit" />
+        </el-tooltip>
+      </div>
     </el-drawer>
   </div>
 </template>

@@ -5,6 +5,8 @@ import failfuc from '../../../modules/failfuc'
 import { unref } from 'vue'
 import baseurl from '../../../modules/baseurl'
 import routeIndex from '../utils/route-index'
+import toPort from '../../../modules/to-port'
+import { UploadFile } from './item'
 
 // const baseurl = `http://localhost/api/`
 
@@ -186,5 +188,83 @@ export class MessageClient {
     const lists = [] as FullList[]
     lists.push(...Array.from(unref(Object.assign([], fullList))))
     return reduce(lists)
+  }
+  fileCenter = {
+    uploadDesc: baseurl + 'message/upload',
+    uploadData: (roomId: string) => ({
+      auth_username: this.userId,
+      auth_password: this.password,
+      data_roomId: roomId,
+    }),
+    delete: async (fileId: string, roomId: string) => {
+      const result = await axios(baseurl + 'message/upload', {
+        data: {
+          auth: {
+            username: this.userId,
+            password: this.password,
+          },
+          data: {
+            roomId,
+            fileId,
+          },
+        },
+        method: 'delete',
+      })
+      // return result.data
+      if (result.data.status === 'ok') {
+        ElNotification({
+          title: '文件删除成功',
+          type: 'success',
+        })
+        return result.data.details
+      } else if (result.data.status === 'error') {
+        failfuc(result.data.reason, result.data.text)
+      }
+    },
+    download: async (fileId: string, roomId: string) => {
+      const result = await axios(baseurl + 'message/upload', {
+        data: {
+          auth: {
+            username: this.userId,
+            password: this.password,
+          },
+          data: {
+            roomId,
+            fileId,
+          },
+        },
+        method: 'post',
+      })
+      // return result.data
+      if (result.data.status === 'ok') {
+        const url = toPort(baseurl + 'file/download?token=' + result.data.details.token)
+        window.open(url, '_blank')
+      } else if (result.data.status === 'error') {
+        failfuc(result.data.reason, result.data.text)
+      }
+    },
+    fetch: async (fileId: string, roomId: string) => {
+      const result = await axios(baseurl + 'message/upload', {
+        data: {
+          auth: {
+            username: this.userId,
+            password: this.password,
+          },
+          data: {
+            roomId,
+            fileId,
+          },
+        },
+        method: 'post',
+      })
+      // return result.data
+      if (result.data.status === 'ok') {
+        const url = toPort(baseurl + 'file/download?token=' + result.data.details.token)
+        window.open(url, '_blank')
+      } else if (result.data.status === 'error') {
+        failfuc(result.data.reason, result.data.text)
+      }
+    },
+    getContent: async (id: string) => (await axios(baseurl + 'message/upload', { params: { id } })).data.details as UploadFile.Item,
   }
 }

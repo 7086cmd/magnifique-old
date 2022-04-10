@@ -199,6 +199,18 @@ downloadRouter.get('/api/class/graph/:type/:token', async ctx => {
       .join(JSON.stringify(graphTokens[token as string]))
   }
 })
+
+downloadRouter.get('/api/file/download', async ctx => {
+  const query = new URLSearchParams(ctx.querystring).get('token')
+  if (fileTokens[query as string] === undefined) {
+    ctx.response.type = 'html'
+    ctx.response.body = '未找到'
+    return
+  }
+  ctx.response.type = fileTokens[query as string].mime
+  ctx.response.body = fileTokens[query as string].content
+  delete fileTokens[query as string]
+})
 router.get('/api/admin/export/download/:token', async ctx => {
   if (csvTokens[ctx.params.token] === undefined) {
     ctx.response.type = 'html'
@@ -2356,17 +2368,6 @@ router.post('/api/message/upload', async ctx => {
       details: { token: id },
     }
   } else return { status: 'error', reason: 'password-wrong' }
-})
-router.get('/api/file/download', async ctx => {
-  const query = new URLSearchParams(ctx.querystring).get('token')
-  if (fileTokens[query as string] === undefined) {
-    ctx.response.type = 'html'
-    ctx.response.body = '未找到'
-    return
-  }
-  ctx.response.type = fileTokens[query as string].mime
-  ctx.response.body = fileTokens[query as string].content
-  delete fileTokens[query as string]
 })
 router.get('/api/message/upload', async ctx => {
   const query = new URLSearchParams(ctx.querystring)
