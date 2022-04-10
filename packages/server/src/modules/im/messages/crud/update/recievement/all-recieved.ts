@@ -7,7 +7,7 @@ export const createMessageAllReadedAction = (roomId: string, account: string) =>
   // roomInfo.details[messageId].status[account] = true
   const entries = Object.entries(roomInfo.details)
   entries.forEach(([index, value]) => {
-    if (value.content.length < 80) {
+    if (value.content.length < 80 && value.type === 'text') {
       roomInfo.details[index].status[account] = true
     }
   })

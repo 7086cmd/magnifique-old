@@ -5,6 +5,7 @@ import { loginModule } from './auth'
 import { createBody } from './ntfc/create-body'
 import { uploadedFileHandler, getUploadedFile, deleteFileHandler } from './uploads'
 import { createUploadedFileItemReader } from './uploads/route/fetch.content'
+import { directedDownloadImage } from './images/direct'
 
 export * from './rooms'
 export * from './messages'
@@ -12,7 +13,7 @@ export * from './auth'
 export * from './ntfc/create-body'
 export * from './uploads'
 
-export { createMemberMap, createUploadedFileItemReader }
+export { createMemberMap, createUploadedFileItemReader, directedDownloadImage }
 
 export default {
   roomActions,
@@ -24,4 +25,5 @@ export default {
   getUploadedFile,
   deleteFileHandler,
   createUploadedFileItemReader,
+  directedDownloadImage,
 }

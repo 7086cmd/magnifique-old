@@ -12,4 +12,5 @@ export const createItem = (options: UploadFile.CreateItemOptions): UploadFile.It
   uploader: options.username,
   uploadDate: dayjs().toJSON(),
   mime: options.file.mimetype,
+  size: options.file.size,
 })

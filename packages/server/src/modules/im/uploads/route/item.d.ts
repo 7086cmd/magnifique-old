@@ -9,6 +9,7 @@ export namespace UploadFile {
     inGroup: string[]
     uploader: string
     mime: string
+    size: number
   }
   export interface CreateItemOptions {
     file: File

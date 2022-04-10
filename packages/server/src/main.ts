@@ -44,6 +44,7 @@ import getEmailConfig from './modules/database/get-email-config'
 import getOrigin from './modules/database/get-origin'
 import createIndex from './modules/im/utils/create-index'
 import { loginModule } from './modules/im'
+import { lookup } from 'mime-types'
 
 // Generate Chart Base File
 const chartBase = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="shortcut icon" href="https://v-charts.js.org/favicon.ico" type="image/x-icon" /><title>Chart (type: <%=tit=>)</title><script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js"></script><script src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css" /></head><body><div id="app"><ve-<%=tpe=> :data="cdata"></ve-<%=tpe=>></div><script>var vm=new Vue({el:'#app',data(){const data=JSON.parse('<%=dat=>');return {cdata:data}}})</script></body></html>`
@@ -182,7 +183,6 @@ downloadRouter.get('/api/member/post/download/:id/:docName', async ctx => {
     delete docTokens[ctx.params.id]
   }
 })
-
 downloadRouter.get('/api/class/graph/:type/:token', async ctx => {
   if (graphTokens[ctx.params.token] === undefined) {
     ctx.response.type = 'html'
@@ -199,7 +199,6 @@ downloadRouter.get('/api/class/graph/:type/:token', async ctx => {
       .join(JSON.stringify(graphTokens[token as string]))
   }
 })
-
 downloadRouter.get('/api/file/download', async ctx => {
   const query = new URLSearchParams(ctx.querystring).get('token')
   if (fileTokens[query as string] === undefined) {
@@ -209,8 +208,14 @@ downloadRouter.get('/api/file/download', async ctx => {
   }
   ctx.response.type = fileTokens[query as string].mime
   ctx.response.body = fileTokens[query as string].content
-  delete fileTokens[query as string]
+  setTimeout(() => delete fileTokens[query as string], 2 * 60 * 60)
 })
+downloadRouter.get('/api/image/download/:fname', async ctx => {
+  const params = new URLSearchParams(ctx.querystring)
+  ctx.response.type = lookup(ctx.fname) as string
+  ctx.response.body = connectionActions.directedDownloadImage(params.get('id') as string)
+})
+
 router.get('/api/admin/export/download/:token', async ctx => {
   if (csvTokens[ctx.params.token] === undefined) {
     ctx.response.type = 'html'
@@ -2372,7 +2377,7 @@ router.post('/api/message/upload', async ctx => {
 router.get('/api/message/upload', async ctx => {
   const query = new URLSearchParams(ctx.querystring)
   const fileId = query.get('id')
-  ctx.response.body = connectionActions.createUploadedFileItemReader(fileId as string)
+  ctx.response.body = { status: 'ok', details: connectionActions.createUploadedFileItemReader(fileId as string) }
 })
 router.delete('/api/message/upload', async ctx => {
   const { auth, data } = ctx.request.body as { auth: { username: string; password: string }; data: { roomId: string; fileId: string } }

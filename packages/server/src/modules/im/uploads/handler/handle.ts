@@ -10,8 +10,10 @@
  */
 
 import { File } from '@koa/multer'
+import dayjs from 'dayjs'
 import { rmSync } from 'fs'
 import { uniq } from 'lodash'
+import { createTextMessageCreation } from '../../messages/crud'
 import { createItem, fileIndexActions } from '../route'
 
 export const uploadedFileHandler = (file: File, uploader: string, room: string, filename?: string) => {
@@ -22,7 +24,7 @@ export const uploadedFileHandler = (file: File, uploader: string, room: string, 
     filename,
   })
   const fileList = fileIndexActions.fileIndexDataExplorer.open()
-  let duplicate: string | false = false
+  let duplicate: string | undefined = undefined
   Object.entries(fileList.details).forEach(item => {
     let index = item[0]
     if (item[1].hash === fileItem.hash) {
@@ -33,6 +35,13 @@ export const uploadedFileHandler = (file: File, uploader: string, room: string, 
       // Flash Upload
       duplicate = index
     }
+  })
+  createTextMessageCreation(room, {
+    creator: uploader,
+    content: duplicate ? fileList.details[duplicate].id : fileItem.id,
+    type: 'file',
+    status: {},
+    createDate: dayjs().toJSON(),
   })
   if (duplicate)
     return {

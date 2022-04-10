@@ -5,7 +5,7 @@ import { Search } from '@element-plus/icons-vue'
 import { MessageClient } from '../../components/messages/modules/main'
 import NProgress from 'nprogress'
 // import dayjs from 'dayjs'
-import { ElMessageBox } from 'element-plus'
+import { ElMessageBox, ElNotification } from 'element-plus'
 import type { ElScrollbar, ElInput } from 'element-plus'
 import failfuc from '../../modules/failfuc'
 import { onStartTyping, useSpeechRecognition } from '@vueuse/core'
@@ -279,6 +279,20 @@ const speechScanner = useSpeechRecognition({
 watch(speechScanner.result, () => {
   createMsgData.value = speechScanner.result.value
 })
+
+let uploadData = ref({})
+
+let isUploading = ref(false)
+
+const createUploader = () => {
+  uploadData.value = client.fileCenter.uploadData(roomData.value.id)
+  isUploading.value = true
+}
+
+const uploadSuccess = async () => {
+  ElNotification({ title: '上传成功', type: 'success' })
+  await getRoomMsg(roomData.value.id)
+}
 </script>
 
 <template>
@@ -350,7 +364,7 @@ watch(speechScanner.result, () => {
       </template>
       <el-scrollbar ref="messageContent" min-height="480px" style="height: 60%">
         <div v-for="msg in msgs" :key="msg.id" className="animate__animated animate__slideInDown">
-          <div v-if="msg.content.length > 50" @mouseover="useId = msg.id">
+          <div v-if="msg.content.length > 50 && msg.type !== 'file'" @mouseover="useId = msg.id">
             <el-card v-menus="blockMessageMenus" shadow="never">
               <template #header>
                 <el-link :underline="false" style="font-size: 16px">
@@ -364,6 +378,7 @@ watch(speechScanner.result, () => {
                   v-model="editContent"
                   height="480px"
                   left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
+                  :disabled-menus="[]"
                   @save="createEdition(msg.id)"
                 />
                 <br />
@@ -374,9 +389,10 @@ watch(speechScanner.result, () => {
               </template>
             </el-card>
           </div>
-          <p v-else className="animate__animated animate__slideInDown" style="padding-top: 8px">
+          <p v-else-if="msg.type !== 'file'" className="animate__animated animate__slideInDown" style="padding-top: 8px">
             <message-piece :content="msg" :username="username" :client="client" :room-id="roomData.id" :rfmethod="getRoomMsg"></message-piece>
           </p>
+          <file-message v-else :id="msg.content" :room="roomData.id" :client="client" :msg="msg.id" :roomperson="roomData.members" :refresh="getRoomMsg" />
         </div>
       </el-scrollbar>
       <v-md-editor
@@ -384,6 +400,7 @@ watch(speechScanner.result, () => {
         height="30%"
         style="padding-left: 3em; padding-right: 3em; height: 30%"
         left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
+        :disabled-menus="[]"
         @save="emit"
       />
       <br />
@@ -392,7 +409,7 @@ watch(speechScanner.result, () => {
           <el-button circle type="primary" plain :disabled="!speechScanner.isSupported" :icon="Microphone" @click="speechScanner.toggle()" />
         </el-tooltip>
         <el-tooltip content="上传文件" placement="top" effect="light">
-          <el-button circle type="warning" plain :icon="Upload" />
+          <el-button circle type="warning" plain :icon="Upload" @click="createUploader" />
         </el-tooltip>
         <el-tooltip content="关闭窗口" placement="top" effect="light">
           <el-button circle type="danger" plain :icon="Close" @click="isShown = false" />
@@ -402,5 +419,14 @@ watch(speechScanner.result, () => {
         </el-tooltip>
       </div>
     </el-drawer>
+    <el-dialog v-model="isUploading" center title="上传文件">
+      <el-upload class="upload-demo" drag :action="client.fileCenter.uploadDesc" multiple method="put" :data="uploadData" :on-success="uploadSuccess" style="text-align: center">
+        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+        <div className="el-upload__text">将文件拖拽到这里或者<em>点击此处</em></div>
+        <template #tip>
+          <div className="el-upload__tip">任意文件格式，小于80MiB</div>
+        </template>
+      </el-upload>
+    </el-dialog>
   </div>
 </template>

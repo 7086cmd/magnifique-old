@@ -16,7 +16,11 @@ const createTextMessageCreation = (roomId: string, content: message) => {
   while (id in messageFileContent.details) {
     id = v4()
   }
-  content.type = 'text'
+  messageFileContent.config.users.forEach(item => {
+    content.status[item] = false
+  })
+  content.status[content.creator] = true
+  content.type ??= 'text'
   content.createDate = dayjs().toJSON()
   messageFileContent.details[id] = content
   createSdbdataSaver(createPath(roomId), messageFileContent)
