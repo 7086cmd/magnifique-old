@@ -2338,15 +2338,16 @@ router.patch('/api/message/message', async ctx => {
 })
 router.put('/api/message/upload', async (ctx, next) => {
   await uploader.single('file')(ctx, next)
-  const { auth_username, auth_password, data_roomId } = ctx.request.body as {
+  const { auth_username, auth_password, data_roomId, data_withMessage, data_filename } = ctx.request.body as {
     auth_username: string
     auth_password: string
     data_roomId: string
     data_filename: string
+    data_withMessage: 'false' | undefined
   }
   if (ctx.file !== undefined) {
     if ((connectionActions.loginModule(auth_username, auth_password).status as string) === 'ok') {
-      ctx.response.body = connectionActions.uploadedFileHandler(ctx.file, auth_username, data_roomId)
+      ctx.response.body = connectionActions.uploadedFileHandler(ctx.file, auth_username, data_roomId, data_withMessage !== 'false', data_filename)
     } else {
       ctx.response.body = {
         status: 'error',

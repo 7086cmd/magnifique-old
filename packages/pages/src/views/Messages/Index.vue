@@ -293,6 +293,13 @@ const uploadSuccess = async () => {
   ElNotification({ title: '上传成功', type: 'success' })
   await getRoomMsg(roomData.value.id)
 }
+
+const handleUploadImage = async (_evt: Event, insertImage: (param: { desc: string; url: string }) => void, files: Array<File>) => {
+  insertImage({
+    url: (await client.fileCenter.upload(roomData.value.id, files[0])) as string,
+    desc: files[0].name,
+  })
+}
 </script>
 
 <template>
@@ -380,6 +387,7 @@ const uploadSuccess = async () => {
                   left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
                   :disabled-menus="[]"
                   @save="createEdition(msg.id)"
+                  @upload-image="handleUploadImage"
                 />
                 <br />
                 <div v-if="msg.editing" style="text-align: right">
@@ -402,6 +410,7 @@ const uploadSuccess = async () => {
         left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
         :disabled-menus="[]"
         @save="emit"
+        @upload-image="handleUploadImage"
       />
       <br />
       <div style="text-align: right">

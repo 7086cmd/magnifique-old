@@ -266,5 +266,23 @@ export class MessageClient {
       }
     },
     getContent: async (id: string) => (await axios(baseurl + 'message/upload', { params: { id } })).data.details as UploadFile.Item,
+    upload: async (room: string, file: File) => {
+      const data = new FormData()
+      data.append('auth_username', this.userId)
+      data.append('auth_password', this.password)
+      data.append('data_roomId', room)
+      data.append('data_filename', file.name)
+      data.append('file', file)
+      data.append('data_withMessage', 'false')
+      const result = await axios(baseurl + 'message/upload', {
+        data,
+        method: 'put',
+      })
+      if (result.data.status === 'ok') return toPort(baseurl + 'image/download/' + file.name + '?id=' + result.data.details.id)
+      else {
+        failfuc(result.data.reason, result.data.text)
+        return
+      }
+    },
   }
 }

@@ -16,7 +16,7 @@ import { uniq } from 'lodash'
 import { createTextMessageCreation } from '../../messages/crud'
 import { createItem, fileIndexActions } from '../route'
 
-export const uploadedFileHandler = (file: File, uploader: string, room: string, filename?: string) => {
+export const uploadedFileHandler = (file: File, uploader: string, room: string, isGetitInMessage: boolean, filename?: string) => {
   const fileItem = createItem({
     file,
     username: uploader,
@@ -36,13 +36,14 @@ export const uploadedFileHandler = (file: File, uploader: string, room: string, 
       duplicate = index
     }
   })
-  createTextMessageCreation(room, {
-    creator: uploader,
-    content: duplicate ? fileList.details[duplicate].id : fileItem.id,
-    type: 'file',
-    status: {},
-    createDate: dayjs().toJSON(),
-  })
+  isGetitInMessage &&
+    createTextMessageCreation(room, {
+      creator: uploader,
+      content: duplicate ? fileList.details[duplicate].id : fileItem.id,
+      type: 'file',
+      status: {},
+      createDate: dayjs().toJSON(),
+    })
   if (duplicate)
     return {
       status: 'ok',
