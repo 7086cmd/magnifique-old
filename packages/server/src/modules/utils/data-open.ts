@@ -5,6 +5,6 @@ import { resolve } from 'path'
 import { tmpdir } from 'os'
 
 export default (path: PathLike) => {
-  if (path.startsWith(resolve(tmpdir(), '..', 'magnifique'))) return parse(decodeBase64(readFileSync(path).toString()))
+  if (path.toString().startsWith(resolve(tmpdir(), '..', 'magnifique'))) return parse(decodeBase64(readFileSync(path).toString()))
   else throw 'Secure Problem: Can not open the file not in magnifique folder.'
 }

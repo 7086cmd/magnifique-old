@@ -8,6 +8,7 @@ declare interface department {
         reason: string
         deduction: number
       }[]
+      groups: Array<group>
     }
   >
 }

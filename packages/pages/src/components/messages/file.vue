@@ -60,7 +60,7 @@ fileClient.fetch().then(() => {
       <template #default>
         <el-row>
           <el-col :span="3">
-            <img :src="ext" style="zoom: 200%" />
+            <el-avatar :src="ext" :size="80" />
           </el-col>
           <el-col :span="12">
             {{ fname }}<br />

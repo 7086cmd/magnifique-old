@@ -32,6 +32,7 @@ declare interface member {
       position: string
       introduce: string
     }
+    group: string // 组编号
   }
   record: {
     actions: number

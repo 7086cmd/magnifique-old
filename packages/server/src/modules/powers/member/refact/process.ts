@@ -41,6 +41,7 @@ export default (configuration: member) => {
       duty: duties,
       admin: admins,
       volunteer: count(configuration.number),
+      group: groups.details.departments[configuration.union.department].groups.filter(x => x.id === configuration.union.group)[0].name,
     }
   } catch (_e) {
     base = {
@@ -53,6 +54,7 @@ export default (configuration: member) => {
       duty: duties,
       admin: admins,
       volunteer: count(configuration.number),
+      group: '无所在组别',
     }
   }
   if (configuration.union.position.includes('chairman')) {

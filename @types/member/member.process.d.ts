@@ -12,4 +12,5 @@ declare interface member_processed {
   duty: string[]
   admin: string[]
   volunteer: number
+  group: string // 组名称
 }
