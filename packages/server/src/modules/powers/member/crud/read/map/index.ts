@@ -1,6 +1,6 @@
 import * as map from './list'
 
-export const createMap = (
+export const getMap = (
   option:
     | {
         type: 'department'

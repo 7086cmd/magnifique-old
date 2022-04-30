@@ -237,6 +237,14 @@ router.get('/api/member/post/download/:id/:docName', async ctx => {
     delete docTokens[ctx.params.id]
   }
 })
+
+router.get('/api/auth/member/list', async ctx => {
+  ctx.response.body = {
+    status: 'ok',
+    details: memberActions.getMap({ type: 'all', as: 'class' }),
+  }
+})
+
 // Class APIs
 router.get('/api/class/:gradeid/:classid/login', async ctx => {
   const params = new URLSearchParams(ctx.querystring)

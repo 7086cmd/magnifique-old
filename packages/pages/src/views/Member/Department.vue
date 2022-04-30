@@ -27,7 +27,7 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
       <el-tab-pane label="义工" name="volunteer">
         <volunteer-page />
       </el-tab-pane>
-      <el-tab-pane v-if="me.union.duty.includes('deduction')" label="扣分" name="deduction">
+      <el-tab-pane v-if="me.union.duty.includes('deduction') && me.union.position !== 'registry'" label="扣分" name="deduction">
         <deduction-page type="member" :number="number" :password="password" />
       </el-tab-pane>
       <el-tab-pane label="投稿" name="post">
