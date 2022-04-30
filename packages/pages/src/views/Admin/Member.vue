@@ -1,14 +1,14 @@
 <script setup lang="ts">
-/* global member, member_processed */
-import { ref, reactive, watch } from 'vue'
+/* global member */
+import { ref, reactive } from 'vue'
 import axios from 'axios'
-import { Refresh } from '@element-plus/icons-vue'
+import { Refresh, Plus, Pointer, View, Delete, Close } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 import baseurl from '../../modules/baseurl'
 import personExample from '../../../examples/person'
 import sucfuc from '../../modules/sucfuc'
 import failfuc from '../../modules/failfuc'
-import MemberDescription from '../../components/lists/MemberDescription.vue'
+import FetchingMember from '../../components/lists/fetching-member.vue'
 import positions from './positions'
 import nProgress from 'nprogress'
 
@@ -36,61 +36,34 @@ let vadmins = ref<
     value: string
   }[]
 >([])
-let search = ref('')
-let choice = ref('all')
-let table = ref([])
+interface Tree {
+  value: string
+  label: string
+  children?: Tree[]
+}
+let table = ref<Tree[]>([])
 let loading = ref(false)
-const panes = ref<
-  {
-    name: string
-    value: string
-  }[]
->([
-  {
-    name: '全部',
-    value: 'all',
-  },
-  {
-    name: '核心成员',
-    value: 'core',
-  },
-])
 axios(`${baseurl}department/list`).then(response => {
   departments.value.push(...response.data.details)
-  panes.value.push(...response.data.details)
 })
 axios(`${baseurl}power/list`).then(response => {
   vadmins.value.push(...response.data.details)
 })
-const startToTrue = (number: number) => {
-  toTrueDialog.value = true
-  toTrueNumber.value = number
-}
-const refresh = async (type: string) => {
+const refresh = async () => {
   nProgress.start()
   loading.value = true
-  const response = await axios(`${baseurl}admin/get/${type}/member?password=${password}`, {
-    method: 'get',
-  })
+  const response = await axios(`${baseurl}admin/get/all/member?password=${password}`)
   loading.value = false
   if (response.data.status === 'ok') {
     table.value = response.data.details
   }
   nProgress.done()
 }
-refresh('all')
-watch(choice, () => {
-  if (!['core', 'all'].includes(choice.value)) {
-    information.union.department = choice.value
-  } else {
-    information.union.department = ''
-  }
-  refresh(choice.value)
-})
-const deletePerson = async (props: { row: member_processed }) => {
+refresh()
+const deletePerson = async (number: number) => {
   const response = await axios(`${baseurl}admin/del/member`, {
     data: {
-      person: props.row.number,
+      person: number,
       password,
     },
     method: 'post',
@@ -100,12 +73,12 @@ const deletePerson = async (props: { row: member_processed }) => {
   } else {
     failfuc(response.data.reason, response.data.text)
   }
-  refresh(choice.value)
+  refresh()
 }
-const vioPerson = async (props: { row: member_processed }) => {
+const vioPerson = async (number: number) => {
   const response = await axios(`${baseurl}admin/vio/member`, {
     data: {
-      member: props.row.number,
+      member: number,
       password,
     },
     method: 'post',
@@ -115,36 +88,9 @@ const vioPerson = async (props: { row: member_processed }) => {
   } else {
     failfuc(response.data.reason, response.data.text)
   }
-  refresh(choice.value)
+  refresh()
 }
-let toTrueDo = ref('')
-let isRegi = ref(false)
-let toTrueNumber = ref(0)
-let isFulling = ref(false)
-let toTrueDialog = ref(false)
 let beTheViceMinisterInTheSameTime = ref(false)
-const toTrueIt = () => {
-  isRegi.value = false
-  isFulling.value = true
-  axios(`${baseurl}admin/full/member`, {
-    data: {
-      password,
-      member: toTrueNumber.value,
-      position: toTrueDo.value,
-    },
-    method: 'post',
-  }).then(response => {
-    if (response.data.status === 'ok') {
-      sucfuc()
-    } else {
-      failfuc(response.data.reason, response.data.text)
-    }
-    isFulling.value = false
-    refresh(choice.value)
-    toTrueNumber.value = 0
-    toTrueDo.value = 'clerk'
-  })
-}
 const createMember = async () => {
   isSubmiting.value = true
   const createMsg = (msg: string) => {
@@ -201,114 +147,91 @@ const createMember = async () => {
     information.union.department = ''
     information.union.position = 'clerk'
     isSubmiting.value = false
-    refresh(choice.value)
+    refresh()
   }
 }
+const useMember = ref(0)
+const isShowingModel = ref(false)
+const openDialog = (num: string) => {
+  useMember.value = Number(num)
+  if (isNaN(useMember.value)) {
+    useMember.value = 0
+  }
+}
+const delay = () => setTimeout(() => (useMember.value = 0), 1000)
 </script>
 
 <template>
-  <div>
-    <h4>成员管理</h4>
-    <el-tabs v-model="choice" tab-position="left">
-      <el-tab-pane v-for="item in panes" :key="item.value" :label="item.name" :name="item.value">
-        <el-skeleton :loading="loading" animated :rows="10" :throttle="500">
-          <template #default>
-            <el-card shadow="never">
-              <template #header>
-                <el-button type="text" @click="isRegistingMember = true"> 添加成员 </el-button>
-              </template>
-              <el-table
-                :data="table.filter((data: any) => !search || data.number.toLowerCase().includes(search.toLowerCase()) || String(data.person).toLowerCase().includes(search.toLowerCase()))"
-                highlight-current-row
-                max-height="480px"
-              >
-                <el-table-column type="expand">
-                  <template #header>
-                    <el-button type="text" :icon="Refresh" @click="refresh(choice)" />
-                  </template>
-                  <template #default="props">
-                    <member-description :data="props.row"></member-description>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="name" label="姓名" />
-                <el-table-column prop="number" label="学号" />
-                <el-table-column prop="do" label="职务" />
-                <el-table-column align="right" fixed="right">
-                  <template #header>
-                    <el-input v-model="search" size="mini" placeholder="输入以搜索" />
-                  </template>
-                  <template #default="props">
-                    <div>
-                      <el-popconfirm title="确定通报批评吗？该成员的素质分将减少15份。" @confirm="vioPerson(props)">
-                        <template #reference>
-                          <el-button size="small" type="text"> 通报批评 </el-button>
-                        </template>
-                      </el-popconfirm>
-                      <el-button size="small" type="text" :disabled="props.row.icg" @click="startToTrue(props.row.number)"> 切换身份 </el-button>
-                      <el-popconfirm title="确定删除吗？" @confirm="deletePerson(props)">
-                        <template #reference>
-                          <el-button size="small" type="text"> 删除成员 </el-button>
-                        </template>
-                      </el-popconfirm>
-                    </div>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </el-card>
-          </template>
-        </el-skeleton>
-      </el-tab-pane>
-    </el-tabs>
-    <el-dialog v-model="isRegistingMember" title="注册成员" center>
-      <template #header>注册成员</template>
-      <el-form v-model="information" title="注册成员">
-        <el-form-item label="姓名">
-          <el-input v-model="information.name" />
-        </el-form-item>
-        <el-form-item label="学号">
-          <el-input v-model="information.number" />
-        </el-form-item>
-        <el-form-item label="加入部门">
-          <el-select v-model="information.union.department" style="width: 100%">
-            <el-option v-for="item in departments" :key="item.value" :label="item.name" :value="item.value"> </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="担任职位">
-          <el-select v-model="information.union.position" style="width: 100%">
-            <el-option v-for="item in types" :key="item.value" :label="item.name" :value="item.value"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item v-if="information.union.position === 'vice-chairman'" label="管理权力">
-          <el-select v-model="information.union.admin" multiple collapse-tags style="width: 100%">
-            <el-option v-for="item in vadmins" :key="item.value" :label="item.name" :value="item.value"></el-option>
-          </el-select>
-          <el-checkbox v-if="information.union.department !== ''" v-model="beTheViceMinisterInTheSameTime" label="在部门内同时担任副部长职务"></el-checkbox>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span>
-          <el-button @click="isRegistingMember = false"> 取消 </el-button>
-          <el-button type="primary" :loading="isSubmiting" @click="createMember"> 确定 </el-button>
-        </span>
+  <div @click="delay">
+    <el-drawer v-model="isShowingModel" direction="ttb" size="40%" :destroy-on-close="true">
+      <fetching-member :number="useMember" />
+    </el-drawer>
+    <el-card>
+      <template #default>
+        <el-tooltip content="刷新内容" placement="bottom" effect="light">
+          <el-button type="success" circle plain :icon="Refresh" @click="refresh" />
+        </el-tooltip>
+        <el-tooltip :content="isRegistingMember ? '关闭添加成员' : '添加成员'" placement="bottom" effect="light">
+          <el-button :type="isRegistingMember ? 'danger' : 'primary'" circle plain :icon="isRegistingMember ? Close : Plus" @click="isRegistingMember = !isRegistingMember" />
+        </el-tooltip>
+        <el-tooltip content="详细信息" placement="bottom" effect="light">
+          <el-button v-if="useMember !== 0" type="info" circle plain :icon="View" @click="isShowingModel = true" />
+        </el-tooltip>
+        <el-tooltip content="删除成员" placement="bottom" effect="light">
+          <el-popconfirm title="确定要删除成员吗？" @confirm="deletePerson(useMember)">
+            <template #reference>
+              <el-button v-if="useMember !== 0" type="danger" circle plain :icon="Delete" />
+            </template>
+          </el-popconfirm>
+        </el-tooltip>
+        <el-tooltip content="通报批评" placement="bottom" effect="light">
+          <el-popconfirm title="确定要删除15分的素质分吗？" @confirm="vioPerson(useMember)">
+            <template #reference>
+              <el-button v-if="useMember !== 0" type="warning" circle plain :icon="Pointer" />
+            </template>
+          </el-popconfirm>
+        </el-tooltip>
+        <el-divider v-if="useMember !== 0" direction="vertical" />
+        <el-tag v-if="useMember !== 0" v-text="useMember" />
+        <el-divider />
+
+        <el-collapse-transition>
+          <el-form v-if="isRegistingMember" v-model="information" title="注册成员">
+            <el-form-item label="姓名">
+              <el-input v-model="information.name" />
+            </el-form-item>
+            <el-form-item label="学号">
+              <el-input v-model="information.number" />
+            </el-form-item>
+            <el-form-item label="加入部门">
+              <el-select v-model="information.union.department" style="width: 100%">
+                <el-option v-for="item in departments" :key="item.value" :label="item.name" :value="item.value"> </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="担任职位">
+              <el-select v-model="information.union.position" style="width: 100%">
+                <el-option v-for="item in types" :key="item.value" :label="item.name" :value="item.value"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item v-if="information.union.position === 'vice-chairman'" label="管理权力">
+              <el-select v-model="information.union.admin" multiple collapse-tags style="width: 100%">
+                <el-option v-for="item in vadmins" :key="item.value" :label="item.name" :value="item.value"></el-option>
+              </el-select>
+              <el-checkbox v-if="information.union.department !== ''" v-model="beTheViceMinisterInTheSameTime" label="在部门内同时担任副部长职务"></el-checkbox>
+            </el-form-item>
+            <el-button round @click="isRegistingMember = false"> 取消 </el-button>
+            <el-button round type="primary" :loading="isSubmiting" @click="createMember"> 确定 </el-button>
+          </el-form>
+        </el-collapse-transition>
+
+        <el-collapse-transition>
+          <el-tree v-if="!isRegistingMember" :data="table" draggable>
+            <template #default="{ node }">
+              <el-link :underline="false" type="default" @click="openDialog(node.data.value)">{{ node.label }}</el-link>
+            </template>
+          </el-tree>
+        </el-collapse-transition>
       </template>
-    </el-dialog>
-    <el-dialog v-model="toTrueDialog" title="转正信息" center>
-      <el-form>
-        <el-form-item label="转正学号">
-          <el-input v-model="toTrueNumber" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="担任职位">
-          <el-select v-model="toTrueDo" style="width: 100%">
-            <el-option v-for="item in types" :key="item.value" :label="item.name" :value="item.value"></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span>
-          <el-button @click="toTrueDialog = false"> 取消 </el-button>
-          <el-button type="primary" :loading="isFulling" @click="toTrueIt()"> 确定 </el-button>
-        </span>
-      </template>
-    </el-dialog>
+    </el-card>
   </div>
 </template>

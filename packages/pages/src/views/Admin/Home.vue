@@ -3,7 +3,7 @@ import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import baseurl from '../../modules/baseurl'
-import { UserFilled as User, List, Back, Box, HomeFilled } from '@element-plus/icons-vue'
+import { List, Back, Box, HomeFilled } from '@element-plus/icons-vue'
 import ControlsPage from '../../components/controls-page.vue'
 const router = useRouter()
 const leftDrawerOpen = ref(true)
@@ -57,12 +57,6 @@ axios({
             <List />
           </el-icon>
           <template #title> 数据管理 </template>
-        </el-menu-item>
-        <el-menu-item index="/admin/member/">
-          <el-icon>
-            <User />
-          </el-icon>
-          <template #title> 成员管理 </template>
         </el-menu-item>
         <el-menu-item index="/admin/message/">
           <el-icon>

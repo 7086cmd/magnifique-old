@@ -1708,7 +1708,10 @@ router.get('/api/admin/get/all/member', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = memberActions.multiProcess(memberActions.getAllAsRaw())
+      ctx.response.body = {
+        status: 'ok',
+        details: memberActions.getMap({ type: 'all', as: 'department', withPosition: true }),
+      }
     } else {
       ctx.response.body = {
         status: 'error',

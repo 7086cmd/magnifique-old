@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import Deduction from '../../components/powers/deduction/deduction.vue'
 import PostDev from '../../components/powers/post/post.vue'
 import Volunteer from './data/volunteer.vue'
+import Member from './Member.vue'
 let nativeName = ref('')
 const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
 </script>
@@ -20,6 +21,9 @@ const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLo
         </el-tab-pane>
         <el-tab-pane label="义工" name="volunteer">
           <volunteer />
+        </el-tab-pane>
+        <el-tab-pane label="成员" name="member">
+          <member />
         </el-tab-pane>
       </el-tabs>
     </div>

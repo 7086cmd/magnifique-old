@@ -2,10 +2,7 @@
 /* global member_processed */
 import { defineProps, ref, toRefs, unref } from 'vue'
 
-const props = defineProps({
-  // eslint-disable-next-line vue/require-default-prop
-  data: Object,
-})
+const props = defineProps<{ data: member_processed }>()
 
 const { data } = toRefs(props)
 
