@@ -54,4 +54,6 @@ const class_department = (gradeid: number, classid: number) => {
   return memberOptions.filter(x => x.children?.length !== 0)
 }
 
-export default class_department
+export const asClass = {
+  default: class_department,
+}

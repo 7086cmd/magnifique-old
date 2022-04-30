@@ -1,4 +1,7 @@
+import { createYearTransformer } from 'packages/client/src/modules/utils'
 import getDepartmentData from 'packages/server/src/modules/database/get-department-data'
+import { getSingleMemberAsRaw } from '..'
+import getClass from '../get-class'
 import getCore from '../get-core'
 import getDepartment from '../get-department'
 
@@ -7,8 +10,75 @@ interface option {
   value: string
   children?: option[]
 }
+const createClassName = (gradeid: number, classid: number) => {
+  const grades = ['', '初一', '初二', '初三']
+  const gradeids = [1, 2, 3]
+  let gradeid_new = gradeid
+  gradeids.forEach(item => {
+    if (createYearTransformer(item) === gradeid) {
+      gradeid_new = item
+    }
+  })
+  return `${grades[gradeid_new]}（${classid}）班`
+}
 
-const department = () => {
+const asDepartmentWithPosition = () => {
+  const data = asDepartment()
+  const result: option[] = []
+  data.forEach(departmentItem => {
+    result.push({
+      label: departmentItem.label,
+      value: departmentItem.value,
+      children: [
+        {
+          label: '主席',
+          value: departmentItem.value + '_chairman',
+          children: [],
+        },
+        {
+          label: '副主席',
+          value: departmentItem.value + '_vice-chairman',
+          children: [],
+        },
+        {
+          label: '部长',
+          value: departmentItem.value + '_minister',
+          children: [],
+        },
+        {
+          label: '副部长',
+          value: departmentItem.value + '_vice-minister',
+          children: [],
+        },
+        {
+          label: '干事',
+          value: departmentItem.value + '_clerk',
+          children: [],
+        },
+        {
+          label: '非注册成员',
+          value: departmentItem.value + '_registry',
+          children: [],
+        },
+      ],
+    })
+    departmentItem.children?.forEach(person => {
+      const personInfo = getSingleMemberAsRaw(Number(person.value)).details
+      const positionValue = departmentItem.value + '_' + personInfo?.union.position
+      result
+        .filter(item => item.value === departmentItem.value)[0]
+        .children?.filter(item => item.value === positionValue)[0]
+        .children?.push({
+          value: String(personInfo?.number),
+          label: personInfo?.name as string,
+        })
+    })
+    result.filter(item => item.value === departmentItem.value)[0].children = result.filter(item => item.value === departmentItem.value)[0].children?.filter(item => item.children?.length !== 0)
+  })
+  return result
+}
+
+const asDepartment = () => {
   const memberOptions = [] as option[]
   const departments = getDepartmentData().details.departments
   memberOptions.push({
@@ -43,4 +113,34 @@ const department = () => {
   return memberOptions
 }
 
-export const all = { department }
+const asClass = () => {
+  const gradeOptions = [] as option[]
+  for (let i = 1; i <= 3; i++) {
+    gradeOptions.push({
+      label: ['', '初一', '初二', '初三'][i],
+      value: 'grade_' + createYearTransformer(i),
+      children: [],
+    })
+    for (let j = 1; j <= 15; j++) {
+      if (getClass(i, j).details.length > 0) {
+        gradeOptions[i - 1].children?.push({
+          label: createClassName(i, j),
+          value: 'class_' + i + '_' + j,
+          children: [],
+        })
+        getClass(i, j).details.forEach(item => {
+          // eslint-disable-next-line @typescript-eslint/no-extra-semi
+          ;(gradeOptions[i - 1].children as option[])
+            .filter(item => item.value === 'class_' + i + '_' + j)[0]
+            .children?.push({
+              label: item.name,
+              value: item.number.toString(),
+            })
+        })
+      }
+    }
+  }
+  return gradeOptions.filter(item => item.children?.length !== 0)
+}
+
+export const asAll = { asDepartment, asClass, asDepartmentWithPosition }
