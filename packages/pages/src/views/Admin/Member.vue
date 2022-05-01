@@ -2,7 +2,7 @@
 /* global member */
 import { ref, reactive } from 'vue'
 import axios from 'axios'
-import { Refresh, Plus, Pointer, View, Delete, Close } from '@element-plus/icons-vue'
+import { Refresh, Plus, Pointer, Delete, Close } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 import baseurl from '../../modules/baseurl'
 import personExample from '../../../examples/person'
@@ -156,15 +156,34 @@ const openDialog = (num: string) => {
   useMember.value = Number(num)
   if (isNaN(useMember.value)) {
     useMember.value = 0
-  }
+  } else isShowingModel.value = true
 }
 const delay = () => setTimeout(() => (useMember.value = 0), 1000)
 </script>
 
 <template>
   <div @click="delay">
-    <el-drawer v-model="isShowingModel" direction="ttb" size="40%" :destroy-on-close="true">
+    <el-drawer v-model="isShowingModel" direction="rtl" size="60%" :destroy-on-close="true">
       <fetching-member :number="useMember" />
+      <el-divider />
+      <el-tooltip content="删除成员" placement="bottom" effect="light">
+        <el-popconfirm title="确定要删除成员吗？" @confirm="deletePerson(useMember)">
+          <template #reference>
+            <el-button type="danger" round plain>
+              <el-icon><delete /></el-icon>删除成员
+            </el-button>
+          </template>
+        </el-popconfirm>
+      </el-tooltip>
+      <el-tooltip content="通报批评" placement="bottom" effect="light">
+        <el-popconfirm title="确定要删除15分的素质分吗？" @confirm="vioPerson(useMember)">
+          <template #reference>
+            <el-button type="warning" round plain>
+              <el-icon><pointer /></el-icon>通报批评（删除15分素质分）
+            </el-button>
+          </template>
+        </el-popconfirm>
+      </el-tooltip>
     </el-drawer>
     <el-card>
       <template #default>
@@ -174,25 +193,6 @@ const delay = () => setTimeout(() => (useMember.value = 0), 1000)
         <el-tooltip :content="isRegistingMember ? '关闭添加成员' : '添加成员'" placement="bottom" effect="light">
           <el-button :type="isRegistingMember ? 'danger' : 'primary'" circle plain :icon="isRegistingMember ? Close : Plus" @click="isRegistingMember = !isRegistingMember" />
         </el-tooltip>
-        <el-tooltip content="详细信息" placement="bottom" effect="light">
-          <el-button v-if="useMember !== 0" type="info" circle plain :icon="View" @click="isShowingModel = true" />
-        </el-tooltip>
-        <el-tooltip content="删除成员" placement="bottom" effect="light">
-          <el-popconfirm title="确定要删除成员吗？" @confirm="deletePerson(useMember)">
-            <template #reference>
-              <el-button v-if="useMember !== 0" type="danger" circle plain :icon="Delete" />
-            </template>
-          </el-popconfirm>
-        </el-tooltip>
-        <el-tooltip content="通报批评" placement="bottom" effect="light">
-          <el-popconfirm title="确定要删除15分的素质分吗？" @confirm="vioPerson(useMember)">
-            <template #reference>
-              <el-button v-if="useMember !== 0" type="warning" circle plain :icon="Pointer" />
-            </template>
-          </el-popconfirm>
-        </el-tooltip>
-        <el-divider v-if="useMember !== 0" direction="vertical" />
-        <el-tag v-if="useMember !== 0" v-text="useMember" />
         <el-divider />
 
         <el-collapse-transition>

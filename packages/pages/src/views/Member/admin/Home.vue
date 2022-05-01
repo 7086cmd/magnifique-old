@@ -23,7 +23,7 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
 
 <template>
   <div>
-    <el-tabs v-if="me.union.position.includes('minister') && !me.union.position.includes('chairman') && got" v-model="choice" tab-position="left">
+    <el-tabs v-if="(me.union.position.includes('minister') || me.union.position.includes('chairman')) && got" v-model="choice" tab-position="left">
       <el-tab-pane v-if="['minister'].includes(me.union.position)" label="成员" name="member">
         <member-page />
       </el-tab-pane>
