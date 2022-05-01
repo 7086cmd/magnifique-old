@@ -66,6 +66,8 @@ let roomData = ref({
   ],
 })
 
+const isFetchingItems = ref(false)
+
 let createMsgData = ref('')
 
 const messageContent = ref<InstanceType<typeof ElScrollbar>>()
@@ -82,8 +84,9 @@ const getRoomMsg = async (roomId: string) => {
   isShown.value = true
   setTimeout(() => messageContent.value?.setScrollTop(2160), 100)
 }
-
+isFetchingItems.value = true
 refresh().then(() => {
+  isFetchingItems.value = false
   if (route.params.id !== undefined) {
     getRoomMsg(route.params.id as string)
   }
@@ -307,7 +310,7 @@ const handleUploadImage = async (_evt: Event, insertImage: (param: { desc: strin
     <el-input ref="inputRef" v-model="searcher" size="large" placeholder="输入以检索" :prefix-icon="Search"></el-input>
     <el-divider />
     <div>
-      <el-button circle type="success" plain class="animate__animated animate__slideInUp" :icon="Plus" @click="fullListLoad" />
+      <el-button circle type="success" plain :icon="Plus" @click="fullListLoad" />
       <el-button
         v-if="showIt && items.filter(x => x.id === contexted)[0].members.length > 2"
         class="animate__animated animate__zoomInRight"
@@ -319,9 +322,9 @@ const handleUploadImage = async (_evt: Event, insertImage: (param: { desc: strin
       />
     </div>
     <el-divider />
-    <el-scrollbar max-height="480px">
+    <el-scrollbar v-loading="isFetchingItems" max-height="480px">
       <div v-for="item in items" :key="item.id">
-        <div v-if="item.title.toLowerCase().includes(searcher.toLowerCase())" :className="item.className">
+        <div v-if="item.title.toLowerCase().includes(searcher.toLowerCase())">
           <el-tooltip :content="'聊天组编号：' + item.id" placement="right" effect="light">
             <el-link :underline="false" style="font-size: 20px" @click="getRoomMsg(item.id)" @mouseover="contexted = item.id" @click.stop @contextmenu.prevent="showIt = true">
               {{ item.title }}
@@ -335,7 +338,7 @@ const handleUploadImage = async (_evt: Event, insertImage: (param: { desc: strin
           <el-divider />
         </div>
       </div>
-      <div v-if="items.filter(item => item.title.includes(searcher)).length === 0">
+      <div v-if="items.filter(item => item.title.includes(searcher)).length === 0 && !isFetchingItems">
         <el-empty description="可是你还没有参与或者匹配到搜索的聊天组诶" />
       </div>
     </el-scrollbar>

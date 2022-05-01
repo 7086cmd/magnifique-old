@@ -14,5 +14,7 @@ axios(baseurl + 'member/getinfo/' + (number?.value as number)).then(response => 
 })
 </script>
 <template>
-  <Desc v-if="fetched" :data="info"></Desc>
+  <div v-loading="!fetched">
+    <Desc v-if="fetched" :data="info"></Desc>
+  </div>
 </template>

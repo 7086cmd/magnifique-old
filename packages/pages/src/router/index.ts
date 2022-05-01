@@ -152,6 +152,20 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: '/admin/data',
         component: AdminData,
+        children: [
+          {
+            path: '/admin/data/:type',
+            component: AdminData,
+          },
+          {
+            path: '/admin/data/:type/info/:data',
+            component: AdminData,
+          },
+          {
+            path: '/admin/data/:type/:status/',
+            component: AdminData,
+          },
+        ],
       },
       {
         path: '/admin/member',

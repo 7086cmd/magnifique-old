@@ -3,12 +3,9 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import axios from 'axios'
-import { ElMessageBox } from 'element-plus'
-import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import baseurl from '../../modules/baseurl'
-
-const { t } = useI18n()
+import failfuc from '../../modules/failfuc'
 const router = useRouter()
 
 let password = ref('')
@@ -16,13 +13,7 @@ let password = ref('')
 const login = () => {
   axios(`${baseurl}admin/login?password=${window.btoa(password.value)}`).then(response => {
     if (response.data.status == 'ok') {
-      let timeOut = 3
-      ElMessageBox.alert(`欢迎使用。` + t('class.status.jump', { sec: timeOut }), '登陆成功', {
-        type: 'success',
-        center: true,
-      }).then(() => {
-        router.push('/admin/')
-      })
+      router.push('/admin/')
       localStorage.setItem(
         'adminLoginInfo',
         window.btoa(
@@ -31,21 +22,9 @@ const login = () => {
           })
         )
       )
-      setTimeout(() => {
-        router.push('/admin/')
-      }, 3000)
     } else {
       localStorage.removeItem('adminLoginInfo')
-      ElMessageBox.alert(
-        t('dialogs.' + response.data.reason, {
-          msg: response.data.text,
-        }),
-        '登陆失败',
-        {
-          type: 'error',
-          center: true,
-        }
-      )
+      failfuc(response.data.reason, response.data.text)
     }
   })
 }

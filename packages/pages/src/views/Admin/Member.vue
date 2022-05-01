@@ -1,9 +1,10 @@
 <script setup lang="ts">
 /* global member */
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import axios from 'axios'
 import { Refresh, Plus, Pointer, Delete, Close } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
+import { useRoute, useRouter } from 'vue-router'
 import baseurl from '../../modules/baseurl'
 import personExample from '../../../examples/person'
 import sucfuc from '../../modules/sucfuc'
@@ -11,11 +12,19 @@ import failfuc from '../../modules/failfuc'
 import FetchingMember from '../../components/lists/fetching-member.vue'
 import positions from './positions'
 import nProgress from 'nprogress'
+import type { FormInstance } from 'element-plus'
+import { AddMemberFormRule } from './member_datas/rules'
 
 nProgress.start()
 
+const route = useRoute()
+const router = useRouter()
+
+const form = ref<FormInstance>()
+
 const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
-let isRegistingMember = ref(false)
+let isRegistingMember = ref(route.params.status === 'register')
+const isFetchComplete = ref(false)
 let isSubmiting = ref(false)
 const information: member = reactive(personExample())
 const departments = ref<
@@ -50,23 +59,23 @@ axios(`${baseurl}power/list`).then(response => {
   vadmins.value.push(...response.data.details)
 })
 const refresh = async () => {
-  nProgress.start()
   loading.value = true
-  const response = await axios(`${baseurl}admin/get/all/member?password=${password}`)
+  isFetchComplete.value = false
+  const response = await axios(`${baseurl}admin/member`, { params: { password } })
   loading.value = false
+  isFetchComplete.value = true
   if (response.data.status === 'ok') {
     table.value = response.data.details
   }
-  nProgress.done()
 }
 refresh()
 const deletePerson = async (number: number) => {
-  const response = await axios(`${baseurl}admin/del/member`, {
+  const response = await axios(`${baseurl}admin/member`, {
     data: {
       person: number,
       password,
     },
-    method: 'post',
+    method: 'delete',
   })
   if (response.data.status === 'ok') {
     sucfuc()
@@ -76,12 +85,12 @@ const deletePerson = async (number: number) => {
   refresh()
 }
 const vioPerson = async (number: number) => {
-  const response = await axios(`${baseurl}admin/vio/member`, {
+  const response = await axios(`${baseurl}admin/member`, {
     data: {
       member: number,
       password,
     },
-    method: 'post',
+    method: 'patch',
   })
   if (response.data.status === 'ok') {
     sucfuc()
@@ -128,7 +137,7 @@ const createMember = async () => {
     if (beTheViceMinisterInTheSameTime.value) {
       information.union.admin.push('member-volunteer')
     }
-    const response = await axios(`${baseurl}admin/new/member`, {
+    const response = await axios(`${baseurl}admin/member`, {
       data: {
         member: information,
         password,
@@ -140,18 +149,15 @@ const createMember = async () => {
     } else {
       failfuc(response.data.reason, response.data.text)
     }
-    information.name = ''
-    information.number = 0
-    information.union.duty = []
-    information.union.admin = []
-    information.union.department = ''
+    form.value.resetFields()
     information.union.position = 'clerk'
     isSubmiting.value = false
+    isRegistingMember.value = false
     refresh()
   }
 }
-const useMember = ref(0)
-const isShowingModel = ref(false)
+const useMember = ref(Number(route.params.data ?? 0))
+const isShowingModel = ref(Boolean(route.params.data))
 const openDialog = (num: string) => {
   useMember.value = Number(num)
   if (isNaN(useMember.value)) {
@@ -159,6 +165,15 @@ const openDialog = (num: string) => {
   } else isShowingModel.value = true
 }
 const delay = () => setTimeout(() => (useMember.value = 0), 1000)
+watch(isShowingModel, () => {
+  if (isShowingModel.value === false) {
+    router.push('/admin/data/member/')
+  } else router.push('/admin/data/member/info/' + String(useMember.value) + '/')
+})
+watch(isRegistingMember, () => {
+  if (isRegistingMember.value === true) router.push('/admin/data/member/register/')
+  else router.push('/admin/data/member/')
+})
 </script>
 
 <template>
@@ -196,7 +211,7 @@ const delay = () => setTimeout(() => (useMember.value = 0), 1000)
         <el-divider />
 
         <el-collapse-transition>
-          <el-form v-if="isRegistingMember" v-model="information" title="注册成员">
+          <el-form v-if="isRegistingMember" ref="form" :model="information" :rules="AddMemberFormRule" title="注册成员">
             <el-form-item label="姓名">
               <el-input v-model="information.name" />
             </el-form-item>
@@ -219,13 +234,12 @@ const delay = () => setTimeout(() => (useMember.value = 0), 1000)
               </el-select>
               <el-checkbox v-if="information.union.department !== ''" v-model="beTheViceMinisterInTheSameTime" label="在部门内同时担任副部长职务"></el-checkbox>
             </el-form-item>
-            <el-button round @click="isRegistingMember = false"> 取消 </el-button>
             <el-button round type="primary" :loading="isSubmiting" @click="createMember"> 确定 </el-button>
           </el-form>
         </el-collapse-transition>
 
         <el-collapse-transition>
-          <el-tree v-if="!isRegistingMember" :data="table" draggable>
+          <el-tree v-if="!isRegistingMember" v-loading="!isFetchComplete" :data="table" draggable>
             <template #default="{ node }">
               <el-link :underline="false" type="default" @click="openDialog(node.data.value)">{{ node.label }}</el-link>
             </template>

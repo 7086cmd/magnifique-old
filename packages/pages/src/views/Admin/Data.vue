@@ -1,12 +1,18 @@
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import Deduction from '../../components/powers/deduction/deduction.vue'
 import PostDev from '../../components/powers/post/post.vue'
 import Volunteer from './data/volunteer.vue'
 import Member from './Member.vue'
-let nativeName = ref('')
+import { useRoute, useRouter } from 'vue-router'
+const route = useRoute()
+const router = useRouter()
+let nativeName = ref(route.params.type ?? '')
 const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
+watch(nativeName, () => {
+  router.push('/admin/data/' + nativeName.value + (nativeName.value ? '/' : ''))
+})
 </script>
 
 <template>

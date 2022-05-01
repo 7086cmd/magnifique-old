@@ -1704,7 +1704,7 @@ router.get('/api/admin/get/all/post', async ctx => {
     }
   }
 })
-router.get('/api/admin/get/all/member', async ctx => {
+router.get('/api/admin/member', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
@@ -1712,25 +1712,6 @@ router.get('/api/admin/get/all/member', async ctx => {
         status: 'ok',
         details: memberActions.getMap({ type: 'all', as: 'department', withPosition: true }),
       }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.get('/api/admin/get/core/member', async ctx => {
-  try {
-    const password = getPassword(ctx)
-    if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = memberActions.multiProcess(memberActions.getCoreAsRaw())
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1856,26 +1837,7 @@ router.post('/api/admin/export/deduction/detail', async ctx => {
     }
   }
 })
-router.get('/api/admin/get/:department/member', async ctx => {
-  try {
-    const password = getPassword(ctx)
-    if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = memberActions.multiProcess(memberActions.getDepartmentAsRaw(ctx.params.department))
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.post('/api/admin/del/deduction', async ctx => {
+router.delete('/api/admin/deduction', async ctx => {
   try {
     const { password } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1907,7 +1869,7 @@ router.post('/api/admin/del/deduction', async ctx => {
     }
   }
 })
-router.post('/api/admin/del/post', async ctx => {
+router.delete('/api/admin/post', async ctx => {
   try {
     const { password } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1926,7 +1888,8 @@ router.post('/api/admin/del/post', async ctx => {
     }
   }
 })
-router.post('/api/admin/full/member', async ctx => {
+router.put('/api/admin/member', async ctx => {
+  // Edit Info
   try {
     const { password, member, position } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1945,7 +1908,8 @@ router.post('/api/admin/full/member', async ctx => {
     }
   }
 })
-router.post('/api/admin/vio/member', async ctx => {
+router.patch('/api/admin/member', async ctx => {
+  // Violations
   try {
     const { password, member } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1967,7 +1931,7 @@ router.post('/api/admin/vio/member', async ctx => {
     }
   }
 })
-router.post('/api/admin/new/member', async ctx => {
+router.post('/api/admin/member', async ctx => {
   try {
     const { password, member } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
@@ -1986,39 +1950,11 @@ router.post('/api/admin/new/member', async ctx => {
     }
   }
 })
-router.post('/api/admin/del/member', async ctx => {
+router.delete('/api/admin/member', async ctx => {
   try {
     const { password, person } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
       ctx.response.body = memberActions.deleteMember(parseInt(person))
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.post('/api/admin/volunteer/sendout', async ctx => {
-  try {
-    const { password } = ctx.request.body
-    if (loginAdmin(password).status == 'ok') {
-      const members = memberActions.getAllAsRaw().details
-      members.forEach(item => {
-        memberActions.autoCalculateVolunteer(item.number)
-      })
-      if (members.length === 0) {
-        throw '没有成员'
-      }
-      return {
-        status: 'ok',
-      }
     } else {
       ctx.response.body = {
         status: 'error',
