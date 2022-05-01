@@ -7,11 +7,11 @@ type Context = Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext & K
 export default async (ctx: Context) => {
   // Violations
   try {
-    const { auth, data } = ctx.request.body as { auth: { password: string }; data: { position: member['union']['position']; member: number } }
+    const { auth, data } = ctx.request.body as { auth: { password: string }; data: { person: number } }
     const { password } = auth
-    const { member } = data
+    const { person } = data
     if (loginAdmin(password).status == 'ok') {
-      createNewViolation(Number(member), 1)
+      createNewViolation(Number(person), 1)
       ctx.response.body = {
         status: 'ok',
       }
@@ -25,7 +25,7 @@ export default async (ctx: Context) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: new Error(<string>e).message,
+      text: new Error(e as string).message,
     }
   }
 }

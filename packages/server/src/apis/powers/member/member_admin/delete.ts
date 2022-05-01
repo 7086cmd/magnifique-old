@@ -26,7 +26,7 @@ export default async (ctx: Context) => {
     ctx.response.body = {
       status: 'error',
       reason: 'type-error',
-      text: new Error(<string>e).message,
+      text: new Error(e as string).message,
     }
   }
 }

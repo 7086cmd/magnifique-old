@@ -28,7 +28,7 @@ declare type member_list = options[]
 
 ## APIs
 
-```json
+```jsonc
 {
   "class": {
     "view": {
@@ -170,11 +170,12 @@ A --> B --> A
 A --> C
 ```
 
-#### Class Filters Step
+---
 
-```mermaid
-flowchart TD
-A(Do it like ALL MEMBER)
-B(Third Level forEach)
-C()
-```
+## Realize Map
+
+- [x] Use `tree` instead of `table`.
+- [ ] Use the `RESTful` api.
+- [ ] Fixes for `Member Admin` and `Class`
+- [ ] Use `drawer` in order to "bounce" the details.
+- [ ] Quickly choose the person in order that the user can send the message to him/her directly.
