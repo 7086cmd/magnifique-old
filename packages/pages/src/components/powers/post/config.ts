@@ -5,42 +5,46 @@ const createPostConfig = (fetcherInput: fetcherOptions): PostFetch.postFetcherCo
   if (fetcherInput.type === 'admin') {
     return {
       type: 'admin',
-      getter: baseurl + 'admin/get/all/post?password=' + fetcherInput.password,
-      deleter: baseurl + 'admin/del/post',
+      getter: true,
+      deleter: true,
       creater: false,
-      downloader: baseurl + 'admin/download/post',
+      downloader: true,
       uploader: false,
+      url: baseurl + 'admin/post',
       standardConfig: fetcherInput,
     }
   } else if (fetcherInput.type === 'member_admin') {
     return {
       type: 'member_admin',
-      getter: baseurl + `member/admin/${fetcherInput.number}/get/all/post?password=` + fetcherInput.password,
-      deleter: baseurl + `member/admin/${fetcherInput.number}/del/post`,
+      getter: true,
+      deleter: true,
       creater: false,
-      downloader: baseurl + `member/admin/${fetcherInput.number}/download/post`,
+      downloader: true,
+      url: baseurl + 'member/admin/post',
       uploader: false,
       standardConfig: fetcherInput,
     }
   } else if (fetcherInput.type === 'member') {
     return {
       type: 'member',
-      getter: baseurl + `member/post/${fetcherInput.number}/work/get/post?password=` + fetcherInput.password,
-      deleter: baseurl + `member/post/${fetcherInput.number}/work/del/post`,
-      creater: baseurl + `member/post/${fetcherInput.number}/work/new/post`,
-      uploader: baseurl + `member/post/${fetcherInput.number}/work/upload/post`,
-      downloader: baseurl + `member/post/${fetcherInput.number}/work/download/post`,
+      getter: true,
+      deleter: true,
+      creater: true,
+      uploader: true,
+      downloader: true,
+      url: baseurl + 'member/post',
       standardConfig: fetcherInput,
       name: fetcherInput.name,
     }
   } else {
     return {
       type: 'class',
-      getter: baseurl + `class/${fetcherInput.gradeid}/${fetcherInput.classid}/get/post?password=` + fetcherInput.password,
+      getter: true,
       deleter: false,
       creater: false,
       uploader: false,
       downloader: false,
+      url: baseurl + 'class/post',
       standardConfig: fetcherInput,
     }
   }

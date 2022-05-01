@@ -2,8 +2,8 @@
 /* global fetcherOptions, DeductionList, member */
 import { DeductionFetcher } from './fetcher'
 import { defineProps, reactive, ref, watch } from 'vue'
-import { Refresh, Box, CirclePlus, DeleteFilled, QuestionFilled as q, Flag } from '@element-plus/icons-vue'
-import { ElLoading, ElMessageBox } from 'element-plus'
+import { Refresh, Box, CirclePlus, DeleteFilled } from '@element-plus/icons-vue'
+import { ElMessageBox } from 'element-plus'
 import sucfuc from '../../../modules/sucfuc'
 import failfuc from '../../../modules/failfuc'
 import axios from 'axios'
@@ -13,14 +13,6 @@ import dayjs from 'dayjs'
 import DeductionDescription from '../../lists/DeductionDescription.vue'
 import toPort from '../../../modules/to-port'
 
-let isClient = ref(false)
-
-try {
-  if (window.magnifique.isElectron === true) {
-    isClient.value = true
-  }
-  // eslint-disable-next-line no-empty
-} catch (_e) {}
 const props = defineProps<{
   password: string
   classid?: number
@@ -58,7 +50,7 @@ const createDataAdmin = async () => {
   isSubmiting.value = false
   if (response.data.status == 'ok') {
     sucfuc()
-    window.open(toPort(`${baseurl}admin/export/download/${response.data.details.token}`), isClient.value ? '_self' : '_blank')
+    window.open(toPort(`${baseurl}admin/export/download/${response.data.details.token}`))
   } else {
     failfuc(response.data.reason, response.data.text)
   }
@@ -78,7 +70,7 @@ const createDataMember = async () => {
   isSubmiting.value = false
   if (response.data.status == 'ok') {
     sucfuc()
-    window.open(toPort(`${baseurl}admin/export/download/${response.data.details.token}`), isClient.value ? '_self' : '_blank')
+    window.open(toPort(`${baseurl}admin/export/download/${response.data.details.token}`))
   } else {
     failfuc(response.data.reason, response.data.text)
   }
@@ -136,35 +128,6 @@ let dets = ref<
 })().catch(() => {
   // normal.
 })
-
-const turnDown = (prop: { row: DeductionList }) => {
-  ElMessageBox.prompt('驳回原因', '驳回', {
-    type: 'warning',
-    center: true,
-    cancelButtonText: '取消',
-    confirmButtonText: '确定',
-    inputType: 'textarea',
-  }).then(async result => {
-    const delLoad = ElLoading.service({
-      text: '正在驳回，请稍后',
-    })
-    fetcher
-      .decline({
-        id: prop.row.id,
-        violater: prop.row.person,
-        message: result.value,
-      })
-      .then(result => {
-        if (result.status == 'ok') {
-          sucfuc()
-        } else {
-          failfuc(result.reason, result.text)
-        }
-      })
-    delLoad.close()
-    fetching()
-  })
-}
 
 const submitDeduction = async () => {
   let allSuccess = true
@@ -259,29 +222,6 @@ const deleteDeduction = (prop: { row: DeductionList }) => {
       }
     })
 }
-const callbackDeductions = (inf: DeductionList) => {
-  ElMessageBox.prompt('确定要申诉吗？请输入原因。', '申诉', {
-    center: true,
-    type: 'warning',
-    cancelButtonText: '取消',
-    confirmButtonText: '确定',
-    inputType: 'textarea',
-  }).then(result => {
-    fetcher
-      .callback({
-        id: inf.id,
-        descriptionMessage: result.value,
-      })
-      .then(response => {
-        if (response.status == 'ok') {
-          sucfuc()
-          fetching()
-        } else {
-          failfuc(response.reason, response.text)
-        }
-      })
-  })
-}
 fetching()
 </script>
 <template>
@@ -289,7 +229,7 @@ fetching()
     <el-skeleton :loading="isFetching" :rows="4" animated :throttle="500">
       <template #default>
         <el-card shadow="never">
-          <el-table :data="data" max-height="640px" highlight-current-row :row-class-name="tableRowClassName">
+          <el-table :data="data" max-height="640px" :row-class-name="tableRowClassName">
             <el-table-column type="expand">
               <template #header>
                 <el-button type="text" :icon="Refresh" size="mini" @click="fetching()"></el-button>
@@ -308,8 +248,6 @@ fetching()
                 <el-button v-if="props.type === 'member'" type="text" :icon="CirclePlus" @click="newDeduction = true"></el-button>
               </template>
               <template #default="proping">
-                <el-button v-if="props.type === 'class'" type="text" :icon="q" size="small" :disabled="proping.row.status == 'processing'" @click="callbackDeductions(proping.row)"></el-button>
-                <el-button v-if="props.type === 'member'" type="text" :icon="Flag" size="small" :disabled="proping.row.status !== 'processing'" @click="turnDown(proping)"></el-button>
                 <el-popconfirm title="确定删除？" @confirm="deleteDeduction(proping)">
                   <template #reference>
                     <el-button v-if="['admin', 'member_admin', 'member'].includes(props.type)" type="text" :icon="DeleteFilled" size="small" :disabled="proping.row.status === 'failed'"></el-button>
@@ -354,8 +292,6 @@ fetching()
     </el-dialog>
     <el-dialog v-model="isExporting" title="导出数据">
       <el-form>
-        <el-alert v-if="isClient" :closable="false" title="提醒" description="使用应用导出时是保存形式" type="info" icon="info" center></el-alert>
-        <el-alert v-if="!isClient" :closable="false" title="提醒" description="使用浏览器导出时是下载形式" type="info" icon="info" center></el-alert>
         <el-form-item label="时间节点">
           <el-date-picker v-model="exportTime" type="datetimerange" style="width: 100%" range-separator="到" start-placeholder="开始日期" end-placeholder="结束日期"> </el-date-picker>
         </el-form-item>

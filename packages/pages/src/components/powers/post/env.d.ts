@@ -28,12 +28,13 @@ declare namespace PostFetch {
 
   export interface postFetcherConfig {
     type: fetcherOptions['type']
-    getter: string
-    deleter: false | string
-    creater: false | string
-    uploader: false | string
-    downloader: false | string
+    getter: true
+    deleter: boolean
+    creater: boolean
+    uploader: boolean
+    downloader: boolean
     standardConfig: fetcherOptions
+    url: string
     name?: string
   }
 }

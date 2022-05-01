@@ -19,23 +19,25 @@ class PostFetcher {
     this.uploader = ''
     if (option.type === 'member') {
       this.postExample.person = Number(option.number)
-      this.uploader = this.options.uploader as string
+      this.uploader = this.options.url as string
     }
   }
 
   get = async () => {
-    return (await axios(this.options.getter)).data
+    return (await axios(this.options.url, { params: this.options.standardConfig })).data
   }
 
   delete = async (postDeleteData: { id: string; uploaderID: number }) => {
     if (this.options.deleter) {
       return (
-        await axios(this.options.deleter, {
-          method: 'post',
+        await axios(this.options.url, {
+          method: 'delete',
           data: {
-            password: this.options.standardConfig.password,
-            id: postDeleteData.id,
-            person: postDeleteData.uploaderID,
+            auth: this.options.standardConfig,
+            data: {
+              id: postDeleteData.id,
+              person: postDeleteData.uploaderID,
+            },
           },
         })
       ).data
@@ -49,7 +51,7 @@ class PostFetcher {
   download = async (postDownloadData: { id: string; uploaderID: number }) => {
     if (this.options.downloader) {
       const response = (
-        await axios(this.options.downloader, {
+        await axios(this.options.url + '/document', {
           method: 'post',
           data: {
             password: this.options.standardConfig.password,
@@ -70,16 +72,17 @@ class PostFetcher {
   create = async (postCreatement: PostList) => {
     if (this.options.creater && this.options.standardConfig.type === 'member') {
       return (
-        await axios(this.options.creater, {
+        await axios(this.options.url, {
           method: 'post',
           data: {
-            person: this.options.standardConfig.number,
-            password: this.options.standardConfig.password,
-            id: postCreatement.id,
-            content: {
-              title: postCreatement.title,
-              type: postCreatement.type,
-              description: postCreatement.description,
+            auth: this.options.standardConfig,
+            data: {
+              id: postCreatement.id,
+              content: {
+                title: postCreatement.title,
+                type: postCreatement.type,
+                description: postCreatement.description,
+              },
             },
           },
         })

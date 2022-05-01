@@ -45,6 +45,7 @@ import getOrigin from './modules/database/get-origin'
 import createIndex from './modules/im/utils/create-index'
 import { loginModule } from './modules/im'
 import { lookup } from 'mime-types'
+import * as API from './apis'
 
 // Generate Chart Base File
 const chartBase = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="shortcut icon" href="https://v-charts.js.org/favicon.ico" type="image/x-icon" /><title>Chart (type: <%=tit=>)</title><script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js"></script><script src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css" /></head><body><div id="app"><ve-<%=tpe=> :data="cdata"></ve-<%=tpe=>></div><script>var vm=new Vue({el:'#app',data(){const data=JSON.parse('<%=dat=>');return {cdata:data}}})</script></body></html>`
@@ -253,35 +254,13 @@ router.get('/api/class/:gradeid/:classid/login', async ctx => {
   ctx.response.type = 'json'
   ctx.response.body = loginClass(parseInt(gradeid), parseInt(classid), String(password))
 })
-router.get('/api/class/:gradeid/:classid/member/get', async ctx => {
-  try {
-    const password = getPassword(ctx)
-    const { gradeid, classid } = ctx.params
-    if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
-      const members = memberActions.getClassAsRaw(parseInt(gradeid), parseInt(classid)).details
-      ctx.response.body = memberActions.multiProcess({
-        status: 'ok',
-        details: members,
-      })
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.get('/api/class/:gradeid/:classid/get/deduction', async ctx => {
+router.get('/api/class/member')
+router.get('/api/class/deduction', async ctx => {
   const params = new URLSearchParams(ctx.querystring)
-  const password = params.get('password')
-  const { gradeid, classid } = ctx.params
-  if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
+  const password = params.get('password') as string
+  const gradeid = params.get('gradeid') as string
+  const classid = params.get('classid') as string
+  if (loginClass(parseInt(gradeid), parseInt(classid), password).status == 'ok') {
     ctx.response.body = deductionActions.getClass(parseInt(gradeid), parseInt(classid))
   } else {
     ctx.response.body = {
@@ -290,10 +269,11 @@ router.get('/api/class/:gradeid/:classid/get/deduction', async ctx => {
     }
   }
 })
-router.get('/api/class/:gradeid/:classid/get/post', async ctx => {
+router.get('/api/class/post', async ctx => {
   const params = new URLSearchParams(ctx.querystring)
-  const password = params.get('password')
-  const { gradeid, classid } = ctx.params
+  const password = params.get('password') as string
+  const gradeid = params.get('gradeid') as string
+  const classid = params.get('classid') as string
   if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
     ctx.response.body = postActions.getClass(parseInt(gradeid), parseInt(classid))
   } else {
@@ -303,35 +283,17 @@ router.get('/api/class/:gradeid/:classid/get/post', async ctx => {
     }
   }
 })
-router.get('/api/class/:gradeid/:classid/get/volunteer', async ctx => {
+router.get('/api/class/volunteer', async ctx => {
   const params = new URLSearchParams(ctx.querystring)
-  const password = params.get('password')
-  const { gradeid, classid } = ctx.params
+  const password = params.get('password') as string
+  const gradeid = params.get('gradeid') as string
+  const classid = params.get('classid') as string
   if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
     ctx.response.body = volunteerActions.getVolunteerAsClass(parseInt(gradeid), parseInt(classid))
   } else {
     ctx.response.body = {
       status: 'error',
       reason: 'password-error',
-    }
-  }
-})
-router.post('/api/class/new/feedback', async ctx => {
-  try {
-    const { gradeid, classid, password } = ctx.request.body
-    if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
-      ctx.response.body = deductionActions.createCallback(ctx.request.body)
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
     }
   }
 })
@@ -411,56 +373,13 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/date', async ct
     }
   }
 })
-router.post('/api/class/member/regist', async ctx => {
-  try {
-    const { gradeid, classid, password, member } = ctx.request.body
-    if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
-      ctx.response.body = memberActions.createMember(member)
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
+router.post('/api/class/member', API.Powers.Member.Class.Post)
 router.post('/api/class/edit/password', async ctx => {
   try {
     const password = ctx.request.body.password
     const { gradeid, classid, newp } = ctx.request.body
     if (loginClass(parseInt(gradeid), parseInt(classid), String(password)).status == 'ok') {
       ctx.response.body = editPassword(gradeid, classid, utils.createDEBase64(newp))
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.post('/api/class/create/volunteer', async ctx => {
-  try {
-    const { password, gradeid, classid, volunteer } = ctx.request.body as {
-      password: string
-      gradeid: number
-      classid: number
-      volunteer: VolunteerMulti
-    }
-    volunteer.status = 'planning'
-    if (loginClass(gradeid, classid, password).status == 'ok') {
-      ctx.response.body = volunteerActions.createVolunteerMulti(volunteer as VolunteerMulti)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -553,190 +472,12 @@ router.get('/api/member/:id/login', async ctx => {
 })
 
 // 青志部管理义工可用
-router.get('/api/member/admin/:id/get/core/volunteer', async ctx => {
-  try {
-    const password = getPassword(ctx)
-    if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(parseInt(ctx.params.id), 'volunteer')) {
-        ctx.response.body = volunteerActions.getVolunteerAsCore()
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.get('/api/member/admin/:id/get/core/member', async ctx => {
-  try {
-    const password = getPassword(ctx)
-    if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(parseInt(ctx.params.id), 'volunteer')) {
-        ctx.response.body = memberActions.multiProcess(memberActions.getCoreAsRaw())
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
+router.get('/api/member/admin/member', API.Powers.Member.MemberAdmin.Get)
 // Member Admin API (Member)
-router.post('/api/member/admin/trans/member', async ctx => {
-  try {
-    const { password, member, number, position } = ctx.request.body
-    if (loginMember(parseInt(number), password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(number, 'member')) {
-        ctx.response.body = memberActions.editPosition(parseInt(member), position)
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.post('/api/member/admin/del/member', async ctx => {
-  try {
-    const { password, person, number } = ctx.request.body
-    if (loginMember(parseInt(number), password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(number, 'member')) {
-        ctx.response.body = memberActions.deleteMember(parseInt(person))
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.post('/api/member/admin/vio/member', async ctx => {
-  try {
-    const { password, person, number } = ctx.request.body
-    if (loginMember(parseInt(number), password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(number, 'member')) {
-        memberActions.createNewViolation(parseInt(person), 1)
-        ctx.response.body = { status: 'ok' }
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.post('/api/member/admin/new/member', async ctx => {
-  try {
-    const { password, number, member } = ctx.request.body
-    if (loginMember(parseInt(number), password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(number, 'member')) {
-        ctx.response.body = memberActions.createMember(member)
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.get('/api/member/admin/:id/get/:department/member', async ctx => {
-  try {
-    const password = getPassword(ctx)
-    if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'member-volunteer')) {
-        ctx.response.body = memberActions.multiProcess(memberActions.getDepartmentAsRaw(ctx.params.department))
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
+router.put('/api/member/admin/member', API.Powers.Member.MemberAdmin.Put)
+router.delete('/api/member/admin/member', API.Powers.Member.MemberAdmin.Delete)
+router.patch('/api/member/admin/member', API.Powers.Member.MemberAdmin.Patch)
+router.post('/api/member/admin/member', API.Powers.Member.MemberAdmin.Post)
 
 // Admin Volunteer APIs.(Member-admin)
 router.get('/api/member/admin/:id/get/:department/volunteer', async ctx => {
@@ -1159,24 +900,9 @@ router.post('/api/member/:id/volunteer/export', async ctx => {
 })
 
 // 纪检部可用API
-router.get('/api/member/admin/:id/get/all/deduction', async ctx => {
+router.get('/api/member/admin/deduction', async ctx => {
   try {
-    const password = getPassword(ctx)
-    if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'deduction')) {
-        ctx.response.body = deductionActions.getAll()
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
+    ctx.response.body = deductionActions.getAll()
   } catch (e) {
     ctx.response.body = {
       status: 'error',
@@ -1185,26 +911,17 @@ router.get('/api/member/admin/:id/get/all/deduction', async ctx => {
     }
   }
 })
-router.post('/api/member/admin/:id/del/deduction', async ctx => {
+router.delete('/api/member/admin/deduction', async ctx => {
   try {
-    const { password } = ctx.request.body
-    const { id } = ctx.params
-    if (loginMember(parseInt(id), password).status == 'ok') {
+    const { auth, data } = ctx.request.body as {
+      auth: { number: number; password: string }
+      data: { person: number; id: string }
+    }
+    const { number, password } = auth
+    const { id, person } = data
+    if (loginMember(Number(number), password).status == 'ok') {
       if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'deduction')) {
-        ctx.response.body = deductionActions.deleteDeduction(parseInt(ctx.request.body.person), ctx.request.body.id)
-        io.emit('deduction', {
-          sendTo: [
-            'member/' + ctx.request.body.person,
-            createIndex({
-              ...utils.createPersonNumberAnalyzor(Number(ctx.request.body.person)),
-              type: 'class',
-            }),
-          ],
-          content: ctx.request.body.person + '的一个扣分被删除',
-          id: ctx.request.body.id,
-          type: 'deduction',
-          action: 'delete',
-        })
+        ctx.response.body = deductionActions.deleteDeduction(Number(person), id)
       } else {
         ctx.response.body = {
           status: 'error',
@@ -1226,19 +943,13 @@ router.post('/api/member/admin/:id/del/deduction', async ctx => {
   }
 })
 
-router.get('/api/member/deduction/:id/work/get/deduction', async ctx => {
+router.get('/api/member/deduction', async ctx => {
   try {
-    const password = getPassword(ctx)
-    const { id } = ctx.params
-    if (loginMember(parseInt(id), password).status == 'ok') {
-      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'deduction')) {
-        ctx.response.body = deductionActions.getOwn(parseInt(id))
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
+    const params = new URLSearchParams(ctx.querystring)
+    const number = Number(params.get('number') as string)
+    const password = params.get('password') as string
+    if (loginMember(Number(number), password).status == 'ok') {
+      ctx.response.body = deductionActions.getOwn(Number(number))
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1253,26 +964,17 @@ router.get('/api/member/deduction/:id/work/get/deduction', async ctx => {
     }
   }
 })
-router.post('/api/member/deduction/:id/work/new/deduction', async ctx => {
+router.post('/api/member/deduction', async ctx => {
   try {
-    const { id } = ctx.params
-    const { password, content } = ctx.request.body
-    if (loginMember(parseInt(id), password).status == 'ok') {
-      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'deduction')) {
+    const { auth, data } = ctx.request.body as {
+      auth: { number: number; password: string }
+      data: { content: deduction }
+    }
+    const { number, password } = auth
+    const { content } = data
+    if (loginMember(Number(number), password).status == 'ok') {
+      if (memberActions.memberDutyLimitCheckPower(String(number), 'deduction')) {
         ctx.response.body = deductionActions.createDeduction(content)
-        io.emit('deduction', {
-          sendTo: [
-            'member/' + ctx.request.body.person,
-            createIndex({
-              ...utils.createPersonNumberAnalyzor(Number(ctx.request.body.person)),
-              type: 'class',
-            }),
-          ],
-          content: ctx.request.body.person + '被扣分',
-          id: ctx.request.body.id,
-          type: 'deduction',
-          action: 'create',
-        })
       } else {
         ctx.response.body = {
           status: 'error',
@@ -1293,66 +995,17 @@ router.post('/api/member/deduction/:id/work/new/deduction', async ctx => {
     }
   }
 })
-router.post('/api/member/deduction/:id/work/turnd/deduction', async ctx => {
+router.delete('/api/member/deduction', async ctx => {
   try {
-    const { id: number } = ctx.params
-    const { id, password, person, reason } = ctx.request.body
-    if (loginMember(parseInt(number), password).status == 'ok') {
-      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'deduction')) {
-        ctx.response.body = deductionActions.refuseCallback(person, id, reason)
-        io.emit('deduction', {
-          sendTo: [
-            'member/' + ctx.request.body.person,
-            createIndex({
-              ...utils.createPersonNumberAnalyzor(Number(ctx.request.body.person)),
-              type: 'class',
-            }),
-          ],
-          content: ctx.request.body.person + '的一个扣分被驳回',
-          id: ctx.request.body.id,
-          type: 'deduction',
-          action: 'update',
-        })
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
+    const { auth, data } = ctx.request.body as {
+      auth: { number: number; password: string }
+      data: { person: number; id: string }
     }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.post('/api/member/deduction/:id/work/del/deduction', async ctx => {
-  try {
-    const { id: number } = ctx.params
-    const { id, password, person } = ctx.request.body
-    if (loginMember(parseInt(number), password).status == 'ok') {
-      if (memberActions.memberDutyLimitCheckPower(ctx.params.id, 'deduction')) {
+    const { number, password } = auth
+    const { id, person } = data
+    if (loginMember(Number(number), password).status == 'ok') {
+      if (memberActions.memberDutyLimitCheckPower(String(number), 'deduction')) {
         ctx.response.body = deductionActions.deleteDeduction(person, id)
-        io.emit('deduction', {
-          sendTo: [
-            'member/' + ctx.request.body.person,
-            createIndex({
-              ...utils.createPersonNumberAnalyzor(Number(ctx.request.body.person)),
-              type: 'class',
-            }),
-          ],
-          content: ctx.request.body.person + '的一个扣分被删除',
-          id: ctx.request.body.id,
-          type: 'deduction',
-          action: 'delete',
-        })
       } else {
         ctx.response.body = {
           status: 'error',
@@ -1445,11 +1098,13 @@ router.post('/api/member/admin/export/deduction/detail', async ctx => {
 })
 
 // 学习部可用API
-router.get('/api/member/admin/:id/get/all/post', async ctx => {
+router.get('/api/member/admin/post', async ctx => {
   try {
-    const password = getPassword(ctx)
-    if (loginMember(parseInt(ctx.params.id), password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'post')) {
+    const params = new URLSearchParams(ctx.querystring)
+    const password = params.get('password') as string
+    const number = Number(params.get('number') as string)
+    if (loginMember(Number(number), password).status == 'ok') {
+      if (memberActions.memberAdminLimitCheckPower(number, 'post')) {
         ctx.response.body = postActions.getAll()
       } else {
         ctx.response.body = {
@@ -1471,13 +1126,17 @@ router.get('/api/member/admin/:id/get/all/post', async ctx => {
     }
   }
 })
-router.post('/api/member/admin/:id/del/post', async ctx => {
+router.delete('/api/member/admin/post', async ctx => {
   try {
-    const { password, person } = ctx.request.body
-    const { id } = ctx.params
-    if (loginMember(parseInt(id), password).status == 'ok') {
+    const { auth, data } = ctx.request.body as {
+      auth: { number: number; password: string }
+      data: { person: number; id: string }
+    }
+    const { number, password } = auth
+    const { id, person } = data
+    if (loginMember(Number(number), password).status == 'ok') {
       if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'post')) {
-        ctx.response.body = postActions.deletePost(parseInt(person), ctx.request.body.id)
+        ctx.response.body = postActions.deletePost(Number(person), id)
       } else {
         ctx.response.body = {
           status: 'error',
@@ -1535,12 +1194,13 @@ router.post('/api/member/admin/:id/download/post', async ctx => {
   }
 })
 
-router.get('/api/member/post/:id/work/get/post', async ctx => {
+router.get('/api/member/post', async ctx => {
   try {
-    const password = getPassword(ctx)
-    const { id } = ctx.params
-    if (loginMember(parseInt(id), password).status == 'ok') {
-      ctx.response.body = postActions.getOwn(parseInt(id))
+    const params = new URLSearchParams(ctx.querystring)
+    const password = params.get('password') as string
+    const number = Number(params.get('number') as string)
+    if (loginMember(number, password).status == 'ok') {
+      ctx.response.body = postActions.getOwn(number)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1555,13 +1215,16 @@ router.get('/api/member/post/:id/work/get/post', async ctx => {
     }
   }
 })
-router.post('/api/member/post/:id/work/upload/post', async (ctx, next) => {
+router.put('/api/member/post', async (ctx, next) => {
   await uploader.single('file')(ctx, next)
   if (ctx.file !== undefined) {
     try {
-      const { password, person } = ctx.request.body
-      if (loginMember(parseInt(person), password).status == 'ok') {
-        ctx.response.body = postActions.editLocation(parseInt(ctx.params.id), ctx.file)
+      const { auth } = ctx.request.body as {
+        auth: { number: number; password: string }
+      }
+      const { number, password } = auth
+      if (loginMember(Number(number), password).status == 'ok') {
+        ctx.response.body = postActions.editLocation(Number(number), ctx.file)
       } else {
         ctx.response.status = 402
         ctx.response.body = {
@@ -1614,11 +1277,23 @@ router.post('/api/member/post/:id/work/download/post', async ctx => {
     }
   }
 })
-router.post('/api/member/post/:id/work/new/post', async ctx => {
+router.post('/api/member/post', async ctx => {
   try {
-    const { id, password, content, person } = ctx.request.body
-    if (loginMember(parseInt(person), password).status == 'ok') {
-      ctx.response.body = postActions.createPost(parseInt(person), id, content)
+    const { auth, data } = ctx.request.body as {
+      auth: { number: number; password: string }
+      data: {
+        content: {
+          title: string
+          type: '小说' | '散文' | '诗歌' | '说明文' | '议论文' | '其他'
+          description: string
+        }
+        id: string
+      }
+    }
+    const { number, password } = auth
+    const { id, content } = data
+    if (loginMember(Number(number), password).status == 'ok') {
+      ctx.response.body = postActions.createPost(Number(number), id, content)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1633,11 +1308,16 @@ router.post('/api/member/post/:id/work/new/post', async ctx => {
     }
   }
 })
-router.post('/api/member/post/:id/work/del/post', async ctx => {
+router.delete('/api/member/post', async ctx => {
   try {
-    const { id, password, person } = ctx.request.body
-    if (loginMember(parseInt(person), password).status == 'ok') {
-      ctx.response.body = postActions.deletePost(parseInt(person), id)
+    const { auth, data } = ctx.request.body as {
+      auth: { number: number; password: string }
+      data: { person: number; id: string }
+    }
+    const { number, password } = auth
+    const { id } = data
+    if (loginMember(Number(number), password).status == 'ok') {
+      ctx.response.body = postActions.deletePost(Number(number), id)
     } else {
       ctx.response.body = {
         status: 'error',
@@ -1704,28 +1384,7 @@ router.get('/api/admin/get/all/post', async ctx => {
     }
   }
 })
-router.get('/api/admin/member', async ctx => {
-  try {
-    const password = getPassword(ctx)
-    if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = {
-        status: 'ok',
-        details: memberActions.getMap({ type: 'all', as: 'department', withPosition: true }),
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
+router.get('/api/admin/member', API.Powers.Member.Admin.Get)
 
 router.post('/api/admin/download/post', async ctx => {
   try {
@@ -1888,87 +1547,10 @@ router.delete('/api/admin/post', async ctx => {
     }
   }
 })
-router.put('/api/admin/member', async ctx => {
-  // Edit Info
-  try {
-    const { password, member, position } = ctx.request.body
-    if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = memberActions.editPosition(parseInt(member), position as 'clerk' | 'vice-minister')
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.patch('/api/admin/member', async ctx => {
-  // Violations
-  try {
-    const { password, member } = ctx.request.body
-    if (loginAdmin(password).status == 'ok') {
-      memberActions.createNewViolation(parseInt(member), 1)
-      ctx.response.body = {
-        status: 'ok',
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.post('/api/admin/member', async ctx => {
-  try {
-    const { password, member } = ctx.request.body
-    if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = memberActions.createMember(member)
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.delete('/api/admin/member', async ctx => {
-  try {
-    const { password, person } = ctx.request.body
-    if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = memberActions.deleteMember(parseInt(person))
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
+router.put('/api/admin/member', API.Powers.Member.Admin.Put)
+router.patch('/api/admin/member', API.Powers.Member.Admin.Patch)
+router.post('/api/admin/member', API.Powers.Member.Admin.Post)
+router.delete('/api/admin/member', API.Powers.Member.Admin.Delete)
 router.get('/api/admin/get/all/volunteer', async ctx => {
   try {
     const password = getPassword(ctx)

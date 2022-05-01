@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /* global member */
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import axios from 'axios'
 import baseurl from '../../../modules/baseurl'
 import MemberPage from './member.vue'
@@ -9,8 +9,12 @@ import PostPage from '../../../components/powers/post/post.vue'
 import VolunteerPage from './volunteer.vue'
 import personExample from '../../../../examples/person'
 import nProgress from 'nprogress'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
 const { number, password } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
-let choice = ref('')
+let choice = ref(route.params.type ?? '')
 let got = ref(false)
 let me = ref<member>(personExample())
 nProgress.start()
@@ -18,6 +22,9 @@ axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
   me.value = response.data.details as member
   got.value = true
   nProgress.done()
+})
+watch(choice, () => {
+  router.push('/member/admin/' + (choice.value ?? '') + (choice.value ? '/' : ''))
 })
 </script>
 

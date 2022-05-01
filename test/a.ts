@@ -1,5 +1,5 @@
-import { getSingleMemberAsRaw } from 'packages/server/src/modules/powers/member'
-import getAll from 'packages/server/src/modules/powers/member/crud/read/get-all'
-import getClass from 'packages/server/src/modules/powers/member/crud/read/get-class'
+import { getMap } from 'packages/server/src/modules/powers/member'
 
-console.log(getSingleMemberAsRaw(20200442))
+const result = getMap({ type: 'department', department: 'publicity', withPosition: true })
+
+console.log(JSON.stringify(result))

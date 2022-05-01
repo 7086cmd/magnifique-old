@@ -146,15 +146,32 @@ interface option {
 
 let fullList = ref<option[]>([])
 
-let isCreatingRoom = ref(false)
+let isFetchingFullListOrCreatingRoom = ref(false)
+let isOpenCreateWindow = ref(false)
 
 const fullListLoad = async () => {
-  NProgress.start()
+  isOpenCreateWindow.value = true
+  isFetchingFullListOrCreatingRoom.value = true
   fullList.value = Object.assign([], await client.getFullList())
   fullList.value = fullList.value.filter(item => item.children?.filter(it => it.children).length !== 0)
-  isCreatingRoom.value = true
-  NProgress.done()
+  isFetchingFullListOrCreatingRoom.value = false
 }
+
+watch(isOpenCreateWindow, () => {
+  if (isOpenCreateWindow.value) {
+    if (username.value === 'admin') {
+      router.push('/admin/message/create/')
+    } else {
+      router.push(`/${username.value.split('/')[0]}/message/create`)
+    }
+  } else {
+    if (username.value === 'admin') {
+      router.push('/admin/message/')
+    } else {
+      router.push(`/${username.value.split('/')[0]}/message/`)
+    }
+  }
+})
 
 const roomc = ref({
   title: '',
@@ -169,8 +186,17 @@ const createRoom = async () => {
   const id = (await client.createRoom(roomc.value)) as string
   await refresh()
   getRoomMsg(id)
-  isCreatingRoom.value = false
+  isOpenCreateWindow.value = false
   NProgress.done()
+}
+
+if (route.params.status === 'create') {
+  let users = route.query.with.split(',')
+  fullListLoad()
+  route.query.with && (roomc.value.users = users)
+  route.query.title && (roomc.value.title = route.query.title)
+  route.query.confirm && users.length < 2 && createRoom()
+  // createRoom()
 }
 
 const inputRef = ref<InstanceType<typeof ElInput>>()
@@ -201,9 +227,9 @@ watch(isShown, async () => {
     })
     subscribor.value.subscribe()
     if (username.value === 'admin') {
-      router.push('/admin/message/' + roomData.value.id)
+      router.push('/admin/message/room/' + roomData.value.id)
     } else {
-      router.push(`/${username.value.split('/')[0]}/message/${roomData.value.id}`)
+      router.push(`/${username.value.split('/')[0]}/message/room/${roomData.value.id}`)
     }
   }
 })
@@ -350,15 +376,14 @@ const handleUploadImage = async (_evt: Event, insertImage: (param: { desc: strin
         <el-button round type="primary">确定</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-model="isCreatingRoom" title="新建聊天组" center>
-      <el-form :model="roomc">
+    <el-dialog v-model="isOpenCreateWindow" title="新建聊天组" center>
+      <el-form v-loading="isFetchingFullListOrCreatingRoom" :model="roomc">
         <el-form-item label="成员">
-          <el-tree-select v-model="roomc.users" :data="fullList" style="width: 100%" multiple filterable />
+          <el-tree-select v-model="roomc.users" show-checkbox :data="fullList" style="width: 100%" multiple filterable />
         </el-form-item>
         <el-form-item label="标题">
           <el-input v-model="roomc.title"></el-input>
         </el-form-item>
-        <el-button round @click="isCreatingRoom = false">取消</el-button>
         <el-button round type="primary" @click="createRoom">确定</el-button>
       </el-form>
     </el-dialog>
@@ -374,7 +399,7 @@ const handleUploadImage = async (_evt: Event, insertImage: (param: { desc: strin
       </template>
       <el-scrollbar ref="messageContent" min-height="480px" style="height: 60%">
         <div v-for="msg in msgs" :key="msg.id" className="animate__animated animate__slideInDown">
-          <div v-if="msg.content.length > 50 && msg.type !== 'file'" @mouseover="useId = msg.id">
+          <div v-if="msg.content.length > 1000 && msg.type !== 'file'" @mouseover="useId = msg.id">
             <el-card v-menus="blockMessageMenus" shadow="never">
               <template #header>
                 <el-link :underline="false" style="font-size: 16px">
@@ -401,6 +426,7 @@ const handleUploadImage = async (_evt: Event, insertImage: (param: { desc: strin
             </el-card>
           </div>
           <p v-else-if="msg.type !== 'file'" className="animate__animated animate__slideInDown" style="padding-top: 8px">
+            <span v-if="msg.creator !== username" style="font-size: 12px; color: gray">{{ roomData.members.filter(x => x.id === msg.creator).map(x => x.name)[0] }}</span>
             <message-piece :content="msg" :username="username" :client="client" :room-id="roomData.id" :rfmethod="getRoomMsg"></message-piece>
           </p>
           <file-message v-else :id="msg.content" :room="roomData.id" :client="client" :msg="msg.id" :roomperson="roomData.members" :refresh="getRoomMsg" />

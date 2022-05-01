@@ -17,37 +17,21 @@ class DeductionFetcher {
   }
 
   get = async () => {
-    return (await axios(this.options.getter)).data
+    const result = await axios(this.options.url, { params: this.options.standardConfig })
+    return result.data
   }
 
   delete = async (deductionDeleteData: { id: string; unviolatedPersonNumber: number }) => {
     if (this.options.deleter) {
       return (
-        await axios(this.options.deleter, {
-          method: 'post',
+        await axios(this.options.url, {
+          method: 'delete',
           data: {
-            ...this.options.standardConfig,
-            id: deductionDeleteData.id,
-            person: deductionDeleteData.unviolatedPersonNumber,
-          },
-        })
-      ).data
-    } else
-      return {
-        status: 'error',
-        reason: 'no-auth',
-      }
-  }
-
-  callback = async (deductionDeleteData: { id: string; descriptionMessage: string }) => {
-    if (this.options.callbacker) {
-      return (
-        await axios(this.options.callbacker, {
-          method: 'post',
-          data: {
-            ...this.options.standardConfig,
-            id: deductionDeleteData.id,
-            msg: deductionDeleteData.descriptionMessage,
+            auth: this.options.standardConfig,
+            data: {
+              id: deductionDeleteData.id,
+              person: deductionDeleteData.unviolatedPersonNumber,
+            },
           },
         })
       ).data
@@ -61,32 +45,14 @@ class DeductionFetcher {
   create = async (deductionCreatement: deduction) => {
     if (this.options.creater && this.options.standardConfig.type === 'member') {
       return (
-        await axios(this.options.creater, {
+        await axios(this.options.url, {
           method: 'post',
           data: {
-            ...this.options.standardConfig,
-            id: Number(this.options.standardConfig.number),
-            content: JSON.parse(JSON.stringify(deductionCreatement)),
-          },
-        })
-      ).data
-    } else
-      return {
-        status: 'error',
-        reason: 'no-auth',
-      }
-  }
-
-  decline = async (deductionDeclineData: { id: string; violater: number; message: string }) => {
-    if (this.options.decliner) {
-      return (
-        await axios(this.options.decliner, {
-          method: 'post',
-          data: {
-            ...this.options.standardConfig,
-            person: deductionDeclineData.violater,
-            reason: deductionDeclineData.message,
-            id: deductionDeclineData.id,
+            auth: this.options.standardConfig,
+            data: {
+              id: Number(this.options.standardConfig.number),
+              content: JSON.parse(JSON.stringify(deductionCreatement)),
+            },
           },
         })
       ).data

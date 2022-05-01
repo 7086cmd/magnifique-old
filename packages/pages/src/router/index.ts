@@ -51,7 +51,7 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'department',
+        path: '/member/department/:type?',
         component: MemberDepartment,
         meta: {
           transition: 'fade',
@@ -65,14 +65,21 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: '/member/message/:id',
+        path: '/member/message/room/:id',
         component: MemberMessage,
         meta: {
           transition: 'fade',
         },
       },
       {
-        path: 'admin/',
+        path: '/member/message/:status?',
+        component: MemberMessage,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: '/member/admin/:type?',
         component: MemberAdminHome,
         meta: {
           transition: 'fade',
@@ -128,7 +135,14 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: '/class/message/:id',
+        path: '/class/message/room/:id',
+        component: ClassMessage,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: '/class/message/:status?',
         component: ClassMessage,
         meta: {
           transition: 'fade',
@@ -172,14 +186,14 @@ const routes: Array<RouteRecordRaw> = [
         component: AdminMember,
       },
       {
-        path: 'message',
+        path: '/admin/message/:status?',
         component: AdminMessage,
         meta: {
           transition: 'fade',
         },
       },
       {
-        path: '/admin/message/:id',
+        path: '/admin/message/room/:id',
         component: AdminMessage,
         meta: {
           transition: 'fade',

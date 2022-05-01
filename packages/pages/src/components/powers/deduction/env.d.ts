@@ -28,11 +28,10 @@ declare namespace DeductionFetch {
 
   export interface deductionFetcherConfig {
     type: fetcherOptions['type']
-    getter: string
-    deleter: false | string
-    creater: false | string
-    callbacker: false | string
-    decliner: false | string
+    getter: true
+    deleter: boolean
+    creater: boolean
+    url: string
     standardConfig: fetcherOptions
     name?: string
   }

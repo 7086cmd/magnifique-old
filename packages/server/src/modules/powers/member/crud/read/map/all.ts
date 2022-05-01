@@ -67,7 +67,21 @@ const asDepartmentWithPosition = () => {
       const positionValue = departmentItem.value + '_' + personInfo?.union.position
       result
         .filter(item => item.value === departmentItem.value)[0]
-        .children?.filter(item => item.value === positionValue)[0]
+        .children?.filter(item => {
+          if (departmentItem.value !== 'core') {
+            if ([departmentItem.value + '_clerk', departmentItem.value + '_vice-minister', departmentItem.value + '_minister'].includes(positionValue) && positionValue === item.value) {
+              return true
+            } else if (departmentItem.value + '_vice-chairman' === positionValue) {
+              if (personInfo?.union.admin.includes('member-volunteer')) {
+                if (item.value === departmentItem.value + '_vice-minister') return true
+              } else {
+                if (item.value === departmentItem.value + '_clerk') return true
+              }
+            }
+          } else if (departmentItem.value === 'core' && item.value === departmentItem.value + '_' + personInfo?.union.position) {
+            return true
+          } else return false
+        })[0]
         .children?.push({
           value: String(personInfo?.number),
           label: personInfo?.name as string,
