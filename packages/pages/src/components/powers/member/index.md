@@ -175,7 +175,7 @@ A --> C
 ## Realize Map
 
 - [x] Use `tree` instead of `table`.
-- [ ] Use the `RESTful` api.
+- [x] Use the `RESTful` api.
 - [ ] Fixes for `Member Admin` and `Class`
-- [ ] Use `drawer` in order to "bounce" the details.
+- [x] Use `dialog` in order to "bounce" the details.
 - [ ] Quickly choose the person in order that the user can send the message to him/her directly.

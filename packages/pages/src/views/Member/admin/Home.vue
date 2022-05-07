@@ -3,12 +3,11 @@
 import { ref, watch } from 'vue'
 import axios from 'axios'
 import baseurl from '../../../modules/baseurl'
-import MemberPage from './member.vue'
 import DeductionPage from '../../../components/powers/deduction/deduction.vue'
 import PostPage from '../../../components/powers/post/post.vue'
+import MemberPageDev from '../../../components/powers/member/Member.vue'
 import VolunteerPage from './volunteer.vue'
 import personExample from '../../../../examples/person'
-import nProgress from 'nprogress'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
@@ -17,11 +16,9 @@ const { number, password } = JSON.parse(window.atob(String(sessionStorage.getIte
 let choice = ref(route.params.type ?? '')
 let got = ref(false)
 let me = ref<member>(personExample())
-nProgress.start()
 axios(`${baseurl}member/getinfo/${number}/raw`).then(response => {
   me.value = response.data.details as member
   got.value = true
-  nProgress.done()
 })
 watch(choice, () => {
   router.push('/member/admin/' + (choice.value ?? '') + (choice.value ? '/' : ''))
@@ -29,21 +26,21 @@ watch(choice, () => {
 </script>
 
 <template>
-  <div>
-    <el-tabs v-if="(me.union.position.includes('minister') || me.union.position.includes('chairman')) && got" v-model="choice" tab-position="left">
-      <el-tab-pane v-if="['minister'].includes(me.union.position)" label="成员" name="member">
-        <member-page />
+  <div v-loading="!got">
+    <el-tabs v-if="(me.union.position.includes('minister') || me.union.position.includes('chairman')) && got && me.union.position !== 'register'" v-model="choice" tab-position="left">
+      <el-tab-pane label="成员" name="member" lazy>
+        <member-page-dev type="member_admin" :number="number" :password="password" />
       </el-tab-pane>
-      <el-tab-pane v-if="me.union.admin.includes('deduction')" label="扣分" name="deduction">
+      <el-tab-pane v-if="me.union.admin.includes('deduction')" label="扣分" name="deduction" lazy>
         <deduction-page type="member_admin" :number="number" :password="password" />
       </el-tab-pane>
-      <el-tab-pane v-if="me.union.admin.includes('post')" label="稿件" name="post">
+      <el-tab-pane v-if="me.union.admin.includes('post')" label="稿件" name="post" lazy>
         <post-page type="member_admin" :number="number" :password="password" />
       </el-tab-pane>
-      <el-tab-pane v-if="['vice-minister', 'minister'].includes(me.union.position) || me.union.admin.includes('member-volunteer')" label="成员义工" name="member-volunteer">
+      <el-tab-pane v-if="['vice-minister', 'minister'].includes(me.union.position) || me.union.admin.includes('member-volunteer')" label="成员义工" name="member-volunteer" lazy>
         <volunteer-page type="member" />
       </el-tab-pane>
-      <el-tab-pane v-if="me.union.admin.includes('volunteer')" label="义工" name="volunteer">
+      <el-tab-pane v-if="me.union.admin.includes('volunteer')" label="义工" name="volunteer" lazy>
         <volunteer-page type="volunteer" />
       </el-tab-pane>
     </el-tabs>

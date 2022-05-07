@@ -4,7 +4,7 @@ import { ref, watch } from 'vue'
 import Deduction from '../../components/powers/deduction/deduction.vue'
 import PostDev from '../../components/powers/post/post.vue'
 import Volunteer from './data/volunteer.vue'
-import Member from './Member.vue'
+import MemberDev from '../../components/powers/member/Member.vue'
 import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
@@ -19,17 +19,18 @@ watch(nativeName, () => {
   <transition name="el-fade-in" appear>
     <div>
       <el-tabs v-model="nativeName" tab-position="left" style="padding-top: 10%">
-        <el-tab-pane label="扣分" name="deduction">
+        <el-tab-pane label="扣分" name="deduction" lazy>
           <deduction type="admin" :password="password" />
         </el-tab-pane>
-        <el-tab-pane label="稿件" name="post">
+        <el-tab-pane label="稿件" name="post" lazy>
           <post-dev type="admin" :password="password" />
         </el-tab-pane>
-        <el-tab-pane label="义工" name="volunteer">
+        <el-tab-pane label="义工" name="volunteer" lazy>
           <volunteer />
         </el-tab-pane>
-        <el-tab-pane label="成员" name="member">
-          <member />
+        <el-tab-pane label="成员" name="member" lazy>
+          <!-- <member /> -->
+          <member-dev type="admin" :password="password" />
         </el-tab-pane>
       </el-tabs>
     </div>

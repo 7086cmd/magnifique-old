@@ -5,6 +5,9 @@ import type KoaRouter from '@koa/router'
 
 type Context = Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext & KoaRouter.RouterParamContext<Koa.DefaultState, Koa.DefaultContext>>
 
+/**
+ * @param {Context} ctx the context of the api.
+ */
 export default async (ctx: Context) => {
   try {
     const { auth, data } = ctx.request.body as {

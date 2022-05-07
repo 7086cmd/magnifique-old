@@ -1,5 +1,9 @@
 export default [
   {
+    name: '注册',
+    value: 'register',
+  },
+  {
     name: '干事',
     value: 'clerk',
   },

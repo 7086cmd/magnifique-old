@@ -9,7 +9,7 @@ export default async (ctx: Context) => {
   try {
     const { auth, data } = ctx.request.body as { auth: { password: string; number: number }; data: { member: member } }
     if (loginMember(Number(auth.number), auth.password).status == 'ok') {
-      if (memberAdminLimitCheckPower(auth.number, 'member')) {
+      if (memberAdminLimitCheckPower(auth.number, 'member-register')) {
         ctx.response.body = createMember(data.member)
       } else {
         ctx.response.body = {

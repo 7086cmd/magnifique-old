@@ -11,12 +11,12 @@ const detail = ref(unref(data) as member_processed)
 
 <template>
   <div>
-    <el-descriptions :title="'成员' + detail.number + '信息'" border>
+    <el-descriptions border direction="vertical">
       <el-descriptions-item label="姓名">
-        {{ detail.name }}
+        <member-dialog :number="detail.number"></member-dialog>
       </el-descriptions-item>
       <el-descriptions-item label="学号">
-        <el-tag type="warning" v-text="detail.number"></el-tag>
+        <span v-text="detail.number"></span>
       </el-descriptions-item>
       <el-descriptions-item label="所属部门">
         <el-tag type="info" v-text="detail.in"></el-tag>

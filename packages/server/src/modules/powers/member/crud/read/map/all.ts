@@ -57,7 +57,7 @@ const asDepartmentWithPosition = () => {
         },
         {
           label: '非注册成员',
-          value: departmentItem.value + '_registry',
+          value: departmentItem.value + '_register',
           children: [],
         },
       ],
@@ -69,7 +69,10 @@ const asDepartmentWithPosition = () => {
         .filter(item => item.value === departmentItem.value)[0]
         .children?.filter(item => {
           if (departmentItem.value !== 'core') {
-            if ([departmentItem.value + '_clerk', departmentItem.value + '_vice-minister', departmentItem.value + '_minister'].includes(positionValue) && positionValue === item.value) {
+            if (
+              [departmentItem.value + '_register', departmentItem.value + '_clerk', departmentItem.value + '_vice-minister', departmentItem.value + '_minister'].includes(positionValue) &&
+              positionValue === item.value
+            ) {
               return true
             } else if (departmentItem.value + '_vice-chairman' === positionValue) {
               if (personInfo?.union.admin.includes('member-volunteer')) {

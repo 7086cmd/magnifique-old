@@ -8,7 +8,10 @@ export default async (ctx: Context) => {
     const params = new URLSearchParams(ctx.querystring)
     const gradeid = params.get('gradeid') as string
     const classid = params.get('classid') as string
-    ctx.response.body = getMap({ type: 'class', gradeid: Number(gradeid), classid: Number(classid) })
+    ctx.response.body = {
+      status: 'ok',
+      details: getMap({ type: 'class', gradeid: Number(gradeid), classid: Number(classid) }),
+    }
   } catch (e) {
     ctx.response.body = {
       status: 'error',

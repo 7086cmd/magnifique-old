@@ -85,6 +85,13 @@ const routes: Array<RouteRecordRaw> = [
           transition: 'fade',
         },
       },
+      {
+        path: '/member/admin/:type/:status?',
+        component: MemberAdminHome,
+        meta: {
+          transition: 'fade',
+        },
+      },
     ],
   },
   {
@@ -121,7 +128,21 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'list',
+        path: '/class/list',
+        component: ClassList,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: '/class/list/:page?',
+        component: ClassList,
+        meta: {
+          transition: 'fade',
+        },
+      },
+      {
+        path: '/class/list/member/:status?',
         component: ClassList,
         meta: {
           transition: 'fade',

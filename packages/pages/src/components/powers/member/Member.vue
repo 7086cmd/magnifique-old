@@ -1,28 +1,27 @@
 <script setup lang="ts">
-/* global member */
+/* global member, defineProps */
 import { ref, reactive, watch } from 'vue'
 import axios from 'axios'
 import { Refresh, Plus, Pointer, Delete, Close } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
-import baseurl from '../../modules/baseurl'
-import personExample from '../../../examples/person'
-import sucfuc from '../../modules/sucfuc'
-import failfuc from '../../modules/failfuc'
-import FetchingMember from '../../components/lists/fetching-member.vue'
+import baseurl from '../../../modules/baseurl'
+import personExample from '../../../../examples/person'
+import sucfuc from '../../../modules/sucfuc'
+import failfuc from '../../../modules/failfuc'
 import positions from './positions'
-import nProgress from 'nprogress'
 import type { FormInstance } from 'element-plus'
 import { AddMemberFormRule } from './member_datas/rules'
-
-nProgress.start()
+import { createEditionMap } from './member_datas/map'
+import { MemberClient, MemberListClientForClass } from './clients'
 
 const route = useRoute()
 const router = useRouter()
 
 const form = ref<FormInstance>()
-
-const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
+const props = defineProps<{ type: 'member_admin' | 'admin' | 'class'; number?: number; classid?: number; gradeid?: number; password: string }>()
+const current = props.type === 'class' ? '/class/list' : props.type === 'admin' ? '/admin/data' : '/member/admin'
+const client = props.type === 'class' ? new MemberListClientForClass(props) : new MemberClient(props)
 let isRegistingMember = ref(route.params.status === 'register')
 const isFetchComplete = ref(false)
 let isSubmiting = ref(false)
@@ -50,18 +49,42 @@ interface Tree {
   label: string
   children?: Tree[]
 }
+let positionCannotEdit = ref(false)
+let departmentCannotEdit = ref(false)
 let table = ref<Tree[]>([])
 let loading = ref(false)
 axios(`${baseurl}department/list`).then(response => {
   departments.value.push(...response.data.details)
 })
+if (props.type === 'member_admin') {
+  types.value = types.value.filter(x => !['minister', 'vice-chairman', 'chairman'].includes(x.value))
+  departments.value = departments.value.filter(x => x.value)
+  axios(`${baseurl}member/getinfo/${props.number}/raw`).then(response => {
+    if (response.data.details.union.position.includes('chairman')) {
+      information.union.position = 'register'
+      positionCannotEdit.value = true
+    } else if (response.data.details.union.position.includes('minister')) {
+      departmentCannotEdit.value = true
+      information.union.department = response.data.details.union.department
+      if (response.data.details.union.position.includes('vice')) {
+        information.union.position = 'register'
+        positionCannotEdit.value = true
+      }
+    }
+  })
+}
+if (props.type === 'class') {
+  departments.value = departments.value.filter(x => x.value)
+  information.union.position = 'register'
+  positionCannotEdit.value = true
+}
 axios(`${baseurl}power/list`).then(response => {
   vadmins.value.push(...response.data.details)
 })
 const refresh = async () => {
   loading.value = true
   isFetchComplete.value = false
-  const response = await axios(`${baseurl}admin/member`, { params: { password } })
+  const response = await client.get()
   loading.value = false
   isFetchComplete.value = true
   if (response.data.status === 'ok') {
@@ -70,13 +93,8 @@ const refresh = async () => {
 }
 refresh()
 const deletePerson = async (number: number) => {
-  const response = await axios(`${baseurl}admin/member`, {
-    data: {
-      person: number,
-      password,
-    },
-    method: 'delete',
-  })
+  loading.value = true
+  const response = await client.delete(number)
   if (response.data.status === 'ok') {
     sucfuc()
   } else {
@@ -85,13 +103,8 @@ const deletePerson = async (number: number) => {
   refresh()
 }
 const vioPerson = async (number: number) => {
-  const response = await axios(`${baseurl}admin/member`, {
-    data: {
-      member: number,
-      password,
-    },
-    method: 'patch',
-  })
+  loading.value = true
+  const response = await client.patch(number)
   if (response.data.status === 'ok') {
     sucfuc()
   } else {
@@ -101,6 +114,8 @@ const vioPerson = async (number: number) => {
 }
 let beTheViceMinisterInTheSameTime = ref(false)
 const createMember = async () => {
+  loading.value = true
+  isRegistingMember.value = false
   isSubmiting.value = true
   const createMsg = (msg: string) => {
     ElMessageBox.alert(msg, '失败', {
@@ -137,13 +152,8 @@ const createMember = async () => {
     if (beTheViceMinisterInTheSameTime.value) {
       information.union.admin.push('member-volunteer')
     }
-    const response = await axios(`${baseurl}admin/member`, {
-      data: {
-        member: information,
-        password,
-      },
-      method: 'post',
-    })
+    const response = await client.post(information)
+    isSubmiting.value = false
     if (response.data.status === 'ok') {
       sucfuc()
     } else {
@@ -151,55 +161,17 @@ const createMember = async () => {
     }
     form.value.resetFields()
     information.union.position = 'clerk'
-    isSubmiting.value = false
-    isRegistingMember.value = false
     refresh()
   }
 }
-const useMember = ref(Number(route.params.data ?? 0))
-const isShowingModel = ref(Boolean(route.params.data))
-const openDialog = (num: string) => {
-  useMember.value = Number(num)
-  if (isNaN(useMember.value)) {
-    useMember.value = 0
-  } else isShowingModel.value = true
-}
-const delay = () => setTimeout(() => (useMember.value = 0), 1000)
-watch(isShowingModel, () => {
-  if (isShowingModel.value === false) {
-    router.push('/admin/data/member/')
-  } else router.push('/admin/data/member/info/' + String(useMember.value) + '/')
-})
 watch(isRegistingMember, () => {
-  if (isRegistingMember.value === true) router.push('/admin/data/member/register/')
-  else router.push('/admin/data/member/')
+  if (isRegistingMember.value === true) router.push(current + '/member/register/')
+  else router.push(current + '/member/')
 })
 </script>
 
 <template>
   <div @click="delay">
-    <el-drawer v-model="isShowingModel" direction="rtl" size="60%" :destroy-on-close="true">
-      <fetching-member :number="useMember" />
-      <el-divider />
-      <el-tooltip content="删除成员" placement="bottom" effect="light">
-        <el-popconfirm title="确定要删除成员吗？" @confirm="deletePerson(useMember)">
-          <template #reference>
-            <el-button type="danger" round plain>
-              <el-icon><delete /></el-icon>删除成员
-            </el-button>
-          </template>
-        </el-popconfirm>
-      </el-tooltip>
-      <el-tooltip content="通报批评" placement="bottom" effect="light">
-        <el-popconfirm title="确定要删除15分的素质分吗？" @confirm="vioPerson(useMember)">
-          <template #reference>
-            <el-button type="warning" round plain>
-              <el-icon><pointer /></el-icon>通报批评（删除15分素质分）
-            </el-button>
-          </template>
-        </el-popconfirm>
-      </el-tooltip>
-    </el-drawer>
     <el-card>
       <template #default>
         <el-tooltip content="刷新内容" placement="bottom" effect="light">
@@ -219,12 +191,12 @@ watch(isRegistingMember, () => {
               <el-input v-model="information.number" />
             </el-form-item>
             <el-form-item label="加入部门">
-              <el-select v-model="information.union.department" style="width: 100%">
+              <el-select v-model="information.union.department" :disabled="departmentCannotEdit" style="width: 100%">
                 <el-option v-for="item in departments" :key="item.value" :label="item.name" :value="item.value"> </el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="担任职位">
-              <el-select v-model="information.union.position" style="width: 100%">
+              <el-select v-model="information.union.position" :disabled="positionCannotEdit" style="width: 100%">
                 <el-option v-for="item in types" :key="item.value" :label="item.name" :value="item.value"></el-option>
               </el-select>
             </el-form-item>
@@ -234,14 +206,31 @@ watch(isRegistingMember, () => {
               </el-select>
               <el-checkbox v-if="information.union.department !== ''" v-model="beTheViceMinisterInTheSameTime" label="在部门内同时担任副部长职务"></el-checkbox>
             </el-form-item>
-            <el-button round type="primary" :loading="isSubmiting" @click="createMember"> 确定 </el-button>
+            <el-button v-loading="isSubmiting" round type="primary" @click="createMember"> 确定 </el-button>
           </el-form>
         </el-collapse-transition>
 
         <el-collapse-transition>
-          <el-tree v-if="!isRegistingMember" v-loading="!isFetchComplete" :data="table" draggable>
+          <el-tree v-if="!isRegistingMember" v-loading="!isFetchComplete" element-loading-text="获取成员信息中……" :data="table" draggable @node-drop="createEditionMap">
             <template #default="{ node }">
-              <el-link :underline="false" type="default" @click="openDialog(node.data.value)">{{ node.label }}</el-link>
+              <el-row v-if="Number.isInteger(Number(node.data.value))">
+                <el-col :span="14"><member-dialog :number="Number(node.data.value)"></member-dialog></el-col>
+                <el-col v-if="!positionCannotEdit" :span="5">
+                  <el-popconfirm title="确定要删除成员吗？" @confirm="deletePerson(node.data.value)">
+                    <template #reference>
+                      <el-link :underline="false" type="danger" :icon="Delete"> </el-link>
+                    </template>
+                  </el-popconfirm>
+                </el-col>
+                <el-col v-if="!positionCannotEdit" :span="5">
+                  <el-popconfirm title="确定要删除15分的素质分吗？" @confirm="vioPerson(node.data.value)">
+                    <template #reference>
+                      <el-link :underline="false" type="warning" :icon="Pointer"> </el-link>
+                    </template>
+                  </el-popconfirm>
+                </el-col>
+              </el-row>
+              <el-link v-else :underline="false" type="default" @click="openDialog(node.data.value)">{{ node.label }}</el-link>
             </template>
           </el-tree>
         </el-collapse-transition>

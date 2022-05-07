@@ -11,7 +11,6 @@ import VolunteerDescription from '../../../components/lists/VolunteerDescription
 import dayjs from 'dayjs'
 import { v4 } from 'uuid'
 import toPort from '../../../modules/to-port'
-import nProgress from 'nprogress'
 
 const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
 
@@ -26,14 +25,12 @@ axios(`${baseurl}admin/get/all/member?password=${password}`).then(responser => {
   persons.value = responser.data.details
 })
 const refresh = async () => {
-  nProgress.start()
   loading.value = true
   const response = await axios(`${baseurl}admin/get/all/volunteer?password=${password}`)
   loading.value = false
   if (response.data.status === 'ok') {
     volunteerDetail.value = response.data.details
   }
-  nProgress.done()
 }
 refresh()
 const startRegistVolunteer = () => {
@@ -183,42 +180,38 @@ const startPassing = (props: { row: VolunteerQueryResult }) => {
 <template>
   <transition name="el-fade-in" appear>
     <div>
-      <el-skeleton :loading="loading" animated :rows="10" :throttle="500">
-        <template #default>
-          <el-card shadow="never">
-            <el-table :data="volunteerDetail" highlight-current-row max-height="480px">
-              <el-table-column type="expand">
-                <template #header>
-                  <el-button type="text" :icon="Refresh" @click="refresh()" />
-                </template>
-                <template #default="prop">
-                  <volunteer-description :data="prop.row" />
-                </template>
-              </el-table-column>
-              <el-table-column label="参与者">
-                <template #default="prop">
-                  <el-tag v-if="typeof prop.row.person === 'number'" type="success" v-text="prop.row.person" />
-                  <el-tag v-for="item in prop.row.person" v-else :key="item" type="success" v-text="item" />
-                </template>
-              </el-table-column>
-              <el-table-column prop="project" label="义工项目" />
-              <el-table-column label="义工时长">
-                <template #default="prop"> {{ prop.row.duration }}小时 </template>
-              </el-table-column>
-              <el-table-column align="right" fixed="right">
-                <template #header>
-                  <el-button type="text" @click="startRegistVolunteer()"> 义工登记 </el-button>
-                  <el-button type="text" @click="ExportStart()"> 导出 </el-button>
-                </template>
-                <template #default="prop">
-                  <el-button type="text" @click="startPassing(prop)">通过</el-button>
-                  <el-button type="text" @click="deleteVolunteer(prop)">删除</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-card>
-        </template>
-      </el-skeleton>
+      <el-card v-loading="loading" shadow="never">
+        <el-table :data="volunteerDetail" highlight-current-row max-height="480px">
+          <el-table-column type="expand">
+            <template #header>
+              <el-button type="text" :icon="Refresh" @click="refresh()" />
+            </template>
+            <template #default="prop">
+              <volunteer-description :data="prop.row" />
+            </template>
+          </el-table-column>
+          <el-table-column label="参与者">
+            <template #default="prop">
+              <el-tag v-if="typeof prop.row.person === 'number'" type="success" v-text="prop.row.person" />
+              <el-tag v-for="item in prop.row.person" v-else :key="item" type="success" v-text="item" />
+            </template>
+          </el-table-column>
+          <el-table-column prop="project" label="义工项目" />
+          <el-table-column label="义工时长">
+            <template #default="prop"> {{ prop.row.duration }}小时 </template>
+          </el-table-column>
+          <el-table-column align="right" fixed="right">
+            <template #header>
+              <el-button type="text" @click="startRegistVolunteer()"> 义工登记 </el-button>
+              <el-button type="text" @click="ExportStart()"> 导出 </el-button>
+            </template>
+            <template #default="prop">
+              <el-button type="text" @click="startPassing(prop)">通过</el-button>
+              <el-button type="text" @click="deleteVolunteer(prop)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
       <el-dialog v-model="isRegistingVolunteer" title="义工登记" center>
         <template #header>义工登记</template>
         <el-form v-model="volunteerData" title="义工登记">

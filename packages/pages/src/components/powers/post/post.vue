@@ -2,7 +2,6 @@
 /* global PostList, status1, fetcherOptions */
 import { ref, reactive, Ref, defineProps } from 'vue'
 import { Refresh, Download, CirclePlus, DeleteFilled } from '@element-plus/icons-vue'
-import { ElLoading } from 'element-plus'
 import failfuc from '../../../modules/failfuc'
 import sucfuc from '../../../modules/sucfuc'
 import postDescription from '../../../components/lists/PostDescription.vue'
@@ -47,14 +46,10 @@ const refresh = async () => {
   }
 }
 const deletepost = async (prop: { row: PostList }) => {
-  const delLoad = ElLoading.service({
-    text: '正在删除投稿，请稍后',
-  })
   const response = await fetcher.delete({
     id: prop.row.id,
     uploaderID: prop.row.person,
   })
-  delLoad.close()
   if (response.status == 'ok') {
     sucfuc()
   } else {
@@ -83,38 +78,34 @@ const submitpost = async () => {
 
 <template>
   <div>
-    <el-skeleton :loading="isFetchingData" :rows="4" animated :throttle="500">
-      <template #default>
-        <el-card shadow="never">
-          <el-table :data="allData" max-height="640px">
-            <el-table-column type="expand">
-              <template #header>
-                <el-button type="text" :icon="Refresh" @click="refresh()"></el-button>
+    <el-card v-loading="isFetchingData" shadow="never">
+      <el-table :data="allData" max-height="640px">
+        <el-table-column type="expand">
+          <template #header>
+            <el-button type="text" :icon="Refresh" @click="refresh()"></el-button>
+          </template>
+          <template #default="prop">
+            <post-description :data="prop.row" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="title" label="标题" />
+        <el-table-column prop="type" label="体裁" />
+        <el-table-column prop="time" label="时间" />
+        <el-table-column align="right" fixed="right">
+          <template #header>
+            <el-button v-if="props.type === 'member'" type="text" :icon="CirclePlus" @click="newpost = true" />
+          </template>
+          <template #default="prop">
+            <el-button v-if="props.type !== 'class'" type="text" :icon="Download" size="small" @click="download(prop)" />
+            <el-popconfirm title="确定删除？" @confirm="deletepost(prop)">
+              <template #reference>
+                <el-button v-if="props.type !== 'class'" type="text" :icon="DeleteFilled" size="small" />
               </template>
-              <template #default="prop">
-                <post-description :data="prop.row" />
-              </template>
-            </el-table-column>
-            <el-table-column prop="title" label="标题" />
-            <el-table-column prop="type" label="体裁" />
-            <el-table-column prop="time" label="时间" />
-            <el-table-column align="right" fixed="right">
-              <template #header>
-                <el-button v-if="props.type === 'member'" type="text" :icon="CirclePlus" @click="newpost = true" />
-              </template>
-              <template #default="prop">
-                <el-button v-if="props.type !== 'class'" type="text" :icon="Download" size="small" @click="download(prop)" />
-                <el-popconfirm title="确定删除？" @confirm="deletepost(prop)">
-                  <template #reference>
-                    <el-button v-if="props.type !== 'class'" type="text" :icon="DeleteFilled" size="small" />
-                  </template>
-                </el-popconfirm>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-card>
-      </template>
-    </el-skeleton>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
     <el-dialog v-model="newpost" title="新建投稿" center width="60%">
       <el-form :model="postData" label-position="right">
         <el-form-item label="标题">

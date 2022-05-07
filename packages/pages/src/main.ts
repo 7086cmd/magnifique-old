@@ -16,6 +16,7 @@ import MonacoEditor from './modules/editor/index.vue'
 import ImageReader from './modules/image/upload.vue'
 import MessageItem from './components/messages/message-item.vue'
 import FileMessage from './components/messages/file.vue'
+import MemberDialog from './components/lists/fetching-member.vue'
 import Prism from 'prismjs'
 import VueMarkdownEditor from '@kangc/v-md-editor'
 import vuepressTheme from '@kangc/v-md-editor/lib/theme/vuepress.js'
@@ -63,6 +64,7 @@ app.component('MonacoEditor', MonacoEditor)
 app.component('TagPurple', TagPurple)
 app.component('ImageReader', ImageReader)
 app.component('MessageItem', MessageItem)
+app.component('MemberDialog', MemberDialog)
 app.component(ElCollapseTransition.name, ElCollapseTransition)
 app.component('FileMessage', FileMessage)
 app.use(router)

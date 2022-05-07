@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import type { FormRules } from 'element-plus'
-import analyzePerson from '../../../modules/utils/analyze-person'
+import analyzePerson from '../../../../modules/utils/analyze-person'
 export const AddMemberFormRule = {
   name: [
     { required: true, message: '姓名为必填项', trigger: 'blur ' },

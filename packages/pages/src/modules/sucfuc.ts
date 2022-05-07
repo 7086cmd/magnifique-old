@@ -1,8 +1,8 @@
-import { ElMessageBox } from 'element-plus'
+import { ElNotification } from 'element-plus'
 
 export default () => {
-  ElMessageBox.alert('操作成功', '成功', {
-    center: true,
+  ElNotification({
     type: 'success',
+    title: '操作成功',
   })
 }

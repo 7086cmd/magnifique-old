@@ -226,39 +226,35 @@ fetching()
 </script>
 <template>
   <div>
-    <el-skeleton :loading="isFetching" :rows="4" animated :throttle="500">
-      <template #default>
-        <el-card shadow="never">
-          <el-table :data="data" max-height="640px" :row-class-name="tableRowClassName">
-            <el-table-column type="expand">
-              <template #header>
-                <el-button type="text" :icon="Refresh" size="mini" @click="fetching()"></el-button>
+    <el-card v-loading="isFetching" shadow="never">
+      <el-table :data="data" max-height="640px" :row-class-name="tableRowClassName">
+        <el-table-column type="expand">
+          <template #header>
+            <el-button type="text" :icon="Refresh" size="mini" @click="fetching()"></el-button>
+          </template>
+          <template #default="proping">
+            <deduction-description :data="proping.row" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="person" label="违纪者" />
+        <el-table-column prop="deduction" label="扣分数" />
+        <el-table-column prop="reason" label="原因" />
+        <el-table-column prop="time" label="时间" />
+        <el-table-column align="right" fixed="right">
+          <template #header>
+            <el-button v-if="['admin', 'member_admin'].includes(props.type)" type="text" :icon="Box" size="mini" @click="isExporting = true"></el-button>
+            <el-button v-if="props.type === 'member'" type="text" :icon="CirclePlus" @click="newDeduction = true"></el-button>
+          </template>
+          <template #default="proping">
+            <el-popconfirm title="确定删除？" @confirm="deleteDeduction(proping)">
+              <template #reference>
+                <el-button v-if="['admin', 'member_admin', 'member'].includes(props.type)" type="text" :icon="DeleteFilled" size="small"></el-button>
               </template>
-              <template #default="proping">
-                <deduction-description :data="proping.row" />
-              </template>
-            </el-table-column>
-            <el-table-column prop="person" label="违纪者" />
-            <el-table-column prop="deduction" label="扣分数" />
-            <el-table-column prop="reason" label="原因" />
-            <el-table-column prop="time" label="时间" />
-            <el-table-column align="right" fixed="right">
-              <template #header>
-                <el-button v-if="['admin', 'member_admin'].includes(props.type)" type="text" :icon="Box" size="mini" @click="isExporting = true"></el-button>
-                <el-button v-if="props.type === 'member'" type="text" :icon="CirclePlus" @click="newDeduction = true"></el-button>
-              </template>
-              <template #default="proping">
-                <el-popconfirm title="确定删除？" @confirm="deleteDeduction(proping)">
-                  <template #reference>
-                    <el-button v-if="['admin', 'member_admin', 'member'].includes(props.type)" type="text" :icon="DeleteFilled" size="small" :disabled="proping.row.status === 'failed'"></el-button>
-                  </template>
-                </el-popconfirm>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-card>
-      </template>
-    </el-skeleton>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
 
     <el-dialog v-model="newDeduction" title="新建扣分" center width="60%">
       <el-form :model="deductionData" label-position="right">

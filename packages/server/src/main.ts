@@ -254,7 +254,7 @@ router.get('/api/class/:gradeid/:classid/login', async ctx => {
   ctx.response.type = 'json'
   ctx.response.body = loginClass(parseInt(gradeid), parseInt(classid), String(password))
 })
-router.get('/api/class/member')
+router.get('/api/class/member', API.Powers.Member.Class.Get)
 router.get('/api/class/deduction', async ctx => {
   const params = new URLSearchParams(ctx.querystring)
   const password = params.get('password') as string
@@ -373,6 +373,7 @@ router.get('/api/class/graph/:gradeid/:classid/:start/:end/:type/date', async ct
     }
   }
 })
+
 router.post('/api/class/member', API.Powers.Member.Class.Post)
 router.post('/api/class/edit/password', async ctx => {
   try {
@@ -900,132 +901,12 @@ router.post('/api/member/:id/volunteer/export', async ctx => {
 })
 
 // 纪检部可用API
-router.get('/api/member/admin/deduction', async ctx => {
-  try {
-    ctx.response.body = deductionActions.getAll()
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.delete('/api/member/admin/deduction', async ctx => {
-  try {
-    const { auth, data } = ctx.request.body as {
-      auth: { number: number; password: string }
-      data: { person: number; id: string }
-    }
-    const { number, password } = auth
-    const { id, person } = data
-    if (loginMember(Number(number), password).status == 'ok') {
-      if (memberActions.memberAdminLimitCheckPower(ctx.params.id, 'deduction')) {
-        ctx.response.body = deductionActions.deleteDeduction(Number(person), id)
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
+router.get('/api/member/admin/deduction', API.Powers.Deduction.MemberAdmin.Get)
+router.delete('/api/member/admin/deduction', API.Powers.Deduction.MemberAdmin.Delete)
 
-router.get('/api/member/deduction', async ctx => {
-  try {
-    const params = new URLSearchParams(ctx.querystring)
-    const number = Number(params.get('number') as string)
-    const password = params.get('password') as string
-    if (loginMember(Number(number), password).status == 'ok') {
-      ctx.response.body = deductionActions.getOwn(Number(number))
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.post('/api/member/deduction', async ctx => {
-  try {
-    const { auth, data } = ctx.request.body as {
-      auth: { number: number; password: string }
-      data: { content: deduction }
-    }
-    const { number, password } = auth
-    const { content } = data
-    if (loginMember(Number(number), password).status == 'ok') {
-      if (memberActions.memberDutyLimitCheckPower(String(number), 'deduction')) {
-        ctx.response.body = deductionActions.createDeduction(content)
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
-router.delete('/api/member/deduction', async ctx => {
-  try {
-    const { auth, data } = ctx.request.body as {
-      auth: { number: number; password: string }
-      data: { person: number; id: string }
-    }
-    const { number, password } = auth
-    const { id, person } = data
-    if (loginMember(Number(number), password).status == 'ok') {
-      if (memberActions.memberDutyLimitCheckPower(String(number), 'deduction')) {
-        ctx.response.body = deductionActions.deleteDeduction(person, id)
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
-    } else {
-      ctx.response.body = {
-        status: 'error',
-        reason: 'password-wrong',
-      }
-    }
-  } catch (e) {
-    ctx.response.body = {
-      status: 'error',
-      reason: 'type-error',
-      text: new Error(<string>e).message,
-    }
-  }
-})
+router.get('/api/member/deduction', API.Powers.Deduction.Member.Get)
+router.post('/api/member/deduction', API.Powers.Deduction.Member.Post)
+router.delete('/api/member/deduction', API.Powers.Deduction.Member.Delete)
 router.post('/api/member/admin/export/deduction/class', async ctx => {
   try {
     const { password, start, end, number } = ctx.request.body as {
@@ -1346,7 +1227,7 @@ router.get('/api/admin/login', async ctx => {
     }
   }
 })
-router.get('/api/admin/get/all/deduction', async ctx => {
+router.get('/api/admin/deduction', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
@@ -1365,7 +1246,7 @@ router.get('/api/admin/get/all/deduction', async ctx => {
     }
   }
 })
-router.get('/api/admin/get/all/post', async ctx => {
+router.get('/api/admin/post', async ctx => {
   try {
     const password = getPassword(ctx)
     if (loginAdmin(password).status == 'ok') {
@@ -1501,19 +1382,6 @@ router.delete('/api/admin/deduction', async ctx => {
     const { password } = ctx.request.body
     if (loginAdmin(password).status == 'ok') {
       ctx.response.body = deductionActions.deleteDeduction(parseInt(ctx.request.body.person), ctx.request.body.id)
-      io.emit('deduction', {
-        sendTo: [
-          'member/' + ctx.request.body.person,
-          createIndex({
-            ...utils.createPersonNumberAnalyzor(Number(ctx.request.body.person)),
-            type: 'class',
-          }),
-        ],
-        content: ctx.request.body.person + '的一个扣分被删除',
-        id: ctx.request.body.id,
-        type: 'deduction',
-        action: 'delete',
-      })
     } else {
       ctx.response.body = {
         status: 'error',

@@ -1,11 +1,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import NProgress from 'nprogress'
 import axios from 'axios'
 import baseurl from '../../modules/baseurl'
 import MemberDescription from '../../components/lists/MemberDescription.vue'
-
-NProgress.start()
 
 const { number } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
 const name = ref('')
@@ -27,7 +24,6 @@ axios(`${baseurl}member/getinfo/${number}/`).then(response => {
   violation.value = response.data.details.record.violation
   department.value = response.data.details.in
   whatdo.value = response.data.details.do
-  NProgress.done()
   let itv = setInterval(() => {
     score.value++
     if (score.value >= 80) {
@@ -44,7 +40,7 @@ axios(`${baseurl}member/getinfo/${number}/`).then(response => {
 })
 </script>
 <template>
-  <div>
+  <div v-loading="!loaded">
     <h3>仪表盘</h3>
     <el-divider>{{ whatdo }} {{ name }}</el-divider>
     <el-row :gutter="8">

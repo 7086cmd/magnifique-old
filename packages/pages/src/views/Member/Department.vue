@@ -26,13 +26,13 @@ watch(choice, () => {
 <template>
   <div>
     <el-tabs v-model="choice" tab-position="left">
-      <el-tab-pane label="义工" name="volunteer">
+      <el-tab-pane label="义工" name="volunteer" lazy>
         <volunteer-page />
       </el-tab-pane>
-      <el-tab-pane v-if="me.union.duty.includes('deduction') && me.union.position !== 'registry'" label="扣分" name="deduction">
+      <el-tab-pane v-if="me.union.duty.includes('deduction') && me.union.position !== 'registry'" lazy label="扣分" name="deduction">
         <deduction-page type="member" :number="number" :password="password" />
       </el-tab-pane>
-      <el-tab-pane label="投稿" name="post">
+      <el-tab-pane label="投稿" name="post" lazy>
         <post-page type="member" :number="number" :password="password" />
       </el-tab-pane>
     </el-tabs>
