@@ -29,7 +29,7 @@ watch(choice, () => {
       <el-tab-pane label="义工" name="volunteer" lazy>
         <volunteer-page />
       </el-tab-pane>
-      <el-tab-pane v-if="me.union.duty.includes('deduction') && me.union.position !== 'registry'" lazy label="扣分" name="deduction">
+      <el-tab-pane v-if="me.union.duty.includes('deduction') && me.union.position !== 'register'" lazy label="扣分" name="deduction">
         <deduction-page type="member" :number="number" :password="password" />
       </el-tab-pane>
       <el-tab-pane label="投稿" name="post" lazy>

@@ -6,10 +6,6 @@ import { useI18n } from 'vue-i18n'
 import generateName from './generate-name'
 import resetPassword from './reset-password'
 import { useRouter } from 'vue-router'
-import baseurl from '../modules/baseurl'
-import axios from 'axios'
-import failfuc from '../modules/failfuc'
-import sucfuc from '../modules/sucfuc'
 import { hideWindow, minWindow, maxWindow } from '../tauri'
 
 const router = useRouter()
@@ -21,9 +17,7 @@ const props = defineProps({
   gradeid: Number,
   classid: Number,
 })
-let feedbackdialogOpen = ref(false)
 let isSubmitingPassword = ref(false)
-let isSubmitingFeedBack = ref(false)
 
 let reset_password = ref(false)
 let newpwd = reactive({
@@ -39,16 +33,6 @@ let name = ref('')
 ;(async () => {
   name.value = String(await generateName(type, numb, classid, gradeid))
 })()
-let feedbackin = reactive({
-  title: '',
-  description: '',
-  from: String(type?.value),
-  more: {
-    class: classid?.value,
-    grade: gradeid?.value,
-    number: numb?.value,
-  },
-})
 const npd = () => {
   isSubmitingPassword.value = true
   resetPassword(
@@ -63,22 +47,6 @@ const npd = () => {
     router
   )
   isSubmitingPassword.value = false
-}
-const fbsub = async () => {
-  isSubmitingFeedBack.value = true
-  const response = await axios(`${baseurl}feed/back`, {
-    method: 'post',
-    data: feedbackin,
-  })
-  feedbackin.title = ''
-  feedbackin.description = ''
-  feedbackdialogOpen.value = false
-  isSubmitingFeedBack.value = false
-  if (response.data.status == 'ok') {
-    sucfuc()
-  } else {
-    failfuc(response.data.reason, response.data.text)
-  }
 }
 const exit = () => {
   if (type?.value !== undefined) {
@@ -124,12 +92,6 @@ const openPassword = () => {
         {{ name }}
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item @click="feedbackdialogOpen = true">
-              <el-icon>
-                <MessageBox />
-              </el-icon>
-              {{ t('class-dropdown.feed-back') }}
-            </el-dropdown-item>
             <el-dropdown-item @click="openPassword">
               <el-icon>
                 <Edit />
@@ -164,21 +126,6 @@ const openPassword = () => {
         <el-form-item>
           <el-button plain @click="reset_password = false"> 取消 </el-button>
           <el-button type="primary" plain :loading="isSubmitingPassword" @click="npd"> 确定 </el-button>
-        </el-form-item>
-      </el-form>
-    </el-drawer>
-
-    <el-drawer v-model="feedbackdialogOpen" title="问题反馈" direction="ltr" size="40%" style="text-align: center">
-      <el-form v-model="feedbackin">
-        <el-form-item label="反馈标题">
-          <el-input v-model="feedbackin.title" />
-        </el-form-item>
-        <el-form-item label="反馈内容">
-          <el-input v-model="feedbackin.description" type="textarea" :autosize="{ minRows: 6, maxRows: 10 }" />
-        </el-form-item>
-        <el-form-item>
-          <el-button plain @click="feedbackdialogOpen = false">取消</el-button>
-          <el-button type="primary" plain :loading="isSubmitingFeedBack" @click="fbsub">确定</el-button>
         </el-form-item>
       </el-form>
     </el-drawer>

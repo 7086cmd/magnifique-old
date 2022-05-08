@@ -1,3 +1,4 @@
+import { PatchRules } from './member_datas/map'
 import axios from 'axios'
 import baseurl from '../../../modules/baseurl'
 
@@ -58,6 +59,23 @@ export class MemberClient {
         },
       },
       method: 'post',
+    })
+  }
+  /**
+   * Edit a member's position and department
+   * @param {number} number the number of the member
+   * @async
+   */
+  async put(number: number, content: PatchRules) {
+    return await axios(this.api, {
+      data: {
+        auth: this.loginInfo,
+        data: {
+          person: number,
+          patch: content.to_str(),
+        },
+      },
+      method: 'put',
     })
   }
   /**

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /* global member, defineProps */
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, h } from 'vue'
 import axios from 'axios'
 import { Refresh, Plus, Pointer, Delete, Close } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
@@ -12,12 +12,37 @@ import failfuc from '../../../modules/failfuc'
 import positions from './positions'
 import type { FormInstance } from 'element-plus'
 import { AddMemberFormRule } from './member_datas/rules'
-import { createEditionMap } from './member_datas/map'
+import { PatchRules, Notificator } from './member_datas/map'
 import { MemberClient, MemberListClientForClass } from './clients'
 
 const route = useRoute()
 const router = useRouter()
 
+async function createEditionMap(before: Node, after: Node): PatchRules | undefined {
+  if (Number.isInteger(Number(after.parent.data.value))) {
+    Notificator(h('span', null, ['非法操作。']), 'error')
+  } else if (after.parent.data.value.includes('_')) {
+    const info = after.parent.data.value
+    const [department, position] = info.split('_')
+    const patch = new PatchRules({
+      number: Number(before.data.value),
+      position,
+      department,
+    })
+    await client?.put(patch.to_obj().number, patch)
+    return patch
+  } else if (after.data.value.includes('_')) {
+    const info = after.data.value
+    const [department, position] = info.split('_')
+    const patch = new PatchRules({
+      number: Number(before.data.value),
+      position,
+      department,
+    })
+    await client?.put(patch.to_obj().number, patch)
+    return patch
+  }
+}
 const form = ref<FormInstance>()
 const props = defineProps<{ type: 'member_admin' | 'admin' | 'class'; number?: number; classid?: number; gradeid?: number; password: string }>()
 const current = props.type === 'class' ? '/class/list' : props.type === 'admin' ? '/admin/data' : '/member/admin'
@@ -26,6 +51,10 @@ let isRegistingMember = ref(route.params.status === 'register')
 const isFetchComplete = ref(false)
 let isSubmiting = ref(false)
 const information: member = reactive(personExample())
+information.number = Number(route.query.number) ?? 0
+information.union.department = route.query.department ?? ''
+information.union.position = route.query.position ?? ''
+information.name = route.query.name ?? ''
 const departments = ref<
   {
     name: string
@@ -171,7 +200,7 @@ watch(isRegistingMember, () => {
 </script>
 
 <template>
-  <div @click="delay">
+  <div>
     <el-card>
       <template #default>
         <el-tooltip content="刷新内容" placement="bottom" effect="light">
@@ -211,7 +240,7 @@ watch(isRegistingMember, () => {
         </el-collapse-transition>
 
         <el-collapse-transition>
-          <el-tree v-if="!isRegistingMember" v-loading="!isFetchComplete" element-loading-text="获取成员信息中……" :data="table" draggable @node-drop="createEditionMap">
+          <el-tree v-if="!isRegistingMember" v-loading="!isFetchComplete" :data="table" :draggable="!positionCannotEdit" @node-drop="createEditionMap">
             <template #default="{ node }">
               <el-row v-if="Number.isInteger(Number(node.data.value))">
                 <el-col :span="14"><member-dialog :number="Number(node.data.value)"></member-dialog></el-col>
@@ -230,7 +259,7 @@ watch(isRegistingMember, () => {
                   </el-popconfirm>
                 </el-col>
               </el-row>
-              <el-link v-else :underline="false" type="default" @click="openDialog(node.data.value)">{{ node.label }}</el-link>
+              <el-link v-else :underline="false" :type="node.data.value === 'not' ? 'error' : 'default'" @click="openDialog(node.data.value)">{{ node.label }}</el-link>
             </template>
           </el-tree>
         </el-collapse-transition>

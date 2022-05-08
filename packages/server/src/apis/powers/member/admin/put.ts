@@ -7,11 +7,11 @@ type Context = Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext & K
 export default async (ctx: Context) => {
   // Edit Info
   try {
-    const { auth, data } = ctx.request.body as { auth: { password: string }; data: { position: member['union']['position']; member: number } }
+    const { auth, data } = ctx.request.body as { auth: { password: string }; data: { patch: string; person: number } }
     const { password } = auth
-    const { member, position } = data
+    const { person, patch } = data
     if (loginAdmin(password).status == 'ok') {
-      ctx.response.body = editPosition(Number(member), position as 'clerk' | 'vice-minister')
+      ctx.response.body = editPosition(Number(person), patch)
     } else {
       ctx.response.body = {
         status: 'error',

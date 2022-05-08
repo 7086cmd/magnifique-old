@@ -14,7 +14,6 @@ import MemberDepartment from '../views/Member/Department.vue'
 import MemberAdminHome from '../views/Member/admin/Home.vue'
 import AdminHome from '../views/Admin/Home.vue'
 import AdminData from '../views/Admin/Data.vue'
-import AdminMember from '../views/Admin/Member.vue'
 import AdminMessage from '../views/Admin/Message.vue'
 import Server from '../views/Server.vue'
 import MessagesHome from '../views/Messages/Index.vue'
@@ -201,10 +200,6 @@ const routes: Array<RouteRecordRaw> = [
             component: AdminData,
           },
         ],
-      },
-      {
-        path: '/admin/member',
-        component: AdminMember,
       },
       {
         path: '/admin/message/:status?',

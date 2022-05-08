@@ -4,6 +4,9 @@ import { toRefs, ref } from 'vue'
 import axios from 'axios'
 import baseurl from '../../modules/baseurl'
 import Desc from './MemberDescription.vue'
+import { useRouter } from 'vue-router'
+import { ElNotification } from 'element-plus'
+const router = useRouter()
 const props = defineProps<{ number: number; useTag: boolean }>()
 const fetched = ref(false)
 const { number, useTag } = toRefs(props)
@@ -17,6 +20,18 @@ axios(baseurl + 'member/getinfo/' + (number?.value as number)).then(response => 
   } else isOk.value = false
   fetched.value = true
 })
+
+const gotoReg = () => {
+  openIt.value = false
+  const params = new URLSearchParams()
+  params.set('number', number.value)
+  router.push('/class/list/member/register/?' + params.toString())
+  ElNotification({
+    title: '已在成员界面为您引导到注册。',
+    message: '请手动前往班级"成员"页面。',
+    type: 'info',
+  })
+}
 </script>
 <template>
   <div>
@@ -38,12 +53,12 @@ axios(baseurl + 'member/getinfo/' + (number?.value as number)).then(response => 
     <teleport to="body">
       <el-dialog v-model="openIt" :title="info ? info.name : number" width="60%" :modal="false" draggable>
         <div>
-          <el-card shadow="never">
-            <template #default>
-              <Desc v-if="fetched && isOk" :data="info"></Desc>
-              <el-result v-else-if="fetched && !isOk" icon="error" title="不存在此人" sub-title="“村中闻有此人，咸来问讯。”"></el-result>
+          <Desc v-if="fetched && isOk" :data="info"></Desc>
+          <el-result v-else-if="fetched && !isOk" icon="error" title="不存在此人" sub-title="村中闻有此人，咸来问讯。">
+            <template #extra>
+              <el-button type="danger" plain @click="gotoReg">去注册</el-button>
             </template>
-          </el-card>
+          </el-result>
         </div>
       </el-dialog>
     </teleport>

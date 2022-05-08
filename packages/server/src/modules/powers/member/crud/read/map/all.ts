@@ -90,7 +90,25 @@ const asDepartmentWithPosition = () => {
           label: personInfo?.name as string,
         })
     })
-    result.filter(item => item.value === departmentItem.value)[0].children = result.filter(item => item.value === departmentItem.value)[0].children?.filter(item => item.children?.length !== 0)
+    result.filter(item => item.value === departmentItem.value)[0].children = result
+      .filter(item => item.value === departmentItem.value)[0]
+      .children?.map(item => {
+        if (item.children?.length === 0) {
+          item.children = []
+          item.children[0] = {
+            label: '不存在',
+            value: 'not',
+          }
+        }
+        return item
+      })
+      .filter(item => {
+        if (departmentItem.value === 'core') {
+          return item.value.includes('chairman') || (item.value.includes('minister') && !item.value.includes('vice-minister'))
+        } else {
+          return item.value.includes('register') || item.value.includes('clerk') || item.value.includes('minister')
+        }
+      })
   })
   return result
 }
