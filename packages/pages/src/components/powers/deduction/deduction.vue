@@ -220,6 +220,7 @@ const deleteDeduction = (prop: { row: DeductionList }) => {
       } else {
         failfuc(response.reason, response.text)
       }
+      fetching()
     })
 }
 fetching()

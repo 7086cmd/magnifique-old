@@ -3,7 +3,6 @@
 import { ref, toRefs, watch, h } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { MessageClient } from '../../components/messages/modules/main'
-import NProgress from 'nprogress'
 // import dayjs from 'dayjs'
 import { ElMessageBox, ElNotification } from 'element-plus'
 import type { ElScrollbar, ElInput } from 'element-plus'
@@ -41,16 +40,18 @@ const items = ref<
     className: string
   }[]
 >([])
+
+const load = ref(true)
 const msgs = ref<(MessageItem & { editing: boolean })[]>([])
 
 const refresh = async () => {
-  NProgress.start()
+  load.value = true
   const rangers = ['Down', 'Up', 'Left', 'Right']
   items.value = (await client.getLatestRooms()).map((x: Record<string, unknown>) => {
     x.className = 'animate__animated animate__fadeIn' + rangers[Math.round(Math.random() * 4)]
     return x
   })
-  NProgress.done()
+  load.value = false
 }
 
 let isShown = ref(false)
@@ -76,11 +77,11 @@ let memberIngroup = ref<string[]>([])
 
 const getRoomMsg = async (roomId: string) => {
   createMsgData.value = ''
-  NProgress.start()
+  load.value = true
   msgs.value = await client.getRoomMessages(roomId)
   roomData.value = items.value.filter(x => x.id === roomId)[0]
   memberIngroup.value = roomData.value.members.map(x => x.id)
-  NProgress.done(true)
+  load.value = false
   isShown.value = true
   setTimeout(() => messageContent.value?.setScrollTop(2160), 100)
 }
@@ -96,7 +97,7 @@ let searcher = ref('')
 
 const emit = async () => {
   const roomId = roomData.value.id
-  NProgress.start()
+  load.value = true
   const status: Record<string, boolean> = {}
   items.value.filter(x => x.id === roomId)[0].members.forEach(x => (status[x.id] = false))
   status[username.value] = true
@@ -105,17 +106,17 @@ const emit = async () => {
     failfuc(result.reason, result.text)
   }
   getRoomMsg(roomId)
-  NProgress.done()
+  load.value = false
 }
 
 const deleteMessage = async (msgId: string) => {
-  NProgress.start()
+  load.value = true
   const result = await client.deleteMessage(roomData.value.id, msgId)
   if (result.status !== 'ok') {
     failfuc(result.reason, result.text)
   }
   getRoomMsg(roomData.value.id)
-  NProgress.done()
+  load.value = false
 }
 
 let editContent = ref('')
@@ -127,7 +128,7 @@ const startEdit = (messageId: string) => {
 
 const createEdition = async (messageId: string) => {
   const roomId = roomData.value.id
-  NProgress.start()
+  load.value = true
 
   msgs.value.filter(x => x.id === messageId)[0].editing = false
   const result = await client.updateMessage(roomId, messageId, editContent.value)
@@ -135,7 +136,7 @@ const createEdition = async (messageId: string) => {
     failfuc(result.reason, result.text)
   }
   getRoomMsg(roomId)
-  NProgress.done()
+  load.value = false
 }
 
 interface option {
@@ -180,14 +181,14 @@ const roomc = ref({
 })
 
 const createRoom = async () => {
-  NProgress.start()
+  load.value = true
   roomc.value.users.push(username.value)
   roomc.value.users = uniq(roomc.value.users)
   const id = (await client.createRoom(roomc.value)) as string
   await refresh()
   getRoomMsg(id)
   isOpenCreateWindow.value = false
-  NProgress.done()
+  load.value = false
 }
 
 if (route.params.status === 'create') {
@@ -209,7 +210,7 @@ const subscribor = ref<MessageRoomSubscribor>()
 
 watch(isShown, async () => {
   if (isShown.value === false) {
-    NProgress.start()
+    load.value = true
     subscribor.value?.unsubscribe()
     items.value = await client.getLatestRooms()
     if (username.value === 'admin') {
@@ -217,7 +218,7 @@ watch(isShown, async () => {
     } else {
       router.push(`/${username.value.split('/')[0]}/message`)
     }
-    NProgress.done()
+    load.value = false
   } else if (isShown.value === true) {
     subscribor.value = new MessageRoomSubscribor({
       account: username.value,
@@ -244,12 +245,12 @@ const deleteGroup = async (roomId?: string) => {
     roundButton: true,
     inputValidator: val => (window.btoa(val) !== password.value ? '密码错误' : true),
   }).then(async () => {
-    NProgress.start()
+    load.value = true
     await client.deleteRoom(roomId ?? roomData.value.id)
     editingTitle.value = false
     isShown.value = false
     await refresh()
-    NProgress.done()
+    load.value = false
   })
 }
 
@@ -332,7 +333,7 @@ const handleUploadImage = async (_evt: Event, insertImage: (param: { desc: strin
 </script>
 
 <template>
-  <div @click="showIt = false" @contextmenu.prevent>
+  <div v-loading="load" @click="showIt = false" @contextmenu.prevent>
     <el-input ref="inputRef" v-model="searcher" size="large" placeholder="输入以检索" :prefix-icon="Search"></el-input>
     <el-divider />
     <div>
@@ -368,7 +369,7 @@ const handleUploadImage = async (_evt: Event, insertImage: (param: { desc: strin
         <el-empty description="可是你还没有参与或者匹配到搜索的聊天组诶" />
       </div>
     </el-scrollbar>
-    <el-dialog v-model="editingTitle" direction="ltr" size="25%" :title="'成员管理 | ' + roomData.title" center>
+    <el-dialog v-model="editingTitle" v-loading="load" direction="ltr" size="25%" :title="'成员管理 | ' + roomData.title" center>
       <el-tree-select v-model="memberIngroup" :data="fullList" style="width: 100%" multiple filterable />
       <el-divider />
       <div style="text-align: center">
@@ -376,8 +377,8 @@ const handleUploadImage = async (_evt: Event, insertImage: (param: { desc: strin
         <el-button round type="primary">确定</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-model="isOpenCreateWindow" title="新建聊天组" center>
-      <el-form v-loading="isFetchingFullListOrCreatingRoom" :model="roomc">
+    <el-dialog v-model="isOpenCreateWindow" v-loading="load || isFetchingFullListOrCreatingRoom" title="新建聊天组" center>
+      <el-form :model="roomc">
         <el-form-item label="成员">
           <el-tree-select v-model="roomc.users" show-checkbox :data="fullList" style="width: 100%" multiple filterable />
         </el-form-item>
@@ -387,7 +388,7 @@ const handleUploadImage = async (_evt: Event, insertImage: (param: { desc: strin
         <el-button round type="primary" @click="createRoom">确定</el-button>
       </el-form>
     </el-dialog>
-    <el-drawer v-model="isShown" direction="btt" size="100%" :show-close="false">
+    <el-drawer v-model="isShown" v-loading="load" direction="btt" size="100%" :show-close="false">
       <template #title>
         <el-page-header v-menus:right="groupMenus" :icon="ArrowLeft" @back="isShown = false">
           <template #content>
@@ -397,7 +398,7 @@ const handleUploadImage = async (_evt: Event, insertImage: (param: { desc: strin
           <template #title> <sub style="font-size: 14px">返回</sub> </template>
         </el-page-header>
       </template>
-      <el-scrollbar ref="messageContent" min-height="480px" style="height: 60%">
+      <el-scrollbar ref="messageContent" v-loading="load" min-height="480px" style="height: 60%">
         <div v-for="msg in msgs" :key="msg.id" className="animate__animated animate__slideInDown">
           <div v-if="msg.content.length > 1000 && msg.type !== 'file'" @mouseover="useId = msg.id">
             <el-card v-menus="blockMessageMenus" shadow="never">
@@ -453,11 +454,11 @@ const handleUploadImage = async (_evt: Event, insertImage: (param: { desc: strin
           <el-button circle type="danger" plain :icon="Close" @click="isShown = false" />
         </el-tooltip>
         <el-tooltip content="发送消息" placement="top" effect="light">
-          <el-button circle type="success" plain :disabled="createMsgData.length === 0" :icon="ArrowRight" @click="emit" />
+          <el-button circle type="success" plain :loading="load" :disabled="createMsgData.length === 0" :icon="ArrowRight" @click="emit" />
         </el-tooltip>
       </div>
     </el-drawer>
-    <el-dialog v-model="isUploading" center title="上传文件">
+    <el-dialog v-model="isUploading" v-loading="load" center title="上传文件">
       <el-upload class="upload-demo" drag :action="client.fileCenter.uploadDesc" multiple method="put" :data="uploadData" :on-success="uploadSuccess" style="text-align: center">
         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
         <div className="el-upload__text">将文件拖拽到这里或者<em>点击此处</em></div>
