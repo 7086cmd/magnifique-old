@@ -1,13 +1,11 @@
 name: Build App
 
 on:
-  release:
-    branches: [main]
-  workflow_dispatch:
+  dorkflow_dispatch:
     branches: [main]
 
 jobs:
-  Windows-Build:
+  windows:
     runs-on: [windows-latest]
 
     strategy:
