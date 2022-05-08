@@ -1,7 +1,7 @@
 name: Build App
 
 on:
-  dorkflow_dispatch:
+  workflow_dispatch:
     branches: [main]
 
 jobs:
