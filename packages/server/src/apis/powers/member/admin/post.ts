@@ -5,7 +5,6 @@ import { createMember } from 'packages/server/src/modules/powers/member'
 type Context = Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext & KoaRouter.RouterParamContext<Koa.DefaultState, Koa.DefaultContext>>
 export default async (ctx: Context) => {
   try {
-    console.log(ctx.request.body)
     const { auth, data } = ctx.request.body as { auth: { password: string }; data: { member: member } }
     const { password } = auth
     const { member } = data

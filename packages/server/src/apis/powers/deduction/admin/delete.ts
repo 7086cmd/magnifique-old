@@ -1,25 +1,17 @@
 import { RouterContext } from '@koa/router'
-import loginMember from 'packages/server/src/modules/member/login-member'
+import loginAdmin from 'packages/server/src/modules/admin/login-admin'
 import { deleteDeduction } from 'packages/server/src/modules/powers/deduction'
-import { memberAdminLimitCheckPower } from 'packages/server/src/modules/powers/member'
 
 export default async (ctx: RouterContext) => {
   try {
     const { auth, data } = ctx.request.body as {
-      auth: { number: number; password: string }
+      auth: { password: string }
       data: { person: number; id: string }
     }
-    const { number, password } = auth
+    const { password } = auth
     const { id, person } = data
-    if (loginMember(Number(number), password).status == 'ok') {
-      if (memberAdminLimitCheckPower(number, 'deduction')) {
-        ctx.response.body = deleteDeduction(person, id)
-      } else {
-        ctx.response.body = {
-          status: 'error',
-          reason: 'no-auth',
-        }
-      }
+    if (loginAdmin(password).status == 'ok') {
+      ctx.response.body = deleteDeduction(person, id)
     } else {
       ctx.response.body = {
         status: 'error',
