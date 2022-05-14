@@ -1,2 +1,4 @@
-import './import-style'
-export * from './plugins'
+/** @format */
+
+import "./import-style";
+export * from "./plugins";

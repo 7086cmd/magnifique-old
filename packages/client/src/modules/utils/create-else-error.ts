@@ -1,11 +1,13 @@
+/** @format */
+
 export default (
   error: string
 ): {
-  status: 'error'
-  reason: string
+  status: "error";
+  reason: string;
 } => {
   return {
-    status: 'error',
+    status: "error",
     reason: error,
-  }
-}
+  };
+};

@@ -1,1 +1,3 @@
-export * from './create-text'
+/** @format */
+
+export * from "./create-text";

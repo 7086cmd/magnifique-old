@@ -1,25 +1,27 @@
-declare type point = { x: number; y: number }
+/** @format */
+
+declare type point = { x: number; y: number };
 declare type mirror = {
-  focal: number
-  radius: number
-  type: 'concave' | 'flat' | 'convex'
-  focus: point[]
-}
+  focal: number;
+  radius: number;
+  type: "concave" | "flat" | "convex";
+  focus: point[];
+};
 
 declare interface linear {
-  k: number
-  b: number
+  k: number;
+  b: number;
 }
 
 declare interface parabola {
-  a: number
-  b: number
-  c: number
+  a: number;
+  b: number;
+  c: number;
 }
 
 declare interface picture {
-  point: point
-  virtual: boolean
+  point: point;
+  virtual: boolean;
 }
 
-export { point, mirror, linear, parabola, picture }
+export { point, mirror, linear, parabola, picture };

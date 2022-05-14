@@ -1,37 +1,41 @@
-import axios from 'axios'
-import toPort from '../../../modules/to-port'
-import post from '../../../../examples/post'
-import { createPostConfig } from './config'
-import { PostFetch } from './env'
-import baseurl from '../../../modules/baseurl'
-import failfuc from '../../../modules/failfuc'
+/** @format */
+
+import axios from "axios";
+import toPort from "../../../modules/to-port";
+import post from "../../../../examples/post";
+import { createPostConfig } from "./config";
+import { PostFetch } from "./env";
+import baseurl from "../../../modules/baseurl";
+import failfuc from "../../../modules/failfuc";
 
 class PostFetcher {
-  options: PostFetch.postFetcherConfig
+  options: PostFetch.postFetcherConfig;
 
-  postExample: PostList
+  postExample: PostList;
 
-  uploader: string
+  uploader: string;
 
   constructor(option: fetcherOptions) {
-    this.options = createPostConfig(option)
-    this.postExample = post()
-    this.uploader = ''
-    if (option.type === 'member') {
-      this.postExample.person = Number(option.number)
-      this.uploader = this.options.url as string
+    this.options = createPostConfig(option);
+    this.postExample = post();
+    this.uploader = "";
+    if (option.type === "member") {
+      this.postExample.person = Number(option.number);
+      this.uploader = this.options.url as string;
     }
   }
 
   get = async () => {
-    return (await axios(this.options.url, { params: this.options.standardConfig })).data
-  }
+    return (
+      await axios(this.options.url, { params: this.options.standardConfig })
+    ).data;
+  };
 
   delete = async (postDeleteData: { id: string; uploaderID: number }) => {
     if (this.options.deleter) {
       return (
         await axios(this.options.url, {
-          method: 'delete',
+          method: "delete",
           data: {
             auth: this.options.standardConfig,
             data: {
@@ -40,40 +44,44 @@ class PostFetcher {
             },
           },
         })
-      ).data
+      ).data;
     } else
       return {
-        status: 'error',
-        reason: 'no-auth',
-      }
-  }
+        status: "error",
+        reason: "no-auth",
+      };
+  };
 
   download = async (postDownloadData: { id: string; uploaderID: number }) => {
     if (this.options.downloader) {
       const response = (
-        await axios(this.options.url + '/document', {
-          method: 'post',
+        await axios(this.options.url + "/document", {
+          method: "post",
           data: {
             password: this.options.standardConfig.password,
             id: postDownloadData.id,
             person: postDownloadData.uploaderID,
           },
         })
-      ).data
+      ).data;
 
-      if (response.status === 'ok') {
-        window.open(toPort(`${baseurl}member/post/download/${response.details.token}/${response.details.token}.docx`))
+      if (response.status === "ok") {
+        window.open(
+          toPort(
+            `${baseurl}member/post/download/${response.details.token}/${response.details.token}.docx`
+          )
+        );
       } else {
-        failfuc(response.reason, response.text)
+        failfuc(response.reason, response.text);
       }
-    } else failfuc('no-auth', '')
-  }
+    } else failfuc("no-auth", "");
+  };
 
   create = async (postCreatement: PostList) => {
-    if (this.options.creater && this.options.standardConfig.type === 'member') {
+    if (this.options.creater && this.options.standardConfig.type === "member") {
       return (
         await axios(this.options.url, {
-          method: 'post',
+          method: "post",
           data: {
             auth: this.options.standardConfig,
             data: {
@@ -86,13 +94,13 @@ class PostFetcher {
             },
           },
         })
-      ).data
+      ).data;
     } else
       return {
-        status: 'error',
-        reason: 'no-auth',
-      }
-  }
+        status: "error",
+        reason: "no-auth",
+      };
+  };
 }
 
-export { PostFetcher }
+export { PostFetcher };

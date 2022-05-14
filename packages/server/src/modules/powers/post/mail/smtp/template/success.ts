@@ -1,14 +1,19 @@
-import { getSingleMemberAsRaw } from '../../../../member'
+/** @format */
 
-const createSMTPSuccessContent = (mailer: string, conf: { from: string; number: number }) => {
-  const person = getSingleMemberAsRaw(conf.number)
-  let grate = 'Hello, '
-  if (person.status === 'ok') {
-    grate += person.details?.name
+import { getSingleMemberAsRaw } from "../../../../member";
+
+const createSMTPSuccessContent = (
+  mailer: string,
+  conf: { from: string; number: number }
+) => {
+  const person = getSingleMemberAsRaw(conf.number);
+  let grate = "Hello, ";
+  if (person.status === "ok") {
+    grate += person.details?.name;
   } else {
-    grate += String(conf.number) + '同学'
+    grate += String(conf.number) + "同学";
   }
-  grate += '，您的来稿已收到'
+  grate += "，您的来稿已收到";
 
   const options = {
     from: `"Study Department" <${mailer}>`,
@@ -16,9 +21,9 @@ const createSMTPSuccessContent = (mailer: string, conf: { from: string; number: 
     subject: grate,
     text: grate,
     html: grate,
-  }
-  return options
+  };
+  return options;
   // SMTPTransport
-}
+};
 
-export { createSMTPSuccessContent }
+export { createSMTPSuccessContent };

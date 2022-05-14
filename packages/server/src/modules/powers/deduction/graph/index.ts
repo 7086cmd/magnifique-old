@@ -1,5 +1,7 @@
-import graphAsDate from './date'
-import graphAsPerson from './person'
-import graphAsReason from './reason'
+/** @format */
 
-export { graphAsDate, graphAsReason, graphAsPerson }
+import graphAsDate from "./date";
+import graphAsPerson from "./person";
+import graphAsReason from "./reason";
+
+export { graphAsDate, graphAsReason, graphAsPerson };

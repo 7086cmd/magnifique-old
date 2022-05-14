@@ -1,10 +1,14 @@
+<!-- @format -->
+
 <script setup lang="ts">
-import { ref } from 'vue'
-import MessageIndex from '../Messages/Index.vue'
+import { ref } from "vue";
+import MessageIndex from "../Messages/Index.vue";
 
-const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
+const { password } = JSON.parse(
+  window.atob(String(localStorage.getItem("adminLoginInfo")))
+);
 
-const id = ref('admin')
+const id = ref("admin");
 </script>
 
 <template>

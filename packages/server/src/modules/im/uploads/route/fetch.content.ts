@@ -1,4 +1,6 @@
-import { fileIndexDataExplorer } from './create'
+/** @format */
+
+import { fileIndexDataExplorer } from "./create";
 export const createUploadedFileItemReader = (id: string) => {
-  return fileIndexDataExplorer.open().details[id]
-}
+  return fileIndexDataExplorer.open().details[id];
+};

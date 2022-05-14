@@ -1,4 +1,6 @@
-import singleProcess from './process'
-import multiProcess from './process-list'
+/** @format */
 
-export { singleProcess, multiProcess }
+import singleProcess from "./process";
+import multiProcess from "./process-list";
+
+export { singleProcess, multiProcess };

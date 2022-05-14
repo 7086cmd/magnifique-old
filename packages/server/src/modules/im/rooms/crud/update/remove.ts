@@ -1,1 +1,3 @@
-export * from '../delete/delete'
+/** @format */
+
+export * from "../delete/delete";

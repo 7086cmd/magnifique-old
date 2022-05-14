@@ -1,18 +1,20 @@
-import { mirror, point } from '../../../typings'
+/** @format */
+
+import { mirror, point } from "../../../typings";
 
 export function createSphericalMirror(focal: number, radius: number): mirror {
   let result = {
     focal,
     radius,
-    type: '',
+    type: "",
     focus: [] as point[],
-  }
+  };
   if (focal < radius) {
-    result.type = 'convex'
+    result.type = "convex";
   } else if (focal > radius) {
-    result.type = 'concave'
+    result.type = "concave";
   } else {
-    result.type = 'flat'
+    result.type = "flat";
   }
   result.focus = [
     {
@@ -23,6 +25,6 @@ export function createSphericalMirror(focal: number, radius: number): mirror {
       x: focal,
       y: 0,
     } as point,
-  ]
-  return result as mirror
+  ];
+  return result as mirror;
 }

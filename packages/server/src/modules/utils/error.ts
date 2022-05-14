@@ -1,6 +1,8 @@
+/** @format */
+
 export default (err: string) => {
   return {
-    status: 'error',
+    status: "error",
     reason: err,
-  }
-}
+  };
+};

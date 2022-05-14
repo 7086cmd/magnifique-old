@@ -1,3 +1,4 @@
+# @format
 ---
 env:
   es2021: true
@@ -13,13 +14,13 @@ extends:
   - plugin:css/recommended
 parser: vue-eslint-parser
 parserOptions:
-  parser: '@typescript-eslint/parser'
+  parser: "@typescript-eslint/parser"
   ecmaVersion: latest
   sourceType: module
   ecmaFeatures:
     jsx: true
 plugins:
-  - '@typescript-eslint'
+  - "@typescript-eslint"
   - prettier
   - vue
   - css
@@ -28,22 +29,22 @@ rules:
   no-console: 2
   prettier/prettier:
     - error
-    - arrowParens: avoid
+    - arrowParens: "always"
       bracketSameLine: false
       bracketSpacing: true
       embeddedLanguageFormatting: auto
       htmlWhitespaceSensitivity: css
-      insertPragma: false
+      insertPragma: true
       jsxSingleQuote: true
       proseWrap: preserve
       quoteProps: as-needed
       requirePragma: false
-      semi: false
-      singleQuote: true
+      semi: true
+      singleQuote: false
       tabWidth: 2
       trailingComma: es5
       useTabs: false
-      printWidth: 200
+      printWidth: 80
     - usePrettierrc: true
   prefer-const: 0
   vue/html-indent: 0

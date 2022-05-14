@@ -1,5 +1,7 @@
-import { ElNotification } from 'element-plus'
-import { VNode } from 'vue'
+/** @format */
+
+import { ElNotification } from "element-plus";
+import { VNode } from "vue";
 
 /**
  * @interface PatchRuleDefine
@@ -9,9 +11,15 @@ import { VNode } from 'vue'
  * @argument {string} department the current department.
  */
 interface PatchRuleDefine {
-  number: number
-  position: 'register' | 'clerk' | 'vice-minister' | 'minister' | 'vice-chairman' | 'chairman'
-  department: string
+  number: number;
+  position:
+    | "register"
+    | "clerk"
+    | "vice-minister"
+    | "minister"
+    | "vice-chairman"
+    | "chairman";
+  department: string;
 }
 /**
  * @class PatchRules
@@ -28,37 +36,43 @@ export class PatchRules {
    * @private
    * @description the member number who is edited.
    */
-  private number: number
+  private number: number;
   /**
    * @argument {'register' | 'clerk' | 'vice-minister' | 'minister' | 'vice-chairman' | 'chairman'} position
    * @private
    * @description the current position after edit.
    */
-  private position: 'register' | 'clerk' | 'vice-minister' | 'minister' | 'vice-chairman' | 'chairman'
+  private position:
+    | "register"
+    | "clerk"
+    | "vice-minister"
+    | "minister"
+    | "vice-chairman"
+    | "chairman";
   /**
    * @argument {string} department
    * @private
    * @description the current department after edit.
    */
-  private department: string
+  private department: string;
   /**
    * @constructor
    * @param {PatchRuleDefine} rule the rule for generate a patch
    */
   constructor(rule: PatchRuleDefine) {
-    this.number = rule.number
-    this.position = rule.position
-    this.department = rule.department
+    this.number = rule.number;
+    this.position = rule.position;
+    this.department = rule.department;
   }
   to_str() {
-    return `patch | ${this.number} -> (${this.department}_${this.position})`
+    return `patch | ${this.number} -> (${this.department}_${this.position})`;
   }
   to_obj() {
     return {
       number: this.number,
       department: this.department,
       position: this.position,
-    }
+    };
   }
 }
 
@@ -67,7 +81,7 @@ export class PatchRules {
  * @public
  * @description the store for the patches
  */
-export let patches = [] as Array<PatchRules>
+export let patches = [] as Array<PatchRules>;
 
 /**
  * @function Notificator
@@ -76,10 +90,13 @@ export let patches = [] as Array<PatchRules>
  * @param {string} message the message body of the tip
  * @param {'warning' | 'success' | 'info' | 'error'} type the message type.
  */
-export function Notificator(message: VNode | string, type?: 'warning' | 'success' | 'info' | 'error') {
+export function Notificator(
+  message: VNode | string,
+  type?: "warning" | "success" | "info" | "error"
+) {
   ElNotification({
     message,
-    title: '操作失败',
-    type: type ?? 'error',
-  })
+    title: "操作失败",
+    type: type ?? "error",
+  });
 }

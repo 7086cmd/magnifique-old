@@ -1,17 +1,16 @@
----
-arrowParens: 'avoid'
+arrowParens: 'always'
 bracketSameLine: false
 bracketSpacing: true
 embeddedLanguageFormatting: auto
 htmlWhitespaceSensitivity: css
-insertPragma: false
+insertPragma: true
 jsxSingleQuote: true
 proseWrap: preserve
 quoteProps: as-needed
 requirePragma: false
-semi: false
-singleQuote: true
+semi: true
+singleQuote: false
 tabWidth: 2
 trailingComma: es5
 useTabs: false
-printWidth: 200
+printWidth: 80

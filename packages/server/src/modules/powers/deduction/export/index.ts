@@ -1,4 +1,6 @@
-import exportAsClass from './class'
-import exportAsDetails from './detail'
+/** @format */
 
-export { exportAsClass, exportAsDetails }
+import exportAsClass from "./class";
+import exportAsDetails from "./detail";
+
+export { exportAsClass, exportAsDetails };

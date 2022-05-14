@@ -1,26 +1,32 @@
+/** @format */
+
 declare interface fetchAsClass {
-  gradeid: number
-  classid: number
-  password: string
-  type: 'class'
+  gradeid: number;
+  classid: number;
+  password: string;
+  type: "class";
 }
 
 declare interface fetchAsSingleMember {
-  number: number
-  password: string
-  type: 'member'
-  name: string
+  number: number;
+  password: string;
+  type: "member";
+  name: string;
 }
 
 declare interface fetchAsMemberAdmin {
-  number: number
-  password: string
-  type: 'member_admin'
+  number: number;
+  password: string;
+  type: "member_admin";
 }
 
 declare interface fetchAsAdmin {
-  password: string
-  type: 'admin'
+  password: string;
+  type: "admin";
 }
 
-declare type fetcherOptions = fetchAsAdmin | fetchAsClass | fetchAsMemberAdmin | fetchAsSingleMember
+declare type fetcherOptions =
+  | fetchAsAdmin
+  | fetchAsClass
+  | fetchAsMemberAdmin
+  | fetchAsSingleMember;

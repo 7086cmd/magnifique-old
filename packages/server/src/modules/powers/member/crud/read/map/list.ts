@@ -1,3 +1,5 @@
-export * from './class'
-export * from './all'
-export * from './department'
+/** @format */
+
+export * from "./class";
+export * from "./all";
+export * from "./department";

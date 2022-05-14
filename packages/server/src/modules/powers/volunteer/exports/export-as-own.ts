@@ -1,11 +1,13 @@
-import exportOverview from './utils/export-overview'
-import createSingleItem from './utils/create-single-item'
+/** @format */
+
+import exportOverview from "./utils/export-overview";
+import createSingleItem from "./utils/create-single-item";
 export default (
   memberNumber: number,
   config?: {
-    start: string
-    end: string
+    start: string;
+    end: string;
   }
 ) => {
-  return exportOverview() + createSingleItem(memberNumber, config)
-}
+  return exportOverview() + createSingleItem(memberNumber, config);
+};

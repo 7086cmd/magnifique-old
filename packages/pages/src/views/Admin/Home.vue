@@ -1,45 +1,56 @@
-<script lang="ts" setup>
-import { ref, inject } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
-import baseurl from '../../modules/baseurl'
-import { List, Back, Box, HomeFilled } from '@element-plus/icons-vue'
-import ControlsPage from '../../components/controls-page.vue'
-const router = useRouter()
-const leftDrawerOpen = ref(true)
-let pageSelected = ref('1')
+<!-- @format -->
 
-if (localStorage.getItem('adminLoginInfo') == undefined) {
-  if (inject('adminLoginInfo') == undefined) {
-    router.push('/')
+<script lang="ts" setup>
+import { ref, inject } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import baseurl from "../../modules/baseurl";
+import { List, Back, Box, HomeFilled } from "@element-plus/icons-vue";
+import ControlsPage from "../../components/controls-page.vue";
+const router = useRouter();
+const leftDrawerOpen = ref(true);
+let pageSelected = ref("1");
+
+if (localStorage.getItem("adminLoginInfo") == undefined) {
+  if (inject("adminLoginInfo") == undefined) {
+    router.push("/");
   }
 }
 try {
-  window.atob(String(localStorage.getItem('adminLoginInfo')))
+  window.atob(String(localStorage.getItem("adminLoginInfo")));
 } catch (e) {
-  router.push('/')
-  localStorage.removeItem('adminLoginInfo')
+  router.push("/");
+  localStorage.removeItem("adminLoginInfo");
 }
 
-const { password } = JSON.parse(window.atob(String(localStorage.getItem('adminLoginInfo'))))
+const { password } = JSON.parse(
+  window.atob(String(localStorage.getItem("adminLoginInfo")))
+);
 
 axios({
   url: `${baseurl}admin/login?password=${password}`,
   data: {
     password: password,
   },
-  method: 'get',
-}).then(response => {
-  if (response.data.status !== 'ok') {
-    localStorage.removeItem('adminLoginInfo')
-    router.push('/admin/login')
+  method: "get",
+}).then((response) => {
+  if (response.data.status !== "ok") {
+    localStorage.removeItem("adminLoginInfo");
+    router.push("/admin/login");
   }
-})
+});
 </script>
 <template>
   <el-container>
     <el-aside width="12%">
-      <el-menu v-model="pageSelected" default-active="/admin/" :collapse="leftDrawerOpen" style="min-height: 1024px; padding-top: 2em" collapse-transition router>
+      <el-menu
+        v-model="pageSelected"
+        default-active="/admin/"
+        :collapse="leftDrawerOpen"
+        style="min-height: 1024px; padding-top: 2em"
+        collapse-transition
+        router
+      >
         <el-menu-item index="/">
           <el-icon>
             <Back />

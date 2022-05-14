@@ -1,10 +1,12 @@
-import zh from './locales/zh-cn'
-import { createI18n } from 'vue-i18n'
+/** @format */
+
+import zh from "./locales/zh-cn";
+import { createI18n } from "vue-i18n";
 const i18n = createI18n({
-  locale: 'zh-CN',
+  locale: "zh-CN",
   messages: {
-    'zh-CN': zh,
+    "zh-CN": zh,
   },
   legacy: false,
-})
-export default i18n
+});
+export default i18n;

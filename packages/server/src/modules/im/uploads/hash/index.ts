@@ -1,1 +1,3 @@
-export * from './hash'
+/** @format */
+
+export * from "./hash";

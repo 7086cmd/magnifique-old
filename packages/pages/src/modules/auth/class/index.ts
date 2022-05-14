@@ -1,3 +1,5 @@
-import createClassLoginer from './login'
+/** @format */
 
-export { createClassLoginer }
+import createClassLoginer from "./login";
+
+export { createClassLoginer };

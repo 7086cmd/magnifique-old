@@ -1,47 +1,69 @@
-<script lang="ts" setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
-import baseurl from '../../modules/baseurl'
-import { HomeFilled as Home, List, Back, PieChart, Box } from '@element-plus/icons-vue'
-import ControlsPage from '../../components/controls-page.vue'
+<!-- @format -->
 
-let heightClient = ref(window.innerHeight)
+<script lang="ts" setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import baseurl from "../../modules/baseurl";
+import {
+  HomeFilled as Home,
+  List,
+  Back,
+  PieChart,
+  Box,
+} from "@element-plus/icons-vue";
+import ControlsPage from "../../components/controls-page.vue";
+
+let heightClient = ref(window.innerHeight);
 
 setInterval(() => {
-  heightClient.value = window.innerHeight
-}, 200)
+  heightClient.value = window.innerHeight;
+}, 200);
 
-let isClient = ref(false)
-const router = useRouter()
-const leftDrawerOpen = ref(true)
-let pageSelected = ref('1')
+let isClient = ref(false);
+const router = useRouter();
+const leftDrawerOpen = ref(true);
+let pageSelected = ref("1");
 
 try {
   if (window.magnifique.isElectron === true) {
-    isClient.value = true
+    isClient.value = true;
   }
   // eslint-disable-next-line no-empty
 } catch (_e) {}
 
-if (localStorage.getItem('classLoginInfo') == undefined || localStorage.getItem('classLoginInfo') == null) {
-  router.push('/')
+if (
+  localStorage.getItem("classLoginInfo") == undefined ||
+  localStorage.getItem("classLoginInfo") == null
+) {
+  router.push("/");
 }
 
-const { gradeid, classid, password } = JSON.parse(window.atob(String(localStorage.getItem('classLoginInfo'))))
+const { gradeid, classid, password } = JSON.parse(
+  window.atob(String(localStorage.getItem("classLoginInfo")))
+);
 
-axios(`${baseurl}class/${gradeid}/${classid}/login?password=${password}`).then(response => {
-  if (response.data.status !== 'ok') {
-    localStorage.removeItem('classLoginInfo')
-    router.push('/')
+axios(`${baseurl}class/${gradeid}/${classid}/login?password=${password}`).then(
+  (response) => {
+    if (response.data.status !== "ok") {
+      localStorage.removeItem("classLoginInfo");
+      router.push("/");
+    }
   }
-})
+);
 </script>
 <template>
   <el-container>
     <el-container>
       <el-aside width="12%">
-        <el-menu v-model="pageSelected" default-active="/class/" :collapse="leftDrawerOpen" collapse-transition router :style="'padding-top: 2em; height: ' + String(heightClient) + 'px'">
+        <el-menu
+          v-model="pageSelected"
+          default-active="/class/"
+          :collapse="leftDrawerOpen"
+          collapse-transition
+          router
+          :style="'padding-top: 2em; height: ' + String(heightClient) + 'px'"
+        >
           <el-menu-item index="/">
             <el-icon>
               <Back />
@@ -75,7 +97,12 @@ axios(`${baseurl}class/${gradeid}/${classid}/login?password=${password}`).then(r
         </el-menu>
       </el-aside>
       <el-container>
-        <el-header reveal bordered class="bg-white text-black" style="text-align: right">
+        <el-header
+          reveal
+          bordered
+          class="bg-white text-black"
+          style="text-align: right"
+        >
           <controls-page type="class" :gradeid="gradeid" :classid="classid" />
         </el-header>
         <el-main>

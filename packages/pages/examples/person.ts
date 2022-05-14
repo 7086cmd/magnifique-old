@@ -1,8 +1,10 @@
+/** @format */
+
 export default () => {
   return {
-    name: '',
+    name: "",
     number: 0,
-    youth: 'none',
+    youth: "none",
     volunteer: {
       time: 0,
       details: {},
@@ -21,23 +23,23 @@ export default () => {
     },
     union: {
       leader: false,
-      position: 'clerk',
+      position: "clerk",
       duty: [],
       admin: [],
       view: [],
-      department: '',
+      department: "",
       regist: {
-        plan: '',
-        position: '',
-        prize: '',
-        introduce: '',
+        plan: "",
+        position: "",
+        prize: "",
+        introduce: "",
       },
     },
-    password: '',
+    password: "",
     record: {
       actions: 0,
       score: 100,
       violation: 0,
     },
-  } as member
-}
+  } as member;
+};

@@ -1,144 +1,158 @@
-/* eslint-disable no-console */
-import { build as buildFrontEnd } from 'vite'
-import { build as buildBackEnd } from 'esbuild'
-import { build as buildApp } from 'electron-builder'
-import './lint.mjs'
+/**
+ * /* eslint-disable no-console
+ *
+ * @format
+ */
+
+import { build as buildFrontEnd } from "vite";
+import { build as buildBackEnd } from "esbuild";
+import { build as buildApp } from "electron-builder";
+import "./lint.mjs";
 const main = async () => {
-  await buildFrontEnd()
+  await buildFrontEnd();
   await buildBackEnd({
-    entryPoints: ['packages/server/src/main.ts'],
-    outfile: 'dist/server.min.js',
+    entryPoints: ["packages/server/src/main.ts"],
+    outfile: "dist/server.min.js",
     bundle: true,
-    platform: 'node',
-    format: 'cjs',
+    platform: "node",
+    format: "cjs",
     minify: true,
     sourcemap: true,
-    target: ['node16'],
+    target: ["node16"],
     loader: {
-      '.png': 'file',
-      '.ts': 'ts',
+      ".png": "file",
+      ".ts": "ts",
     },
-    logLevel: 'info',
-    chunkNames: 'chunks/[name]-[hash]',
-    assetNames: 'assets/[name]-[hash]',
+    logLevel: "info",
+    chunkNames: "chunks/[name]-[hash]",
+    assetNames: "assets/[name]-[hash]",
     color: true,
     define: {
-      'process.env.NODE_ENV': "'production'",
+      "process.env.NODE_ENV": "'production'",
     },
     banner: {
-      js: '/* Copyright© 2022 7086cmd */',
+      js: "/* Copyright© 2022 7086cmd */",
     },
     treeShaking: true,
-    external: ['electron'],
+    external: ["electron"],
     metafile: true,
-  })
+  });
   await buildBackEnd({
-    entryPoints: ['packages/server/src/preload.ts'],
-    outfile: 'dist/server.preload.min.js',
+    entryPoints: ["packages/server/src/preload.ts"],
+    outfile: "dist/server.preload.min.js",
     bundle: true,
-    platform: 'node',
-    format: 'cjs',
+    platform: "node",
+    format: "cjs",
     minify: true,
     sourcemap: true,
-    target: ['node16'],
+    target: ["node16"],
     loader: {
-      '.png': 'file',
-      '.ts': 'ts',
+      ".png": "file",
+      ".ts": "ts",
     },
-    logLevel: 'info',
-    chunkNames: 'chunks/[name]-[hash]',
-    assetNames: 'assets/[name]-[hash]',
+    logLevel: "info",
+    chunkNames: "chunks/[name]-[hash]",
+    assetNames: "assets/[name]-[hash]",
     color: true,
     define: {
-      'process.env.NODE_ENV': "'production'",
+      "process.env.NODE_ENV": "'production'",
     },
     banner: {
-      js: '/* Copyright© 2022 7086cmd */',
+      js: "/* Copyright© 2022 7086cmd */",
     },
     treeShaking: true,
-    external: ['electron'],
-  })
+    external: ["electron"],
+  });
   await buildBackEnd({
-    entryPoints: ['packages/client/src/main.js'],
-    outfile: 'dist/client.min.js',
+    entryPoints: ["packages/client/src/main.js"],
+    outfile: "dist/client.min.js",
     bundle: true,
-    platform: 'node',
-    format: 'cjs',
+    platform: "node",
+    format: "cjs",
     minify: true,
     sourcemap: true,
-    target: ['node16'],
+    target: ["node16"],
     loader: {
-      '.png': 'file',
-      '.ts': 'ts',
+      ".png": "file",
+      ".ts": "ts",
     },
-    logLevel: 'info',
-    chunkNames: 'chunks/[name]-[hash]',
-    assetNames: 'assets/[name]-[hash]',
+    logLevel: "info",
+    chunkNames: "chunks/[name]-[hash]",
+    assetNames: "assets/[name]-[hash]",
     color: true,
     define: {
-      'process.env.NODE_ENV': "'production'",
+      "process.env.NODE_ENV": "'production'",
     },
     banner: {
-      js: '/* Copyright© 2022 7086cmd */',
+      js: "/* Copyright© 2022 7086cmd */",
     },
     treeShaking: true,
-    external: ['electron'],
-  })
+    external: ["electron"],
+  });
   await buildBackEnd({
-    entryPoints: ['packages/client/src/preload.ts'],
-    outfile: 'dist/client.preload.min.js',
+    entryPoints: ["packages/client/src/preload.ts"],
+    outfile: "dist/client.preload.min.js",
     bundle: true,
-    platform: 'node',
-    format: 'cjs',
+    platform: "node",
+    format: "cjs",
     minify: true,
     sourcemap: true,
-    target: ['node16'],
+    target: ["node16"],
     loader: {
-      '.png': 'file',
-      '.ts': 'ts',
+      ".png": "file",
+      ".ts": "ts",
     },
-    logLevel: 'info',
-    chunkNames: 'chunks/[name]-[hash]',
-    assetNames: 'assets/[name]-[hash]',
+    logLevel: "info",
+    chunkNames: "chunks/[name]-[hash]",
+    assetNames: "assets/[name]-[hash]",
     color: true,
     define: {
-      'process.env.NODE_ENV': "'production'",
+      "process.env.NODE_ENV": "'production'",
     },
     banner: {
-      js: '/* Copyright© 2022 7086cmd */',
+      js: "/* Copyright© 2022 7086cmd */",
     },
     treeShaking: true,
-    external: ['electron'],
-  })
+    external: ["electron"],
+  });
   await buildApp({
-    publish: 'always',
+    publish: "always",
     config: {
-      files: ['./dist/docs/**/*', './dist/pages/**/*', './dist/docs/*', './dist/pages/*', './dist/server.min.js', './dist/server.preload.min.js', './icons/server.ico', './ssl/*'],
+      files: [
+        "./dist/docs/**/*",
+        "./dist/pages/**/*",
+        "./dist/docs/*",
+        "./dist/pages/*",
+        "./dist/server.min.js",
+        "./dist/server.preload.min.js",
+        "./icons/server.ico",
+        "./ssl/*",
+      ],
       extraMetadata: {
-        main: 'dist/server.min.js',
+        main: "dist/server.min.js",
       },
       asar: true,
       extends: null,
-      appId: 'com.magnifique.server',
-      copyright: 'Copyright ©7086cmd 2021 GNU License',
-      productName: 'Magnifique Server',
+      appId: "com.magnifique.server",
+      copyright: "Copyright ©7086cmd 2021 GNU License",
+      productName: "Magnifique Server",
       win: {
-        icon: './icons/server.ico',
+        icon: "./icons/server.ico",
         target: [
           {
-            target: 'nsis',
-            arch: ['x64'],
+            target: "nsis",
+            arch: ["x64"],
           },
           {
-            target: 'zip',
-            arch: ['x64'],
+            target: "zip",
+            arch: ["x64"],
           },
         ],
         publish: [
           {
-            provider: 'github',
-            owner: '7086cmd',
-            repo: 'magnifique',
+            provider: "github",
+            owner: "7086cmd",
+            repo: "magnifique",
           },
         ],
       },
@@ -146,10 +160,10 @@ const main = async () => {
         oneClick: false,
         perMachine: false,
         allowToChangeInstallationDirectory: true,
-        shortcutName: 'Magnifique Server',
-        menuCategory: 'Magnifique',
+        shortcutName: "Magnifique Server",
+        menuCategory: "Magnifique",
       },
     },
-  })
-}
-main()
+  });
+};
+main();

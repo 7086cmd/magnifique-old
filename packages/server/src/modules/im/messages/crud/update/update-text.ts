@@ -1,20 +1,27 @@
-import { createSdbdataSaver } from 'packages/server/src/modules/utils'
-import { createSingleRoomItemGetter } from '../../../rooms/crud'
-import createPath from '../../../utils/create-path'
+/** @format */
 
-const createTextMessageUpdate = (roomId: string, messageId: string, currentContent: string, editor: string) => {
-  const messageFileContent = createSingleRoomItemGetter(roomId)
+import { createSdbdataSaver } from "packages/server/src/modules/utils";
+import { createSingleRoomItemGetter } from "../../../rooms/crud";
+import createPath from "../../../utils/create-path";
+
+const createTextMessageUpdate = (
+  roomId: string,
+  messageId: string,
+  currentContent: string,
+  editor: string
+) => {
+  const messageFileContent = createSingleRoomItemGetter(roomId);
   if (messageFileContent.details[messageId].creator !== editor) {
     return {
-      status: 'error',
-      reason: 'no-auth',
-    }
+      status: "error",
+      reason: "no-auth",
+    };
   }
-  messageFileContent.details[messageId].content = currentContent
-  createSdbdataSaver(createPath(roomId), messageFileContent)
+  messageFileContent.details[messageId].content = currentContent;
+  createSdbdataSaver(createPath(roomId), messageFileContent);
   return {
-    status: 'ok',
-  }
-}
+    status: "ok",
+  };
+};
 
-export { createTextMessageUpdate }
+export { createTextMessageUpdate };

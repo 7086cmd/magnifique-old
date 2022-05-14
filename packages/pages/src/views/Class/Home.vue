@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <script lang="ts" setup></script>
 
 <template>

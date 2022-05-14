@@ -1,12 +1,14 @@
-import dayjs from 'dayjs'
+/** @format */
+
+import dayjs from "dayjs";
 
 export default () =>
   ({
-    title: '',
-    description: '',
+    title: "",
+    description: "",
     person: 0,
     time: dayjs().toJSON(),
-    path: '',
-    type: '其他',
-    id: '',
-  } as PostList)
+    path: "",
+    type: "其他",
+    id: "",
+  } as PostList);

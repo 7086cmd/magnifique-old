@@ -1,9 +1,13 @@
-import dayjs from 'dayjs'
-import { v1 } from 'uuid'
-import { createFileHash } from '../hash/hash'
-import { UploadFile } from './item'
+/** @format */
 
-export const createItem = (options: UploadFile.CreateItemOptions): UploadFile.Item => ({
+import dayjs from "dayjs";
+import { v1 } from "uuid";
+import { createFileHash } from "../hash/hash";
+import { UploadFile } from "./item";
+
+export const createItem = (
+  options: UploadFile.CreateItemOptions
+): UploadFile.Item => ({
   name: options.filename ?? options.file.originalname,
   id: v1(),
   hash: createFileHash(options.file.path),
@@ -13,4 +17,4 @@ export const createItem = (options: UploadFile.CreateItemOptions): UploadFile.It
   uploadDate: dayjs().toJSON(),
   mime: options.file.mimetype,
   size: options.file.size,
-})
+});

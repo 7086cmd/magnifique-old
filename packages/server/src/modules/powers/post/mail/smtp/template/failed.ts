@@ -1,14 +1,19 @@
-import { getSingleMemberAsRaw } from '../../../../member'
+/** @format */
 
-const createSMTPFailedContent = (mailer: string, conf: { from: string; number: number; msg: string }) => {
-  const person = getSingleMemberAsRaw(conf.number)
-  let grate = 'Hello, '
-  if (person.status === 'ok') {
-    grate += person.details?.name
+import { getSingleMemberAsRaw } from "../../../../member";
+
+const createSMTPFailedContent = (
+  mailer: string,
+  conf: { from: string; number: number; msg: string }
+) => {
+  const person = getSingleMemberAsRaw(conf.number);
+  let grate = "Hello, ";
+  if (person.status === "ok") {
+    grate += person.details?.name;
   } else {
-    grate += String(conf.number) + '同学'
+    grate += String(conf.number) + "同学";
   }
-  grate += '，您的来稿因格式未被收录，请检查格式'
+  grate += "，您的来稿因格式未被收录，请检查格式";
 
   const explain = `首先，实在抱歉给您带来麻烦！<br />
 由于我们使用的自动同步（邮件投稿自动合并到平台），故计算机需要正确的格式才可以正确处理。<br />
@@ -27,16 +32,16 @@ const createSMTPFailedContent = (mailer: string, conf: { from: string; number: n
 }<br />
 <br />
 <blockquote><i>您也可以复制该格式进行标准化正文投稿。
-我们会每1小时检测一次是否会有新的来稿。</i></blockquote>`
+我们会每1小时检测一次是否会有新的来稿。</i></blockquote>`;
   const options = {
     from: `"Study Department" <${mailer}>`,
     to: conf.from,
     subject: grate,
     text: explain,
     html: explain,
-  }
-  return options
+  };
+  return options;
   // SMTPTransport
-}
+};
 
-export { createSMTPFailedContent }
+export { createSMTPFailedContent };

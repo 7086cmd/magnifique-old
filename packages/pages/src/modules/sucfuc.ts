@@ -1,8 +1,10 @@
-import { ElNotification } from 'element-plus'
+/** @format */
+
+import { ElNotification } from "element-plus";
 
 export default () => {
   ElNotification({
-    type: 'success',
-    title: '操作成功',
-  })
-}
+    type: "success",
+    title: "操作成功",
+  });
+};

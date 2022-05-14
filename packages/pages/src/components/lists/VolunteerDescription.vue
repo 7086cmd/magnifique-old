@@ -1,21 +1,23 @@
+<!-- @format -->
+
 <script setup lang="ts">
 /* global VolunteerCombo */
-import { defineProps, ref, toRefs, unref } from 'vue'
-import dayjs from 'dayjs'
+import { defineProps, ref, toRefs, unref } from "vue";
+import dayjs from "dayjs";
 
 const props = defineProps<{
-  data: VolunteerCombo
-}>()
+  data: VolunteerCombo;
+}>();
 
 const status = {
-  done: 'success',
-  planning: 'warning',
-  miss: 'error',
-}
+  done: "success",
+  planning: "warning",
+  miss: "error",
+};
 
-const { data } = toRefs(props)
+const { data } = toRefs(props);
 
-const detail = ref(unref(data) as VolunteerCombo)
+const detail = ref(unref(data) as VolunteerCombo);
 </script>
 <template>
   <div>
@@ -25,7 +27,12 @@ const detail = ref(unref(data) as VolunteerCombo)
           <el-tag :type="status[detail.status]" v-text="detail.person" />
         </div>
         <div v-else>
-          <el-tag v-for="item in detail.records" :key="item" :type="status[item.status]" v-text="item.person" />
+          <el-tag
+            v-for="item in detail.records"
+            :key="item"
+            :type="status[item.status]"
+            v-text="item.person"
+          />
         </div>
       </el-descriptions-item>
       <el-descriptions-item label="义工时长">
@@ -38,9 +45,10 @@ const detail = ref(unref(data) as VolunteerCombo)
         {{ detail.place }}
       </el-descriptions-item>
       <el-descriptions-item label="时间">
-        {{ dayjs(detail.time).format('YYYY-MM-DD HH:mm:ss') }}
+        {{ dayjs(detail.time).format("YYYY-MM-DD HH:mm:ss") }}
       </el-descriptions-item>
     </el-descriptions>
-    义工编号：<el-tag type="info">{{ detail.idInUserData }}</el-tag> <br />义工登记编号：<el-tag type="info">{{ detail.createId }}</el-tag>
+    义工编号：<el-tag type="info">{{ detail.idInUserData }}</el-tag>
+    <br />义工登记编号：<el-tag type="info">{{ detail.createId }}</el-tag>
   </div>
 </template>

@@ -1,3 +1,5 @@
+/** @format */
+
 // Delete Steps
 /*
 <summary>
@@ -7,22 +9,22 @@
 </summary>
 */
 
-import { rmSync } from 'fs'
-import { createSdbdataParser } from 'packages/server/src/modules/utils'
-import createPath from '../../../utils/create-path'
-import { removeUserInRoom } from './delete-person'
+import { rmSync } from "fs";
+import { createSdbdataParser } from "packages/server/src/modules/utils";
+import createPath from "../../../utils/create-path";
+import { removeUserInRoom } from "./delete-person";
 
 const deleteRoom = (roomId: string) => {
-  const roomFilePath = createPath(roomId)
-  const roomInfo = createSdbdataParser(roomFilePath) as MessageFile
-  const Lists = roomInfo.config.users
-  Lists.forEach(item => {
-    removeUserInRoom(item, roomId)
-  })
-  rmSync(roomFilePath)
+  const roomFilePath = createPath(roomId);
+  const roomInfo = createSdbdataParser(roomFilePath) as MessageFile;
+  const Lists = roomInfo.config.users;
+  Lists.forEach((item) => {
+    removeUserInRoom(item, roomId);
+  });
+  rmSync(roomFilePath);
   return {
-    status: 'ok',
-  }
-}
+    status: "ok",
+  };
+};
 
-export { deleteRoom }
+export { deleteRoom };

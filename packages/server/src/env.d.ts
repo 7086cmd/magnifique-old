@@ -1,13 +1,15 @@
+/** @format */
+
 export interface magnifique_api {
-  closeServer: () => void
-  minServerWindow: () => void
-  maxServerWindow: () => void
-  isElectron: boolean
+  closeServer: () => void;
+  minServerWindow: () => void;
+  maxServerWindow: () => void;
+  isElectron: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  networks: any[]
+  networks: any[];
 }
 declare global {
   interface Window {
-    magnifique: magnifique_api
+    magnifique: magnifique_api;
   }
 }

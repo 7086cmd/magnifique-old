@@ -1,32 +1,36 @@
-import getDepartmentData from '../../../database/get-department-data'
-import getPublicPower from '../../../database/get-public-power'
-import count from '../../volunteer/count/count'
+/** @format */
+
+import getDepartmentData from "../../../database/get-department-data";
+import getPublicPower from "../../../database/get-public-power";
+import count from "../../volunteer/count/count";
 
 export default (configuration: member) => {
-  const groups = getDepartmentData()
+  const groups = getDepartmentData();
   const types = {
-    chairman: '主席',
-    'vice-chairman': '副主席',
-    minister: '部长',
-    'vice-minister': '副部长',
-    clerk: '干事',
-    '': '无部门',
-  }
-  let base: member_processed
-  const publicPower = getPublicPower()
-  const duties: string[] = []
+    chairman: "主席",
+    "vice-chairman": "副主席",
+    minister: "部长",
+    "vice-minister": "副部长",
+    clerk: "干事",
+    "": "无部门",
+  };
+  let base: member_processed;
+  const publicPower = getPublicPower();
+  const duties: string[] = [];
   for (let i = 0; i in configuration.union.duty; i++) {
-    duties.push(publicPower.details.power[configuration.union.duty[i]].name)
+    duties.push(publicPower.details.power[configuration.union.duty[i]].name);
   }
-  const admins: string[] = []
+  const admins: string[] = [];
   for (let i = 0; i in configuration.union.admin; i++) {
-    if (configuration.union.admin[i] === 'member') {
-      admins.push('成员')
+    if (configuration.union.admin[i] === "member") {
+      admins.push("成员");
     } else {
       try {
-        admins.push(publicPower.details.power[configuration.union.admin[i]].name)
+        admins.push(
+          publicPower.details.power[configuration.union.admin[i]].name
+        );
       } catch (_e) {
-        admins.push(configuration.union.admin[i])
+        admins.push(configuration.union.admin[i]);
       }
     }
   }
@@ -35,40 +39,48 @@ export default (configuration: member) => {
       name: configuration.name,
       number: configuration.number,
       in: groups.details.departments[configuration.union.department].name,
-      do: '',
+      do: "",
       icg: false,
       record: configuration.record,
       duty: duties,
       admin: admins,
       volunteer: count(configuration.number),
-      group: groups.details.departments[configuration.union.department].groups.filter(x => x.id === configuration.union.group)[0].name,
-    }
+      group: groups.details.departments[
+        configuration.union.department
+      ].groups.filter((x) => x.id === configuration.union.group)[0].name,
+    };
   } catch (_e) {
     base = {
       name: configuration.name,
       number: configuration.number,
-      in: '无部门',
-      do: '',
+      in: "无部门",
+      do: "",
       icg: false,
       record: configuration.record,
       duty: duties,
       admin: admins,
       volunteer: count(configuration.number),
-      group: '无所在组别',
-    }
+      group: "无所在组别",
+    };
   }
-  if (configuration.union.position.includes('chairman')) {
-    base.do = types[configuration.union.position]
-    base.icg = true
-  } else if (configuration.union.position == 'minister') {
-    base.do = groups.details.departments[configuration.union.department].name + types[configuration.union.position]
-    base.icg = true
-  } else if (['vice-minister', 'clerk'].includes(configuration.union.position)) {
-    base.do = groups.details.departments[configuration.union.department].name + types[configuration.union.position]
-    base.icg = false
+  if (configuration.union.position.includes("chairman")) {
+    base.do = types[configuration.union.position];
+    base.icg = true;
+  } else if (configuration.union.position == "minister") {
+    base.do =
+      groups.details.departments[configuration.union.department].name +
+      types[configuration.union.position];
+    base.icg = true;
+  } else if (
+    ["vice-minister", "clerk"].includes(configuration.union.position)
+  ) {
+    base.do =
+      groups.details.departments[configuration.union.department].name +
+      types[configuration.union.position];
+    base.icg = false;
   } else {
-    base.do = '非正式成员'
-    base.icg = false
+    base.do = "非正式成员";
+    base.icg = false;
   }
-  return base
-}
+  return base;
+};

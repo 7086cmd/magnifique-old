@@ -1,26 +1,32 @@
-import { existsSync } from 'fs'
-import { createMemberIndex, createObjectToArrayTransformer, createSdbdataParser } from '../../../utils'
+/** @format */
+
+import { existsSync } from "fs";
+import {
+  createMemberIndex,
+  createObjectToArrayTransformer,
+  createSdbdataParser,
+} from "../../../utils";
 
 export default (numb: number) => {
-  let temppath = createMemberIndex(numb)
+  let temppath = createMemberIndex(numb);
   if (existsSync(temppath)) {
     try {
-      const opwd = createSdbdataParser(temppath).workflow.details
+      const opwd = createSdbdataParser(temppath).workflow.details;
       return {
-        status: 'ok',
-        details: createObjectToArrayTransformer('id', opwd),
-      }
+        status: "ok",
+        details: createObjectToArrayTransformer("id", opwd),
+      };
     } catch (e) {
       return {
-        status: 'error',
-        reason: 'type-error',
+        status: "error",
+        reason: "type-error",
         text: new Error(<string>e).message,
-      }
+      };
     }
   } else {
     return {
-      status: 'error',
-      reason: 'not-exists',
-    }
+      status: "error",
+      reason: "not-exists",
+    };
   }
-}
+};

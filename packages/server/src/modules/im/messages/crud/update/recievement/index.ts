@@ -1,6 +1,11 @@
-import { createMessageAllReadedAction } from './all-recieved'
-import { createMessageReadedAction } from './recieved'
+/** @format */
 
-const recievementActions = { all: createMessageAllReadedAction, single: createMessageReadedAction }
+import { createMessageAllReadedAction } from "./all-recieved";
+import { createMessageReadedAction } from "./recieved";
 
-export { recievementActions }
+const recievementActions = {
+  all: createMessageAllReadedAction,
+  single: createMessageReadedAction,
+};
+
+export { recievementActions };

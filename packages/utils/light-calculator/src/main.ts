@@ -1,3 +1,5 @@
+/** @format */
+
 // import { createImaging } from './physics/calc/imaging'
 // import { createSphericalMirror } from './physics/mirror/initialization'
 

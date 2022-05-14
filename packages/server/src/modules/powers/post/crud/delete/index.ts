@@ -1,3 +1,5 @@
-import deletePost from './delete'
+/** @format */
 
-export { deletePost }
+import deletePost from "./delete";
+
+export { deletePost };

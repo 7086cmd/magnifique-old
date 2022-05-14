@@ -1,31 +1,38 @@
-import axios from 'axios'
-import deduction from '../../../../examples/deduction'
-import { createDeductionConfig } from './config'
+/** @format */
+
+import axios from "axios";
+import deduction from "../../../../examples/deduction";
+import { createDeductionConfig } from "./config";
 
 class DeductionFetcher {
-  options: DeductionFetch.deductionFetcherConfig
+  options: DeductionFetch.deductionFetcherConfig;
 
-  deductionExample: deduction
+  deductionExample: deduction;
 
   constructor(option: fetcherOptions) {
-    this.options = createDeductionConfig(option)
-    this.deductionExample = deduction()
-    if (option.type === 'member') {
-      this.deductionExample.deductor.number = option.number
-      this.deductionExample.deductor.name = option.name
+    this.options = createDeductionConfig(option);
+    this.deductionExample = deduction();
+    if (option.type === "member") {
+      this.deductionExample.deductor.number = option.number;
+      this.deductionExample.deductor.name = option.name;
     }
   }
 
   get = async () => {
-    const result = await axios(this.options.url, { params: this.options.standardConfig })
-    return result.data
-  }
+    const result = await axios(this.options.url, {
+      params: this.options.standardConfig,
+    });
+    return result.data;
+  };
 
-  delete = async (deductionDeleteData: { id: string; unviolatedPersonNumber: number }) => {
+  delete = async (deductionDeleteData: {
+    id: string;
+    unviolatedPersonNumber: number;
+  }) => {
     if (this.options.deleter) {
       return (
         await axios(this.options.url, {
-          method: 'delete',
+          method: "delete",
           data: {
             auth: this.options.standardConfig,
             data: {
@@ -34,19 +41,19 @@ class DeductionFetcher {
             },
           },
         })
-      ).data
+      ).data;
     } else
       return {
-        status: 'error',
-        reason: 'no-auth',
-      }
-  }
+        status: "error",
+        reason: "no-auth",
+      };
+  };
 
   create = async (deductionCreatement: deduction) => {
-    if (this.options.creater && this.options.standardConfig.type === 'member') {
+    if (this.options.creater && this.options.standardConfig.type === "member") {
       return (
         await axios(this.options.url, {
-          method: 'post',
+          method: "post",
           data: {
             auth: this.options.standardConfig,
             data: {
@@ -55,13 +62,13 @@ class DeductionFetcher {
             },
           },
         })
-      ).data
+      ).data;
     } else
       return {
-        status: 'error',
-        reason: 'no-auth',
-      }
-  }
+        status: "error",
+        reason: "no-auth",
+      };
+  };
 }
 
-export { DeductionFetcher }
+export { DeductionFetcher };

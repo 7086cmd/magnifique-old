@@ -1,2 +1,4 @@
-export * from './update-text'
-export * from './recievement'
+/** @format */
+
+export * from "./update-text";
+export * from "./recievement";

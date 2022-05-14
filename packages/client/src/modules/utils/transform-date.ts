@@ -1,9 +1,11 @@
+/** @format */
+
 const transformDate = (grade: number) => {
-  const dt = new Date()
+  const dt = new Date();
   if (dt.getMonth() < 9) {
-    return dt.getFullYear() - grade
+    return dt.getFullYear() - grade;
   } else {
-    return dt.getFullYear() - grade + 1
+    return dt.getFullYear() - grade + 1;
   }
-}
-export default transformDate
+};
+export default transformDate;

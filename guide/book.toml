@@ -1,0 +1,6 @@
+[book]
+authors = ["7086cmd"]
+language = "zh-cn"
+multilingual = false
+src = "src"
+title = "Magnifique Guide"

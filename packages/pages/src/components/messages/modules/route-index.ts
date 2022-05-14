@@ -1,37 +1,39 @@
+/** @format */
+
 export default (
   index: string
 ):
   | {
-      type: 'admin'
+      type: "admin";
     }
   | {
-      type: 'member'
-      number: number
+      type: "member";
+      number: number;
     }
   | {
-      type: 'class'
-      gradeid: number
-      classid: number
+      type: "class";
+      gradeid: number;
+      classid: number;
     }
   | null => {
-  if (index === 'admin') {
+  if (index === "admin") {
     return {
-      type: 'admin',
-    }
+      type: "admin",
+    };
   } else {
-    const items = index.split('/')
-    if (items[0] === 'member') {
+    const items = index.split("/");
+    if (items[0] === "member") {
       return {
-        type: 'member',
+        type: "member",
         number: Number(items[1]),
-      }
-    } else if (items[0] === 'class') {
+      };
+    } else if (items[0] === "class") {
       return {
-        type: 'class',
+        type: "class",
         gradeid: Number(items[1]),
         classid: Number(items[2]),
-      }
+      };
     }
   }
-  return null
-}
+  return null;
+};

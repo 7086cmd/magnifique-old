@@ -1,1 +1,3 @@
-export * as Powers from './powers'
+/** @format */
+
+export * as Powers from "./powers";

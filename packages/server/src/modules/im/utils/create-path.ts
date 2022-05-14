@@ -1,6 +1,8 @@
-import { tmpdir } from 'os'
-import { resolve } from 'path'
+/** @format */
+
+import { tmpdir } from "os";
+import { resolve } from "path";
 
 export default (id: string) => {
-  return resolve(tmpdir(), '..', 'magnifique', 'im_rooms', `${id}.sdbdata`)
-}
+  return resolve(tmpdir(), "..", "magnifique", "im_rooms", `${id}.sdbdata`);
+};

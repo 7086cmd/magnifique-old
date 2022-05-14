@@ -1,43 +1,47 @@
+<!-- @format -->
+
 <script lang="ts" setup>
-import { ref } from 'vue'
-import axios from 'axios'
-import baseurl from '../../modules/baseurl'
-import MemberDescription from '../../components/lists/MemberDescription.vue'
+import { ref } from "vue";
+import axios from "axios";
+import baseurl from "../../modules/baseurl";
+import MemberDescription from "../../components/lists/MemberDescription.vue";
 
-const { number } = JSON.parse(window.atob(String(sessionStorage.getItem('memberLoginInfo'))))
-const name = ref('')
-const score = ref(0)
-let col = ref('success')
-let actions = ref(0)
-let violation = ref(0)
-let department = ref('')
-let whatdo = ref('')
-let aboutme = ref({})
-let loaded = ref(false)
+const { number } = JSON.parse(
+  window.atob(String(sessionStorage.getItem("memberLoginInfo")))
+);
+const name = ref("");
+const score = ref(0);
+let col = ref("success");
+let actions = ref(0);
+let violation = ref(0);
+let department = ref("");
+let whatdo = ref("");
+let aboutme = ref({});
+let loaded = ref(false);
 
-axios(`${baseurl}member/getinfo/${number}/`).then(response => {
-  aboutme.value = response.data.details
-  loaded.value = true
-  name.value = response.data.details.name
-  let total = response.data.details.record.score
-  actions.value = response.data.details.record.actions
-  violation.value = response.data.details.record.violation
-  department.value = response.data.details.in
-  whatdo.value = response.data.details.do
+axios(`${baseurl}member/getinfo/${number}/`).then((response) => {
+  aboutme.value = response.data.details;
+  loaded.value = true;
+  name.value = response.data.details.name;
+  let total = response.data.details.record.score;
+  actions.value = response.data.details.record.actions;
+  violation.value = response.data.details.record.violation;
+  department.value = response.data.details.in;
+  whatdo.value = response.data.details.do;
   let itv = setInterval(() => {
-    score.value++
+    score.value++;
     if (score.value >= 80) {
-      col.value = 'success'
+      col.value = "success";
     } else if (score.value >= 60 && score.value < 80) {
-      col.value = 'warning'
+      col.value = "warning";
     } else if (score.value < 60) {
-      col.value = 'exception'
+      col.value = "exception";
     }
     if (score.value >= total) {
-      clearInterval(itv)
+      clearInterval(itv);
     }
-  }, 8)
-})
+  }, 8);
+});
 </script>
 <template>
   <div v-loading="!loaded">

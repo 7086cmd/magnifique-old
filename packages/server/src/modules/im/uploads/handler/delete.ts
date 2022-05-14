@@ -7,25 +7,29 @@
  * 3. Delete File
  * 4. Return
  * </summary>
+ *
+ * @format
  */
 
-import { rmSync } from 'fs'
-import { fileIndexActions } from '../route'
+import { rmSync } from "fs";
+import { fileIndexActions } from "../route";
 
 export const deleteFileHandler = (fileId: string, roomId: string) => {
-  const index = fileIndexActions.fileIndexDataExplorer.open()
-  const item = index.details[fileId]
+  const index = fileIndexActions.fileIndexDataExplorer.open();
+  const item = index.details[fileId];
   if (item.inGroup.includes(roomId) && item.inGroup.length > 1) {
-    index.details[fileId].inGroup = item.inGroup.filter(item => item !== roomId)
+    index.details[fileId].inGroup = item.inGroup.filter(
+      (item) => item !== roomId
+    );
     return {
-      status: 'ok',
-    }
+      status: "ok",
+    };
   }
-  delete index.details[fileId]
-  fileIndexActions.fileIndexDataExplorer.save(index)
-  rmSync(item.location)
+  delete index.details[fileId];
+  fileIndexActions.fileIndexDataExplorer.save(index);
+  rmSync(item.location);
 
   return {
-    status: 'ok',
-  }
-}
+    status: "ok",
+  };
+};

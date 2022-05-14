@@ -1,19 +1,21 @@
+/** @format */
+
 export default () => {
   return {
     person: 0,
-    reason: '',
-    description: '',
+    reason: "",
+    description: "",
     deduction: 0,
     deductor: {
-      name: '',
+      name: "",
       number: 0,
     },
-    time: '',
-    place: '',
-    status: 'normal',
+    time: "",
+    place: "",
+    status: "normal",
     msgs: {
-      feedback: '',
-      turndown: '',
+      feedback: "",
+      turndown: "",
     },
-  } as deduction
-}
+  } as deduction;
+};

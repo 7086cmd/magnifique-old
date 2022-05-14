@@ -1,1 +1,3 @@
-export * from './class'
+/** @format */
+
+export * from "./class";

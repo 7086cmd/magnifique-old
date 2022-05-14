@@ -1,33 +1,35 @@
+<!-- @format -->
+
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref } from "vue";
 
-let key = ref('')
+let key = ref("");
 interface MonacoEditorElement extends HTMLDivElement {
-  getValue: () => string
+  getValue: () => string;
 }
-let editorRef = ref<MonacoEditorElement>()
+let editorRef = ref<MonacoEditorElement>();
 
-let ctrlKeyUp = ref(false)
+let ctrlKeyUp = ref(false);
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Control') {
-    ctrlKeyUp.value = true
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Control") {
+    ctrlKeyUp.value = true;
     setTimeout(() => {
-      ctrlKeyUp.value = false
-    }, 800)
-  } else if (e.key === 'Enter' && ctrlKeyUp.value) {
+      ctrlKeyUp.value = false;
+    }, 800);
+  } else if (e.key === "Enter" && ctrlKeyUp.value) {
     // send
-    ctrlKeyUp.value = false
+    ctrlKeyUp.value = false;
   } else {
-    ctrlKeyUp.value = false
+    ctrlKeyUp.value = false;
   }
-})
-let previewIng = ref(false)
-let contentMd = ref('')
+});
+let previewIng = ref(false);
+let contentMd = ref("");
 const preview = () => {
-  contentMd.value = editorRef.value?.getValue() as string
-  previewIng.value = true
-}
+  contentMd.value = editorRef.value?.getValue() as string;
+  previewIng.value = true;
+};
 </script>
 <template>
   <div>
@@ -39,9 +41,16 @@ const preview = () => {
       ></markdown>
       <el-row>
         <el-col :span="20">
-          <monaco-editor ref="editorRef" v-model="key" language="markdown" height="480px"></monaco-editor>
+          <monaco-editor
+            ref="editorRef"
+            v-model="key"
+            language="markdown"
+            height="480px"
+          ></monaco-editor>
         </el-col>
-        <el-col :span="4"> <el-button @click="preview">确定</el-button> </el-col>
+        <el-col :span="4">
+          <el-button @click="preview">确定</el-button>
+        </el-col>
       </el-row>
     </el-card>
     <el-dialog v-model="previewIng" center title="预览">

@@ -1,12 +1,16 @@
-import { PatchRules } from './member_datas/map'
-import axios from 'axios'
-import baseurl from '../../../modules/baseurl'
+/** @format */
+
+import { PatchRules } from "./member_datas/map";
+import axios from "axios";
+import baseurl from "../../../modules/baseurl";
 
 /**
  * @type login
  * The login (auth) field when requesting.
  */
-type login = ({ type: 'member_admin'; number: number } | { type: 'admin' }) & { password: string }
+type login = ({ type: "member_admin"; number: number } | { type: "admin" }) & {
+  password: string;
+};
 
 /**
  * @class MemberClient
@@ -17,22 +21,23 @@ export class MemberClient {
    * @var loginInfo
    */
   private loginInfo = {
-    password: '',
+    password: "",
     number: undefined as number | undefined,
-  }
+  };
   /**
    * The API address.
    * @var {string} api
    */
-  private api: string
+  private api: string;
   /**
    * @constructor
    * @param {login} info login data
    */
   constructor(info: login) {
-    this.loginInfo.password = info.password
-    this.loginInfo.number = info.type === 'admin' ? undefined : info.number
-    this.api = baseurl + (info.type === 'admin' ? 'admin' : 'member/admin') + '/member'
+    this.loginInfo.password = info.password;
+    this.loginInfo.number = info.type === "admin" ? undefined : info.number;
+    this.api =
+      baseurl + (info.type === "admin" ? "admin" : "member/admin") + "/member";
   }
   /**
    * Get the member list for (member) admins.
@@ -43,7 +48,7 @@ export class MemberClient {
       params: {
         number: this.loginInfo.number,
       },
-    })
+    });
   }
   /**
    * Add a member.
@@ -58,8 +63,8 @@ export class MemberClient {
           member: member_info,
         },
       },
-      method: 'post',
-    })
+      method: "post",
+    });
   }
   /**
    * Edit a member's position and department
@@ -75,8 +80,8 @@ export class MemberClient {
           patch: content.to_str(),
         },
       },
-      method: 'put',
-    })
+      method: "put",
+    });
   }
   /**
    * Remark a member violated.
@@ -91,8 +96,8 @@ export class MemberClient {
           person: number,
         },
       },
-      method: 'patch',
-    })
+      method: "patch",
+    });
   }
   /**
    * Delete a member.
@@ -107,13 +112,13 @@ export class MemberClient {
           person: person,
         },
       },
-      method: 'delete',
-    })
+      method: "delete",
+    });
   }
 }
 
 export class MemberListClientForClass {
-  private info: { gradeid: number; classid: number; password: string }
+  private info: { gradeid: number; classid: number; password: string };
   /**
    * Auth when requesting.
    * @constructor
@@ -122,20 +127,20 @@ export class MemberListClientForClass {
    * @param {string} password base-64 encrypted(...) password.
    */
   constructor(info: { gradeid: number; classid: number; password: string }) {
-    this.info = info
+    this.info = info;
   }
   /**
    * Get Member List for A Class
    * @async
    */
   async get() {
-    const resp = await axios(baseurl + 'class/member', {
+    const resp = await axios(baseurl + "class/member", {
       params: {
         gradeid: this.info.gradeid,
         classid: this.info.classid,
       },
-    })
-    return resp
+    });
+    return resp;
   }
   /**
    * Register a member.
@@ -143,14 +148,14 @@ export class MemberListClientForClass {
    * @async
    */
   async post(member_info: member) {
-    return await axios(baseurl + 'class/member', {
+    return await axios(baseurl + "class/member", {
       data: {
         auth: this.info,
         data: {
           member: member_info,
         },
       },
-      method: 'post',
-    })
+      method: "post",
+    });
   }
 }

@@ -1,14 +1,16 @@
+<!-- @format -->
+
 <script setup lang="ts">
 /* global DeductionList */
-import { defineProps, ref, toRefs, unref } from 'vue'
+import { defineProps, ref, toRefs, unref } from "vue";
 
 const props = defineProps<{
-  data: DeductionList
-}>()
+  data: DeductionList;
+}>();
 
-const { data } = toRefs(props)
+const { data } = toRefs(props);
 
-const detail = ref(unref(data) as DeductionList)
+const detail = ref(unref(data) as DeductionList);
 </script>
 <template>
   <div>

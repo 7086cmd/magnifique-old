@@ -1,1 +1,3 @@
-export * as roomActions from './crud'
+/** @format */
+
+export * as roomActions from "./crud";
