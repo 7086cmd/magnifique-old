@@ -220,10 +220,10 @@ const createRoom = async () => {
 };
 
 if (route.params.status === "create") {
-  let users = route.query.with.split(",");
+  let users = (route.query.with as string).split(",");
   fullListLoad();
   route.query.with && (roomc.value.users = users);
-  route.query.title && (roomc.value.title = route.query.title);
+  route.query.title && (roomc.value.title = route.query.title as string);
   route.query.confirm && users.length < 2 && createRoom();
   // createRoom()
 }
@@ -388,7 +388,9 @@ const handleUploadImage = async (
       <el-button
         circle
         type="success"
-        plain
+        text
+        bg
+        round
         :icon="Plus"
         @click="fullListLoad"
       />
@@ -400,7 +402,8 @@ const handleUploadImage = async (
         class="animate__animated animate__zoomInRight"
         circle
         type="danger"
-        plain
+        text
+        bg
         :icon="Delete"
         @click="deleteGroup(contexted)"
       />
@@ -414,8 +417,8 @@ const handleUploadImage = async (
             placement="right"
             effect="light"
           >
-            <el-link
-              :underline="false"
+            <el-button
+              text
               style="font-size: 20px"
               @click="getRoomMsg(item.id)"
               @mouseover="contexted = item.id"
@@ -424,13 +427,18 @@ const handleUploadImage = async (
             >
               {{ item.title }}
               <el-badge v-if="item.unreaded" :value="item.unreaded"></el-badge>
-              <span v-if="item.members.length > 2"><el-tag type="warning" v-text="'群组'" /><el-tag
+              <span v-if="item.members.length > 2">
+                <el-tag type="warning" v-text="'群组'" /><el-tag
                   v-for="member in item.members"
                   :key="member.id"
                   v-text="member.name"
-                ></el-tag></span>
-              <span v-else-if="item.members.length === 2"><el-tag type="success" v-text="'单聊'"/></span>
-            </el-link>
+                >
+                </el-tag>
+              </span>
+              <span v-else-if="item.members.length === 2">
+                <el-tag type="success" v-text="'单聊'" />
+              </span>
+            </el-button>
           </el-tooltip>
           <br />
           <span style="color: gray; font-size: 14px">{{ item.recent }}</span>
@@ -463,8 +471,8 @@ const handleUploadImage = async (
       />
       <el-divider />
       <div style="text-align: center">
-        <el-button round @click="editingTitle = false">取消</el-button>
-        <el-button round type="primary">确定</el-button>
+        <el-button text bg round @click="editingTitle = false">取消</el-button>
+        <el-button text bg round type="primary">确定</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -487,7 +495,7 @@ const handleUploadImage = async (
         <el-form-item label="标题">
           <el-input v-model="roomc.title"></el-input>
         </el-form-item>
-        <el-button round type="primary" @click="createRoom">确定</el-button>
+        <el-button bg text type="primary" @click="createRoom">确定</el-button>
       </el-form>
     </el-dialog>
     <el-drawer
@@ -509,7 +517,8 @@ const handleUploadImage = async (
               v-if="!editingTitle && roomData.members.length > 2"
               v-menus:left="groupMenus"
               :icon="More"
-              round
+              text
+              bg
               type="text"
               @click.stop
             />
@@ -563,14 +572,16 @@ const handleUploadImage = async (
                   <el-button
                     circle
                     type="danger"
-                    plain
+                    text
+                    bg
                     :icon="Close"
                     @click="msg.editing = false"
                   />
                   <el-button
                     circle
                     type="success"
-                    plain
+                    text
+                    bg
                     :disabled="
                       editContent === msg.content || editContent === ''
                     "
@@ -593,7 +604,8 @@ const handleUploadImage = async (
                 roomData.members
                   .filter((x) => x.id === msg.creator)
                   .map((x) => x.name)[0]
-              }}</span>
+              }}
+            </span>
             <message-piece
               :content="msg"
               :username="username"
@@ -628,7 +640,8 @@ const handleUploadImage = async (
           <el-button
             circle
             type="primary"
-            plain
+            text
+            bg
             :disabled="!speechScanner.isSupported"
             :icon="Microphone"
             @click="speechScanner.toggle()"
@@ -638,7 +651,8 @@ const handleUploadImage = async (
           <el-button
             circle
             type="warning"
-            plain
+            text
+            bg
             :icon="Upload"
             @click="createUploader"
           />
@@ -647,7 +661,8 @@ const handleUploadImage = async (
           <el-button
             circle
             type="danger"
-            plain
+            text
+            bg
             :icon="Close"
             @click="isShown = false"
           />
@@ -656,7 +671,8 @@ const handleUploadImage = async (
           <el-button
             circle
             type="success"
-            plain
+            text
+            bg
             :loading="load"
             :disabled="createMsgData.length === 0"
             :icon="ArrowRight"

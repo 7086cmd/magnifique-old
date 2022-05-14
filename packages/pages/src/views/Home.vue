@@ -1,17 +1,27 @@
 <!-- @format -->
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import controls from "../components/controls.vue";
 import MemberLogin from "./Member/Login.vue";
 import ClassLogin from "./Class/ClassLogin.vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import AdminLogin from "./Admin/Login.vue";
 import { useWebNotification } from "@vueuse/core";
 import { ElMessageBox } from "element-plus";
 
+let classEntranceAble = ref("classLoginInfo" in localStorage);
+let memberEntranceAble = ref("memberLoginInfo" in sessionStorage);
+let adminEntranceAble = ref("adminLoginInfo" in localStorage);
+
 const router = useRouter();
-const choice = ref("class");
+const route = useRoute();
+
+const choice = ref(route.params.type ?? "class");
+
+watch(choice, () => {
+  router.push("/login/" + choice.value);
+});
 
 const toTag = (tag: string) => {
   router.push("/" + tag + "/");
@@ -34,51 +44,52 @@ if (!supportment) {
 <template>
   <div className="background_must_be_gray">
     <el-container>
-      <el-header style="text-align: right; height: 30%">
+      <el-header style="text-align: right; height: 10%">
         <controls />
       </el-header>
       <el-container>
         <el-aside width="30%"></el-aside>
-        <el-main style="padding-top: 15%">
-          <!-- <v-md-editor
-            v-model="txt"
-            height="400px"
-            style="text-align: left"
-            left-toolbar="undo redo clear | h bold italic emoji strikethrough quote tip | ul ol table hr todo-list | link image code | save"
-          ></v-md-editor> -->
+        <el-main style="padding-top: 2%">
+          <h3>登录 Magnifique.</h3>
           <el-card shadow="never">
             <el-tabs v-model="choice">
               <el-tab-pane name="class" label="班级登录">
                 <class-login></class-login>
                 <el-button
                   style="width: 100%"
-                  plain
+                  text
+                  bg
                   round
+                  :disabled="!classEntranceAble"
                   @click="toTag('class')"
                 >
-                  已登录
+                  根据登录信息直接进入
                 </el-button>
               </el-tab-pane>
               <el-tab-pane name="member" label="成员登录">
                 <member-login></member-login>
                 <el-button
                   style="width: 100%"
-                  plain
+                  text
+                  bg
                   round
+                  :disabled="!memberEntranceAble"
                   @click="toTag('member')"
                 >
-                  已登录
+                  根据登录信息直接进入
                 </el-button>
               </el-tab-pane>
               <el-tab-pane name="admin" label="管理员登录">
                 <admin-login></admin-login>
                 <el-button
                   style="width: 100%"
-                  plain
+                  text
+                  bg
                   round
+                  :disabled="!adminEntranceAble"
                   @click="toTag('admin')"
                 >
-                  已登录
+                  根据登录信息直接进入
                 </el-button>
               </el-tab-pane>
             </el-tabs>

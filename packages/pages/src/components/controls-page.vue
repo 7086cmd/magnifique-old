@@ -11,6 +11,7 @@ import { useRouter } from "vue-router";
 import { hideWindow, minWindow, maxWindow } from "../tauri";
 import { Moon, Sunny } from "@element-plus/icons-vue";
 import { useDark } from "@vueuse/core";
+import { useToggle } from "@vueuse/shared";
 
 const router = useRouter();
 
@@ -95,8 +96,12 @@ const isDark = useDark();
         v-model="isDark"
         inline-prompt
         :active-icon="Moon"
+        active-color="#2c2c2c"
         :inactive-icon="Sunny"
+        inactive-color="#f2f2f2"
+        @change="useToggle(isDark)"
       />
+      <el-divider direction="vertical"></el-divider>
       <el-dropdown split-button plain>
         <el-icon>
           <User />
@@ -119,6 +124,8 @@ const isDark = useDark();
           </el-dropdown-menu>
         </template>
       </el-dropdown>
+      <el-divider direction="vertical"></el-divider>
+      Magnifique v2.0.0
       <el-divider v-if="isInTauri" direction="vertical" />
       <el-button
         v-if="isInTauri"

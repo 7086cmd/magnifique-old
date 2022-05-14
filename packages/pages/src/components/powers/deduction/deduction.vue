@@ -29,7 +29,8 @@ const props = defineProps<{
   name?: string;
 }>();
 
-const fetcher = new DeductionFetcher(props as unknown as fetcherOptions);
+// eslint-disable-next-line prettier/prettier
+const fetcher = new DeductionFetcher((props as unknown) as fetcherOptions);
 let exportTime = ref([]);
 let isExporting = ref(false);
 let exportTypes = ref([
@@ -265,7 +266,10 @@ fetching();
         <el-table-column type="expand">
           <template #header>
             <el-button
-              type="text"
+              text
+              circle
+              bg
+              type="primary"
               :icon="Refresh"
               size="mini"
               @click="fetching()"
@@ -283,14 +287,20 @@ fetching();
           <template #header>
             <el-button
               v-if="['admin', 'member_admin'].includes(props.type)"
-              type="text"
+              text
+              bg
+              circle
+              type="success"
               :icon="Box"
               size="mini"
               @click="isExporting = true"
             ></el-button>
             <el-button
               v-if="props.type === 'member'"
-              type="text"
+              type="warning"
+              text
+              bg
+              circle
               :icon="CirclePlus"
               @click="newDeduction = true"
             ></el-button>
@@ -305,7 +315,10 @@ fetching();
                   v-if="
                     ['admin', 'member_admin', 'member'].includes(props.type)
                   "
-                  type="text"
+                  type="danger"
+                  text
+                  bg
+                  circle
                   :icon="DeleteFilled"
                   size="small"
                 ></el-button>
@@ -318,7 +331,7 @@ fetching();
 
     <el-dialog v-model="newDeduction" title="新建扣分" center width="60%">
       <el-form :model="deductionData" label-position="right">
-        <el-form-item label="时间">
+        <el-form-item label="时间" style="width: 100%">
           <el-date-picker
             v-model="deductionData.time"
             type="datetime"
@@ -354,9 +367,14 @@ fetching();
       </el-form>
       <template #footer>
         <span>
-          <el-button @click="newDeduction = false"> 取消 </el-button>
+          <el-button text round bg @click="newDeduction = false">
+            取消
+          </el-button>
           <el-button
             type="primary"
+            text
+            round
+            bg
             :loading="isFetching"
             @click="submitDeduction"
           >

@@ -1,10 +1,9 @@
 <!-- @format -->
 
 <script lang="ts" setup>
-import { provide, ref } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import failfuc from "../../modules/failfuc";
-import { ElMessageBox } from "element-plus";
 import { createClassLoginer } from "../../modules/auth";
 const router = useRouter();
 let gradeid = ref("");
@@ -37,14 +36,7 @@ async function login() {
   )
     .then((response) => {
       localStorage.setItem("classLoginInfo", response);
-      provide("classLoginInfo", response);
-      ElMessageBox.alert("成功登录", "成功", {
-        center: true,
-        type: "success",
-      }).then(() => {
-        router.push("/class/");
-      });
-      setTimeout(() => router.push("/class/"), 3000);
+      router.push("/class/");
     })
     .catch(() => {
       localStorage.removeItem("classLoginInfo");
@@ -91,8 +83,8 @@ async function login() {
       <el-form-item>
         <el-button
           id="e2e_tst_class_login_btn"
-          outline
-          plain
+          text
+          bg
           round
           type="primary"
           style="width: 100%"

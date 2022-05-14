@@ -5,7 +5,7 @@
 import { useRouter } from "vue-router";
 import { ElMessageBox } from "element-plus";
 import { ref, Ref } from "vue";
-import controls from "../components/controls.vue";
+import controls from "../components/controls-with-back.vue";
 import { useWebNotification } from "@vueuse/core";
 const router = useRouter();
 const networks: Ref<any[]> = ref([]);

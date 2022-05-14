@@ -6,9 +6,13 @@ import baseurl from "../../../modules/baseurl";
 
 /**
  * @type login
+ * @public
  * The login (auth) field when requesting.
  */
-type login = ({ type: "member_admin"; number: number } | { type: "admin" }) & {
+export type login = (
+  | { type: "member_admin"; number: number }
+  | { type: "admin" }
+) & {
   password: string;
 };
 
@@ -158,4 +162,15 @@ export class MemberListClientForClass {
       method: "post",
     });
   }
+}
+
+/**
+ * @interface class_login
+ * @public
+ * @description login data struct type
+ */
+export interface class_login {
+  gradeid: number;
+  classid: number;
+  password: string;
 }

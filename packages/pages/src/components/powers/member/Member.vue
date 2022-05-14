@@ -15,7 +15,13 @@ import positions from "./positions";
 import type { FormInstance } from "element-plus";
 import { AddMemberFormRule } from "./member_datas/rules";
 import { PatchRules, Notificator } from "./member_datas/map";
-import { MemberClient, MemberListClientForClass } from "./clients";
+import {
+  MemberClient,
+  MemberListClientForClass,
+  login,
+  class_login,
+} from "./clients";
+import type Node from "element-plus/es/components/tree/src/model/node";
 
 const route = useRoute();
 const router = useRouter();
@@ -23,7 +29,7 @@ const router = useRouter();
 async function createEditionMap(
   before: Node,
   after: Node
-): PatchRules | undefined {
+): Promise<PatchRules | undefined> {
   if (Number.isInteger(Number(after.parent.data.value))) {
     Notificator(h("span", null, ["非法操作。"]), "error");
   } else if (after.parent.data.value.includes("_")) {
@@ -34,7 +40,7 @@ async function createEditionMap(
       position,
       department,
     });
-    await client?.put(patch.to_obj().number, patch);
+    await (client as MemberClient)?.put(patch.to_obj().number, patch);
     return patch;
   } else if (after.data.value.includes("_")) {
     const info = after.data.value;
@@ -44,7 +50,7 @@ async function createEditionMap(
       position,
       department,
     });
-    await client?.put(patch.to_obj().number, patch);
+    await (client as MemberClient)?.put(patch.to_obj().number, patch);
     return patch;
   }
 }
@@ -64,16 +70,25 @@ const current =
     : "/member/admin";
 const client =
   props.type === "class"
-    ? new MemberListClientForClass(props)
-    : new MemberClient(props);
+    ? // eslint-disable-next-line prettier/prettier
+      new MemberListClientForClass((props as unknown) as class_login)
+    : // eslint-disable-next-line prettier/prettier
+      new MemberClient((props as unknown) as login);
 let isRegistingMember = ref(route.params.status === "register");
 const isFetchComplete = ref(false);
 let isSubmiting = ref(false);
 const information: member = reactive(personExample());
 information.number = Number(route.query.number) ?? 0;
-information.union.department = route.query.department ?? "";
-information.union.position = route.query.position ?? "";
-information.name = route.query.name ?? "";
+information.union.department = (route.query.department as string) ?? "";
+information.union.position = ((route.query.position as string) ?? "none") as
+  | "register"
+  | "clerk"
+  | "vice-minister"
+  | "minister"
+  | "vice-chairman"
+  | "chairman"
+  | "none";
+information.name = (route.query.name as string) ?? "";
 const departments = ref<
   {
     name: string;
@@ -134,7 +149,7 @@ axios(`${baseurl}power/list`).then((response) => {
 const refresh = async () => {
   loading.value = true;
   isFetchComplete.value = false;
-  const response = await client.get();
+  const response = await client?.get();
   loading.value = false;
   isFetchComplete.value = true;
   if (response.data.status === "ok") {
@@ -144,7 +159,7 @@ const refresh = async () => {
 refresh();
 const deletePerson = async (number: number) => {
   loading.value = true;
-  const response = await client.delete(number);
+  const response = await (client as MemberClient)?.delete(number);
   if (response.data.status === "ok") {
     sucfuc();
   } else {
@@ -154,7 +169,7 @@ const deletePerson = async (number: number) => {
 };
 const vioPerson = async (number: number) => {
   loading.value = true;
-  const response = await client.patch(number);
+  const response = await (client as MemberClient)?.patch(number);
   if (response.data.status === "ok") {
     sucfuc();
   } else {
@@ -212,14 +227,14 @@ const createMember = async () => {
     if (beTheViceMinisterInTheSameTime.value) {
       information.union.admin.push("member-volunteer");
     }
-    const response = await client.post(information);
+    const response = await client?.post(information);
     isSubmiting.value = false;
     if (response.data.status === "ok") {
       sucfuc();
     } else {
       failfuc(response.data.reason, response.data.text);
     }
-    form.value.resetFields();
+    form?.value?.resetFields();
     information.union.position = "clerk";
     refresh();
   }
@@ -239,7 +254,8 @@ watch(isRegistingMember, () => {
           <el-button
             type="success"
             circle
-            plain
+            text
+            bg
             :icon="Refresh"
             @click="refresh"
           />
@@ -252,7 +268,8 @@ watch(isRegistingMember, () => {
           <el-button
             :type="isRegistingMember ? 'danger' : 'primary'"
             circle
-            plain
+            text
+            bg
             :icon="isRegistingMember ? Close : Plus"
             @click="isRegistingMember = !isRegistingMember"
           />
@@ -382,7 +399,6 @@ watch(isRegistingMember, () => {
                 v-else
                 :underline="false"
                 :type="node.data.value === 'not' ? 'error' : 'default'"
-                @click="openDialog(node.data.value)"
               >
                 {{ node.label }}
               </el-link>

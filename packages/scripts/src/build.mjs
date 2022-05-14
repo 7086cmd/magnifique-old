@@ -7,6 +7,7 @@
 import { build as buildFrontEnd } from "vite";
 import { build as buildBackEnd } from "esbuild";
 import { build as buildApp } from "electron-builder";
+import { md_transfer } from "./modules/md.mjs";
 import "./lint.mjs";
 const main = async () => {
   await buildFrontEnd();
@@ -36,6 +37,7 @@ const main = async () => {
     treeShaking: true,
     external: ["electron"],
     metafile: true,
+    plugins: [md_transfer()],
   });
   await buildBackEnd({
     entryPoints: ["packages/server/src/preload.ts"],
@@ -62,6 +64,7 @@ const main = async () => {
     },
     treeShaking: true,
     external: ["electron"],
+    plugins: [md_transfer()],
   });
   await buildBackEnd({
     entryPoints: ["packages/client/src/main.js"],
@@ -88,6 +91,7 @@ const main = async () => {
     },
     treeShaking: true,
     external: ["electron"],
+    plugins: [md_transfer()],
   });
   await buildBackEnd({
     entryPoints: ["packages/client/src/preload.ts"],
@@ -114,6 +118,7 @@ const main = async () => {
     },
     treeShaking: true,
     external: ["electron"],
+    plugins: [md_transfer()],
   });
   await buildApp({
     publish: "always",

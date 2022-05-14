@@ -9,6 +9,7 @@ import "./index.css";
 import "katex/dist/katex.css";
 import "katex/dist/katex.mjs";
 import "nprogress/nprogress.css";
+import "element-plus/theme-chalk/dark/css-vars.css";
 import App from "./App.vue";
 import router from "./router";
 import i18n from "./i18n";

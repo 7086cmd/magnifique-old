@@ -1,5 +1,7 @@
+/** @format */
+
 declare interface group {
-  loader: number
-  name: string
-  id: string
+  loader: number;
+  name: string;
+  id: string;
 }

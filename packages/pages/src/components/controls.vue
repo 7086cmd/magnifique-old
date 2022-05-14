@@ -4,6 +4,10 @@
 import { ref } from "vue";
 import { Close, Minus, Plus } from "@element-plus/icons-vue";
 import { hideWindow, minWindow, maxWindow } from "../tauri";
+import { Moon, Sunny } from "@element-plus/icons-vue";
+import { useDark } from "@vueuse/core";
+import { useToggle } from "@vueuse/shared";
+const isDark = useDark();
 
 let isClient = ref(false);
 try {
@@ -30,6 +34,18 @@ const isInTauri = ref("__TAURI_IPC__" in window || isClient.value);
 <template>
   <div>
     <div style="text-align: right">
+      <el-switch
+        v-model="isDark"
+        inline-prompt
+        :active-icon="Moon"
+        active-color="#2c2c2c"
+        :inactive-icon="Sunny"
+        inactive-color="#f2f2f2"
+        @change="useToggle(isDark)"
+      />
+      <el-divider direction="vertical"></el-divider>
+      Magnifique v2.0.0
+      <el-divider direction="vertical"></el-divider>
       <el-button
         v-if="isInTauri"
         style="text-align: right"

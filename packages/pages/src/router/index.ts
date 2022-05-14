@@ -24,7 +24,14 @@ import loginPortableVue from "../views/Member/login_portable.vue";
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "Home",
+    component: Home,
+  },
+  {
+    path: "/login/",
+    component: Home,
+  },
+  {
+    path: "/login/:type",
     component: Home,
   },
   {

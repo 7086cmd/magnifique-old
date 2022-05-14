@@ -66,7 +66,14 @@ const login = () => {
       <el-input v-model="password" type="password" @keydown.enter="login" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" style="width: 100%" plain round @click="login">
+      <el-button
+        type="primary"
+        style="width: 100%"
+        text
+        bg
+        round
+        @click="login"
+      >
         确定
       </el-button>
     </el-form-item>

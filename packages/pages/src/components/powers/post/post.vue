@@ -24,7 +24,8 @@ const props = defineProps<{
   name?: string;
 }>();
 
-const fetcher = new PostFetcher(props as unknown as fetcherOptions);
+// eslint-disable-next-line prettier/prettier
+const fetcher = new PostFetcher((props as unknown) as fetcherOptions);
 
 let postData = reactive(fetcher.postExample);
 let isFetchingData = ref(false);
@@ -90,7 +91,10 @@ const submitpost = async () => {
         <el-table-column type="expand">
           <template #header>
             <el-button
-              type="text"
+              type="primary"
+              text
+              bg
+              circle
               :icon="Refresh"
               @click="refresh()"
             ></el-button>
@@ -106,7 +110,10 @@ const submitpost = async () => {
           <template #header>
             <el-button
               v-if="props.type === 'member'"
-              type="text"
+              type="success"
+              bg
+              text
+              circle
               :icon="CirclePlus"
               @click="newpost = true"
             />
@@ -114,7 +121,10 @@ const submitpost = async () => {
           <template #default="prop">
             <el-button
               v-if="props.type !== 'class'"
-              type="text"
+              type="success"
+              circle
+              bg
+              text
               :icon="Download"
               size="small"
               @click="download(prop)"
@@ -123,7 +133,10 @@ const submitpost = async () => {
               <template #reference>
                 <el-button
                   v-if="props.type !== 'class'"
-                  type="text"
+                  type="danger"
+                  text
+                  circle
+                  bg
                   :icon="DeleteFilled"
                   size="small"
                 />
@@ -186,8 +199,15 @@ const submitpost = async () => {
       </el-form>
       <template #footer>
         <span>
-          <el-button @click="newpost = false"> 取消 </el-button>
-          <el-button type="primary" :loading="isCreating" @click="submitpost">
+          <el-button round text bg @click="newpost = false"> 取消 </el-button>
+          <el-button
+            round
+            text
+            bg
+            type="primary"
+            :loading="isCreating"
+            @click="submitpost"
+          >
             确定
           </el-button>
         </span>
