@@ -31,7 +31,9 @@
 12. Message page, use `button` instead of `link` to choose the dialog;
 13. Deduction page, delete the `callback` function which can replaced by `messages`;
 14. Delete feedback page which can replaced by `messages`;
-15. Add CHANGELOG dialog for note.
+15. Add CHANGELOG dialog for note;
+16. Add [autocomplete](https://staging.element-plus.org/zh-CN/component/input.html#%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8) for member login in order to choose the number have logined directly, chich can let us login faster;
+17. Edit main color for fonts to default so as to adapt dark mode better.
 
 ### Fixes in v2.0.0
 
@@ -42,4 +44,4 @@
 
 1. Cannot post the post;
 2. Editor supportion is not good when `dark` mode;
-3. We need to refresh the page after deete a file.
+3. We need to refresh the page after delete a file.
