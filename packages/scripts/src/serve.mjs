@@ -1,10 +1,8 @@
 /**
- * /* eslint-disable @typescript-eslint/no-unused-vars
- *
  * @format
  */
-
 /* eslint-disable no-console */
+
 import { build } from "esbuild";
 import chalk from "chalk";
 import { resolve } from "path";
@@ -13,7 +11,6 @@ import glob from "glob";
 import { exec } from "child_process";
 import { createServer } from "vite";
 import { platform } from "os";
-import { md_transfer } from "./modules/md.mjs";
 
 const getGlob = () => [...glob.sync("packages/**/*.*")];
 
@@ -44,6 +41,7 @@ const generate = async () => {
     loader: {
       ".ts": "ts",
       ".png": "file",
+      ".md": "text",
     },
     target: ["node16"],
     logLevel: "info",
@@ -61,7 +59,6 @@ const generate = async () => {
     bundle: true,
     sourcemap: true,
     external: ["electron"],
-    plugins: [md_transfer()],
   });
   console.log(chalk.green(`[Build] ${getGlob().length} files have built.`));
 };

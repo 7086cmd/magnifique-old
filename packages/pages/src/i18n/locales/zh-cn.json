@@ -1,0 +1,115 @@
+{
+  "title": {
+    "edit-password": {
+      "title": "修改密码",
+      "dialog": {
+        "old": "原密码",
+        "new": "新密码"
+      }
+    },
+    "exit-login": {
+      "title": "退出登录"
+    }
+  },
+  "login": {
+    "title": "登录 Magnifique.",
+    "placeholder": "请选择",
+    "class": "班级",
+    "grade": "年级",
+    "number": "学号",
+    "name": "姓名",
+    "password": "密码",
+    "submit": "登录",
+    "entrance": "根据登录信息直接进入",
+    "methods": {
+      "class": "班级登录",
+      "member": "成员登录",
+      "admin": "管理员登录"
+    },
+    "notify": {
+      "unopen": "未开启通知",
+      "request": "请开启通知",
+      "welcome": "欢迎使用 Magnifique"
+    }
+  },
+  "methods": {
+    "submit": "提交",
+    "cancel": "取消"
+  },
+  "class": {
+    "grade": {
+      "1": "初一",
+      "2": "初二",
+      "3": "初三"
+    },
+    "expression": "{grade}（{number}班）",
+    "menu": {
+      "back": "返回",
+      "home": "主页",
+      "list": "列表",
+      "chart": "绘图",
+      "msg": "消息"
+    },
+    "home": {
+      "title": "班级主页建设中……"
+    }
+  },
+  "powers": {
+    "method": {
+      "refresh": "刷新",
+      "add": "新建",
+      "delete": "删除",
+      "download": "下载",
+      "edit": "修改",
+      "close": "关闭"
+    },
+    "member": {
+      "index": "成员",
+      "desc": {
+        "name": "姓名",
+        "number": "学号",
+        "department": "部门",
+        "duty": "职权",
+        "admin": "管理",
+        "responsibility": "责任",
+        "score": "分数",
+        "vio": "被通报次数",
+        "fb": "反馈次数"
+      },
+      "position": {
+        "register": "注册",
+        "clerk": "干事",
+        "vice-minister": "副部长",
+        "minister": "部长",
+        "vice-chairman": "副主席",
+        "chairman": "主席",
+        "none": "非成员"
+      },
+      "add": {
+        "name": "姓名",
+        "number": "学号",
+        "department": "部门",
+        "position": "职位",
+        "sametime": "在部门内同时担任副部长职务",
+        "powers": "管理权力"
+      },
+      "confirm": {
+        "delete": "确定要删除成员吗？",
+        "vio": "确定要删除 15 分的分数吗？"
+      },
+      "uncorrect": "不正确的{content}"
+    },
+    "deduction": {
+      "index": "扣分",
+      "desc": {
+        "person": "扣分者",
+        "reason": "原因",
+        "description": "解释说明",
+        "deduction": "扣分数",
+        "time": "时间",
+        "place": "地点",
+        "deductor": "扣分者"
+      }
+    }
+  }
+}

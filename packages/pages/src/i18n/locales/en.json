@@ -1,0 +1,118 @@
+{
+  "title": {
+    "edit-password": {
+      "title": "Edit Password",
+      "dialog": {
+        "old": "Old Password",
+        "new": "New Password"
+      }
+    },
+    "exit-login": {
+      "title": "Exit"
+    }
+  },
+  "login": {
+    "title": "Login to Magnifique.",
+    "placeholder": "Please Choose",
+    "class": "Class",
+    "grade": "Grade",
+    "number": "No. ",
+    "name": "Name",
+    "password": "Password",
+    "submit": "Login",
+    "entrance": "Directly enter with the login info saved.",
+    "methods": {
+      "class": "Login for class",
+      "member": "Login for member",
+      "admin": "Login for admin"
+    },
+    "notify": {
+      "unopen": "Notification Method is not enabled.",
+      "request": "Please open the Notification Method",
+      "welcome": "Welcome to use Magnifique"
+    }
+  },
+  "methods": {
+    "submit": "Submit",
+    "cancel": "Cancel"
+  },
+  "class": {
+    "grade": {
+      "1": "Grade 1",
+      "2": "Grade 2",
+      "3": "Grade 3"
+    },
+    "expression": "Class {number}, {grade}",
+    "menu": {
+      "back": "Back",
+      "home": "Homepage",
+      "list": "List",
+      "chart": "Chart",
+      "msg": "Messages"
+    },
+    "home": {
+      "title": "Developing class home page..."
+    }
+  },
+  "powers": {
+    "method": {
+      "refresh": "Refresh",
+      "add": "New",
+      "delete": "Delete",
+      "download": "Download",
+      "edit": "Edit",
+      "close": "Close"
+    },
+    "member": {
+      "index": "Member",
+      "desc": {
+        "name": "Name",
+        "number": "Number",
+        "department": "Department",
+        "duty": "Duty",
+        "admin": "Admin",
+        "responsibility": "Responsibility",
+        "score": "Score",
+        "vio": "Times Violated",
+        "fb": "Times Feedback"
+      },
+      "position": {
+        "register": "Register",
+        "clerk": "Clerk",
+        "vice-minister": "Vice Minister",
+        "minister": "Minister",
+        "vice-chairman": "Vice Chairman",
+        "chairman": "Chairman",
+        "none": "Not a member"
+      },
+      "add": {
+        "name": "Name",
+        "number": "Number",
+        "department": "Department",
+        "position": "Position",
+        "sametime": "Be a Vice Minister in the department as the same time.",
+        "powers": "Powers"
+      },
+      "confirm": {
+        "delete": "Already to delete?",
+        "vio": "Already to delete 15 for him/her?"
+      },
+      "uncorrect": "{content} is not correct."
+    },
+    "deduction": {
+      "index": "Deduction",
+      "desc": {
+        "person": "Person",
+        "reason": "Reason",
+        "description": "Desc.",
+        "deduction": "Deduction",
+        "time": "Deduct Time",
+        "place": "Place",
+        "deductor": "Deductor"
+      },
+      "confirm": {
+        "delete": "Already to delete?"
+      }
+    }
+  }
+}

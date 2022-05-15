@@ -95,6 +95,7 @@ const submitpost = async () => {
               text
               bg
               circle
+              size="small"
               :icon="Refresh"
               @click="refresh()"
             ></el-button>

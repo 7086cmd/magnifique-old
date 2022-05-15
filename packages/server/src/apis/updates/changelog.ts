@@ -2,4 +2,6 @@
 
 import changelog from "../../../../../CHANGELOG.md";
 
-export { changelog };
+let body = changelog as string;
+
+export { body };

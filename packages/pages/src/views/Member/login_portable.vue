@@ -4,6 +4,9 @@
 import LoginMember from "./Login.vue";
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const isOpenWindow = ref(false);
 
@@ -22,7 +25,7 @@ const route = useRoute();
       :show-close="false"
       :close-on-press-escape="false"
     >
-      <h4>请先登录</h4>
+      <h4>{{ t("login.title") }}</h4>
       <login-member
         :number-def="route.params.id"
         :redr="route.query.redirection"

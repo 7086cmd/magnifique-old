@@ -19,6 +19,9 @@ import { createArrayToObjectTramsformer } from "../../../modules/utils";
 import dayjs from "dayjs";
 import DeductionDescription from "../../lists/DeductionDescription.vue";
 import toPort from "../../../modules/to-port";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   password: string;
@@ -271,7 +274,7 @@ fetching();
               bg
               type="primary"
               :icon="Refresh"
-              size="mini"
+              size="small"
               @click="fetching()"
             ></el-button>
           </template>
@@ -279,10 +282,22 @@ fetching();
             <deduction-description :data="proping.row" />
           </template>
         </el-table-column>
-        <el-table-column prop="person" label="违纪者" />
-        <el-table-column prop="deduction" label="扣分数" />
-        <el-table-column prop="reason" label="原因" />
-        <el-table-column prop="time" label="时间" />
+        <el-table-column :label="t('powers.deduction.desc.person')">
+          <template #default="prop">
+            <member-dialog
+              :number="Number(prop.row.person.toString().trim())"
+            ></member-dialog>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="deduction"
+          :label="t('powers.deduction.desc.deduction')"
+        />
+        <el-table-column
+          prop="reason"
+          :label="t('powers.deduction.desc.reason')"
+        />
+        <el-table-column prop="time" :label="t('powers.deduction.desc.time')" />
         <el-table-column align="right" fixed="right">
           <template #header>
             <el-button
@@ -292,22 +307,23 @@ fetching();
               circle
               type="success"
               :icon="Box"
-              size="mini"
+              size="small"
               @click="isExporting = true"
-            ></el-button>
+            />
             <el-button
               v-if="props.type === 'member'"
               type="warning"
               text
               bg
               circle
+              size="small"
               :icon="CirclePlus"
               @click="newDeduction = true"
-            ></el-button>
+            />
           </template>
           <template #default="proping">
             <el-popconfirm
-              title="确定删除？"
+              :title="t('powers.deduction.confirm.delete')"
               @confirm="deleteDeduction(proping)"
             >
               <template #reference>
@@ -331,17 +347,17 @@ fetching();
 
     <el-dialog v-model="newDeduction" title="新建扣分" center width="60%">
       <el-form :model="deductionData" label-position="right">
-        <el-form-item label="时间" style="width: 100%">
+        <el-form-item :label="t('powers.deduction.desc.time')">
           <el-date-picker
             v-model="deductionData.time"
             type="datetime"
             style="width: 100%"
           />
         </el-form-item>
-        <el-form-item label="违者">
+        <el-form-item :label="t('powers.deduction.desc.person')">
           <el-input v-model="deductionData.person" />
         </el-form-item>
-        <el-form-item label="原因">
+        <el-form-item :label="t('powers.deduction.desc.reason')">
           <el-select v-model="typs" style="width: 100%" multiple>
             <el-option
               v-for="i in typicals"
@@ -351,13 +367,13 @@ fetching();
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="扣分">
+        <el-form-item :label="t('powers.deduction.desc.deduction')">
           <el-input v-model="deductionData.deduction" readonly></el-input>
         </el-form-item>
-        <el-form-item label="地点">
+        <el-form-item :label="t('powers.deduction.desc.place')">
           <el-input v-model="deductionData.place"></el-input>
         </el-form-item>
-        <el-form-item label="解释">
+        <el-form-item :label="t('powers.deduction.desc.description')">
           <el-input
             v-model="deductionData.description"
             type="textarea"
@@ -368,7 +384,7 @@ fetching();
       <template #footer>
         <span>
           <el-button text round bg @click="newDeduction = false">
-            取消
+            {{ t("methods.cancel") }}
           </el-button>
           <el-button
             type="primary"
@@ -378,7 +394,7 @@ fetching();
             :loading="isFetching"
             @click="submitDeduction"
           >
-            确定
+            {{ t("methods.submit") }}
           </el-button>
         </span>
       </template>
@@ -409,10 +425,12 @@ fetching();
       </el-form>
       <template #footer>
         <span className="dialog-footer">
-          <el-button @click="isExporting = false"> 取消 </el-button>
           <el-button
             v-if="props.type === 'admin'"
             type="primary"
+            text
+            bg
+            round
             :loading="isSubmiting"
             @click="createDataAdmin"
           >
@@ -421,6 +439,9 @@ fetching();
           <el-button
             v-if="props.type === 'member_admin'"
             type="primary"
+            text
+            bg
+            round
             :loading="isSubmiting"
             @click="createDataMember"
           >

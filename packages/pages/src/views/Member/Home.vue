@@ -7,7 +7,9 @@ import axios from "axios";
 import baseurl from "../../modules/baseurl";
 import { List, Back, Box, Odometer, Magnet } from "@element-plus/icons-vue";
 import ControlsPage from "../../components/controls-page.vue";
-import { ElMessageBox } from "element-plus";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 let heightClient = ref(window.innerHeight);
 
@@ -33,15 +35,7 @@ axios(`${baseurl}member/${number}/login?password=${password}`).then(
   (response) => {
     if (response.data.status !== "ok") {
       sessionStorage.removeItem("memberLoginInfo");
-      ElMessageBox.alert(
-        "您的密码有误，已为您引导到班级界面，点击“成员登录”即可再次登录。",
-        "密码错误",
-        {
-          type: "error",
-          center: true,
-        }
-      );
-      router.push("/");
+      router.push("/login/member");
     }
   }
 );

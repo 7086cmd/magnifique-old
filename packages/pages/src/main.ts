@@ -3,7 +3,8 @@
 import { createApp } from "vue";
 import ElementPlus from "element-plus";
 import * as ElIconModules from "@element-plus/icons-vue";
-import elementPlusLang from "element-plus/es/locale/lang/zh-cn";
+import zhCn from "element-plus/es/locale/lang/zh-cn";
+import en from "element-plus/es/locale/lang/en";
 import "element-plus/dist/index.css";
 import "./index.css";
 import "katex/dist/katex.css";
@@ -53,7 +54,7 @@ import { ElCollapseTransition } from "element-plus";
 const app = createApp(App);
 
 app.use(ElementPlus, {
-  locale: elementPlusLang,
+  locale: navigator.language === "zh-CN" ? zhCn : en,
   size: "default",
 });
 // app.use(Vant)

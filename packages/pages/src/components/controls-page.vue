@@ -113,13 +113,13 @@ const isDark = useDark();
               <el-icon>
                 <Edit />
               </el-icon>
-              {{ t("class-dropdown.edit-password") }}
+              {{ t("title.edit-password.title") }}
             </el-dropdown-item>
             <el-dropdown-item @click="exit">
               <el-icon>
                 <Close />
               </el-icon>
-              {{ t("class-dropdown.log-out") }}
+              {{ t("title.exit-login.title") }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -157,30 +157,32 @@ const isDark = useDark();
     </div>
     <el-drawer
       v-model="reset_password"
-      title="修改密码"
+      :title="t('title.edit-password.title')"
       direction="rtl"
       size="40%"
       style="text-align: center"
     >
       <el-form v-model="newpwd">
-        <el-form-item label="原密码">
+        <el-form-item :label="t('title.edit-password.dialog.old')">
           <el-input v-model="newpwd.oldpwd" type="password" />
         </el-form-item>
-        <el-form-item label="新密码">
+        <el-form-item :label="t('title.edit-password.dialog.new')">
           <el-input v-model="newpwd.newpwd1" type="password" />
         </el-form-item>
-        <el-form-item label="新密码">
+        <el-form-item :label="t('title.edit-password.dialog.new')">
           <el-input v-model="newpwd.newpwd2" type="password" />
         </el-form-item>
         <el-form-item>
-          <el-button plain @click="reset_password = false"> 取消 </el-button>
+          <el-button plain @click="reset_password = false">
+            {{ t("methods.cancel") }}
+          </el-button>
           <el-button
             type="primary"
             plain
             :loading="isSubmitingPassword"
             @click="npd"
           >
-            确定
+            {{ t("methods.submit") }}
           </el-button>
         </el-form-item>
       </el-form>

@@ -11,7 +11,6 @@ import baseurl from "../../../modules/baseurl";
 import personExample from "../../../../examples/person";
 import sucfuc from "../../../modules/sucfuc";
 import failfuc from "../../../modules/failfuc";
-import positions from "./positions";
 import type { FormInstance } from "element-plus";
 import { AddMemberFormRule } from "./member_datas/rules";
 import { PatchRules, Notificator } from "./member_datas/map";
@@ -21,10 +20,34 @@ import {
   login,
   class_login,
 } from "./clients";
+import { useI18n } from "vue-i18n";
 import type Node from "element-plus/es/components/tree/src/model/node";
 
+let positions = ref<
+  Array<{
+    name: string;
+    value: string;
+  }>
+>([]);
+
+const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
+
+[
+  "none",
+  "register",
+  "clerk",
+  "vice-minister",
+  "minister",
+  "vice-chairman",
+  "chairman",
+].forEach((item) => {
+  positions.value.push({
+    name: t("powers.member.position." + item),
+    value: item,
+  });
+});
 
 async function createEditionMap(
   before: Node,
@@ -79,6 +102,7 @@ const isFetchComplete = ref(false);
 let isSubmiting = ref(false);
 const information: member = reactive(personExample());
 information.number = Number(route.query.number) ?? 0;
+if (Number.isNaN(information.number)) information.number = 0;
 information.union.department = (route.query.department as string) ?? "";
 information.union.position = ((route.query.position as string) ?? "none") as
   | "register"
@@ -250,7 +274,11 @@ watch(isRegistingMember, () => {
   <div>
     <el-card>
       <template #default>
-        <el-tooltip content="刷新内容" placement="bottom" effect="light">
+        <el-tooltip
+          :content="t('powers.method.refresh')"
+          placement="bottom"
+          effect="light"
+        >
           <el-button
             type="success"
             circle
@@ -261,7 +289,11 @@ watch(isRegistingMember, () => {
           />
         </el-tooltip>
         <el-tooltip
-          :content="isRegistingMember ? '关闭添加成员' : '添加成员'"
+          :content="
+            isRegistingMember
+              ? t('powers.method.close')
+              : t('powers.method.add')
+          "
           placement="bottom"
           effect="light"
         >
@@ -282,15 +314,15 @@ watch(isRegistingMember, () => {
             ref="form"
             :model="information"
             :rules="AddMemberFormRule"
-            title="注册成员"
+            :title="t('powers.method.add')"
           >
-            <el-form-item label="姓名">
+            <el-form-item :label="t('powers.member.add.name')">
               <el-input v-model="information.name" />
             </el-form-item>
-            <el-form-item label="学号">
+            <el-form-item :label="t('powers.member.add.number')">
               <el-input v-model="information.number" />
             </el-form-item>
-            <el-form-item label="加入部门">
+            <el-form-item :label="t('powers.member.add.department')">
               <el-select
                 v-model="information.union.department"
                 :disabled="departmentCannotEdit"
@@ -305,7 +337,7 @@ watch(isRegistingMember, () => {
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="担任职位">
+            <el-form-item :label="t('powers.member.add.position')">
               <el-select
                 v-model="information.union.position"
                 :disabled="positionCannotEdit"
@@ -321,7 +353,7 @@ watch(isRegistingMember, () => {
             </el-form-item>
             <el-form-item
               v-if="information.union.position === 'vice-chairman'"
-              label="管理权力"
+              :label="t('powers.member.add.powers')"
             >
               <el-select
                 v-model="information.union.admin"
@@ -339,16 +371,18 @@ watch(isRegistingMember, () => {
               <el-checkbox
                 v-if="information.union.department !== ''"
                 v-model="beTheViceMinisterInTheSameTime"
-                label="在部门内同时担任副部长职务"
+                :label="t('powers.member.add.sametime')"
               ></el-checkbox>
             </el-form-item>
             <el-button
               v-loading="isSubmiting"
               round
+              text
+              bg
               type="primary"
               @click="createMember"
             >
-              确定
+              {{ t("methods.submit") }}
             </el-button>
           </el-form>
         </el-collapse-transition>

@@ -2040,6 +2040,10 @@ router.get("/config", async (ctx) => {
   ctx.response.body = readData();
 });
 
+router.get("/update", (ctx) => {
+  ctx.response.body = API.ChangeLog.latest();
+});
+
 setInterval(() => {
   const members = memberActions.getAllAsRaw().details;
   members.forEach((item) => {

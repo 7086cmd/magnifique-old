@@ -7,12 +7,16 @@ import post from "../../components/powers/post/post.vue";
 import volunteer from "./lists/volunteer.vue";
 import memberDev from "../../components/powers/member/Member.vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
 let page = ref(route.params.page ?? "member");
 watch(page, () => {
   router.push("/class/list/" + page.value + "/");
 });
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+/// @ts-ignore
 watch(route.params.page, () => {
   if (route.params.page !== page.value) page.value = route.params.page;
 });
@@ -23,8 +27,8 @@ const { gradeid, classid, password } = JSON.parse(
 <template>
   <transition name="el-fade-in" appear>
     <div>
-      <el-tabs v-model="page" tab-position="left" style="padding-top: 10%">
-        <el-tab-pane label="成员" name="member" lazy>
+      <el-tabs v-model="page" tab-position="left">
+        <el-tab-pane :label="t('powers.member.index')" name="member" lazy>
           <member-dev
             :gradeid="gradeid"
             :classid="classid"
@@ -32,7 +36,7 @@ const { gradeid, classid, password } = JSON.parse(
             type="class"
           />
         </el-tab-pane>
-        <el-tab-pane label="扣分" name="deduction" lazy>
+        <el-tab-pane :label="t('powers.deduction.index')" name="deduction" lazy>
           <deduction
             :gradeid="gradeid"
             :classid="classid"

@@ -9,6 +9,10 @@ import { useRouter, useRoute } from "vue-router";
 import AdminLogin from "./Admin/Login.vue";
 import { useWebNotification } from "@vueuse/core";
 import { ElMessageBox } from "element-plus";
+import InsertDialog from "../modules/updates/show.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 let classEntranceAble = ref("classLoginInfo" in localStorage);
 let memberEntranceAble = ref("memberLoginInfo" in sessionStorage);
@@ -28,13 +32,13 @@ const toTag = (tag: string) => {
 };
 
 const supportment = useWebNotification({
-  title: "欢迎使用Magnifique",
+  title: t("login.notify.welcome"),
   dir: "auto",
   lang: "zh-cn",
 }).isSupported;
 
 if (!supportment) {
-  ElMessageBox.alert("请开启通知", "未开启通知", {
+  ElMessageBox.alert(t("login.notify.unopen"), t("login.notify.request"), {
     center: true,
     type: "warning",
   });
@@ -50,10 +54,11 @@ if (!supportment) {
       <el-container>
         <el-aside width="30%"></el-aside>
         <el-main style="padding-top: 2%">
-          <h3>登录 Magnifique.</h3>
+          <h3>{{ t("login.title") }}</h3>
+          <insert-dialog />
           <el-card shadow="never">
             <el-tabs v-model="choice">
-              <el-tab-pane name="class" label="班级登录">
+              <el-tab-pane name="class" :label="t('login.methods.class')">
                 <class-login></class-login>
                 <el-button
                   style="width: 100%"
@@ -62,11 +67,10 @@ if (!supportment) {
                   round
                   :disabled="!classEntranceAble"
                   @click="toTag('class')"
-                >
-                  根据登录信息直接进入
-                </el-button>
+                  v-text="t('login.entrance')"
+                />
               </el-tab-pane>
-              <el-tab-pane name="member" label="成员登录">
+              <el-tab-pane name="member" :label="t('login.methods.member')">
                 <member-login></member-login>
                 <el-button
                   style="width: 100%"
@@ -75,11 +79,10 @@ if (!supportment) {
                   round
                   :disabled="!memberEntranceAble"
                   @click="toTag('member')"
-                >
-                  根据登录信息直接进入
-                </el-button>
+                  v-text="t('login.entrance')"
+                />
               </el-tab-pane>
-              <el-tab-pane name="admin" label="管理员登录">
+              <el-tab-pane name="admin" :label="t('login.methods.admin')">
                 <admin-login></admin-login>
                 <el-button
                   style="width: 100%"
@@ -88,9 +91,8 @@ if (!supportment) {
                   round
                   :disabled="!adminEntranceAble"
                   @click="toTag('admin')"
-                >
-                  根据登录信息直接进入
-                </el-button>
+                  v-text="t('login.entrance')"
+                />
               </el-tab-pane>
             </el-tabs>
           </el-card>

@@ -24,11 +24,7 @@ watch(nativeName, () => {
 <template>
   <transition name="el-fade-in" appear>
     <div>
-      <el-tabs
-        v-model="nativeName"
-        tab-position="left"
-        style="padding-top: 10%"
-      >
+      <el-tabs v-model="nativeName" tab-position="left">
         <el-tab-pane label="扣分" name="deduction" lazy>
           <deduction type="admin" :password="password" />
         </el-tab-pane>

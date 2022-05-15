@@ -3,19 +3,27 @@
 <!-- eslint-disable vue/html-self-closing -->
 <!-- eslint-disable vue/max-attributes-per-line -->
 <script lang="ts" setup>
-/* global option */
 import { ref, defineProps, toRefs } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import baseurl from "../../modules/baseurl";
 import { encode } from "../../components/record-data";
 import failfuc from "../../modules/failfuc";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   numberDef?: string;
   passwordDef?: string;
   redr?: string;
 }>();
+
+interface option {
+  value: string;
+  label: string;
+  children?: option[];
+}
 
 const { numberDef, passwordDef, redr } = toRefs(props);
 const router = useRouter();
@@ -50,10 +58,10 @@ const login = () => {
 
 <template>
   <el-form>
-    <el-form-item label="学号">
+    <el-form-item :label="t('login.number')">
       <el-input v-model="number" :disabled="numberDef !== undefined" />
     </el-form-item>
-    <el-form-item label="姓名">
+    <el-form-item :label="t('login.name')">
       <el-tree-select
         v-model="number"
         :disabled="numberDef !== undefined"
@@ -62,7 +70,7 @@ const login = () => {
         style="width: 100%"
       />
     </el-form-item>
-    <el-form-item label="密码">
+    <el-form-item :label="t('login.password')">
       <el-input v-model="password" type="password" @keydown.enter="login" />
     </el-form-item>
     <el-form-item>
@@ -74,7 +82,7 @@ const login = () => {
         round
         @click="login"
       >
-        确定
+        {{ t("methods.submit") }}
       </el-button>
     </el-form-item>
   </el-form>

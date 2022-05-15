@@ -11,7 +11,7 @@ import { ElNotification } from "element-plus";
 const router = useRouter();
 const props = defineProps<{ number: number; useTag: boolean }>();
 const fetched = ref(false);
-const { number, useTag } = toRefs(props);
+const { number } = toRefs(props);
 const info = ref<member_processed>();
 const isOk = ref(true);
 const openIt = ref(false);
@@ -28,7 +28,7 @@ axios(baseurl + "member/getinfo/" + (number?.value as number)).then(
 const gotoReg = () => {
   openIt.value = false;
   const params = new URLSearchParams();
-  params.set("number", number.value);
+  params.set("number", number.value.toString());
   router.push("/class/list/member/register/?" + params.toString());
   ElNotification({
     title: "已在成员界面为您引导到注册。",
@@ -44,19 +44,13 @@ const gotoReg = () => {
         <el-skeleton-item variant="text" style="width: 4em" />
       </template>
       <template #default>
-        <div v-if="useTag" @click="openIt = true">
-          <el-tag v-if="isOk && fetched" type="success">
+        <div @click="openIt = true">
+          <el-button v-if="isOk && fetched" text bg size="small" type="success">
             {{ info?.name }}
-          </el-tag>
-          <el-tag v-else-if="fetched" type="error">{{ number }}</el-tag>
-        </div>
-        <div v-else @click="openIt = true">
-          <el-link v-if="isOk && fetched" :underline="false">
-            {{ info?.name }}
-          </el-link>
-          <el-link v-else-if="fetched" :underline="false" type="error">
+          </el-button>
+          <el-button v-else-if="fetched" text bg size="small" type="danger">
             {{ number }}
-          </el-link>
+          </el-button>
         </div>
       </template>
     </el-skeleton>

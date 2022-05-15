@@ -267,7 +267,7 @@ watch(isShown, async () => {
 
 let editingTitle = ref(false);
 
-const deleteGroup = async (roomId?: string) => {
+const deleteGroup = async () => {
   ElMessageBox.prompt(
     h("span", null, [h("b", null, "危险！此操作不可逆！"), "输入密码以继续"]),
     "Think Twice, Delete Once!",
@@ -281,7 +281,7 @@ const deleteGroup = async (roomId?: string) => {
     }
   ).then(async () => {
     load.value = true;
-    await client.deleteRoom(roomId ?? roomData.value.id);
+    await client.deleteRoom(roomData.value.id);
     editingTitle.value = false;
     isShown.value = false;
     await refresh();
@@ -376,38 +376,47 @@ const handleUploadImage = async (
 
 <template>
   <div v-loading="load" @click="showIt = false" @contextmenu.prevent>
-    <el-input
-      ref="inputRef"
-      v-model="searcher"
-      size="large"
-      placeholder="输入以检索"
-      :prefix-icon="Search"
-    ></el-input>
-    <el-divider />
-    <div>
-      <el-button
-        circle
-        type="success"
-        text
-        bg
-        round
-        :icon="Plus"
-        @click="fullListLoad"
-      />
-      <el-button
-        v-if="
-          showIt &&
-          items.filter((x) => x.id === contexted)[0].members.length > 2
-        "
-        class="animate__animated animate__zoomInRight"
-        circle
-        type="danger"
-        text
-        bg
-        :icon="Delete"
-        @click="deleteGroup(contexted)"
-      />
-    </div>
+    <el-row>
+      <el-col :span="1">
+        <el-button
+          circle
+          type="success"
+          text
+          bg
+          round
+          size="large"
+          :icon="Plus"
+          @click="fullListLoad"
+        />
+      </el-col>
+      <el-col :span="1"> </el-col>
+      <el-col :span="18">
+        <el-input
+          ref="inputRef"
+          v-model="searcher"
+          size="large"
+          placeholder="输入以检索"
+          :prefix-icon="Search"
+        />
+      </el-col>
+      <el-col :span="1"></el-col>
+      <el-col :span="1">
+        <el-button
+          v-if="
+            showIt &&
+            items.filter((x) => x.id === contexted)[0].members.length > 2
+          "
+          class="animate__animated animate__zoomInRight"
+          circle
+          type="danger"
+          text
+          bg
+          size="small"
+          :icon="Delete"
+          @click="deleteGroup()"
+        />
+      </el-col>
+    </el-row>
     <el-divider />
     <el-scrollbar v-loading="isFetchingItems" max-height="480px">
       <div v-for="item in items" :key="item.id">
@@ -419,7 +428,8 @@ const handleUploadImage = async (
           >
             <el-button
               text
-              style="font-size: 20px"
+              :style="{ fontSize: '16px' }"
+              size="small"
               @click="getRoomMsg(item.id)"
               @mouseover="contexted = item.id"
               @click.stop
@@ -519,6 +529,7 @@ const handleUploadImage = async (
               :icon="More"
               text
               bg
+              circle
               type="text"
               @click.stop
             />
