@@ -30,7 +30,8 @@
 11. Change "Submit" text in class login to "Login";
 12. Message page, use `button` instead of `link` to choose the dialog;
 13. Deduction page, delete the `callback` function which can replaced by `messages`;
-14. Delete feedback page which can replaced by `messages`.
+14. Delete feedback page which can replaced by `messages`;
+15. Add CHANGELOG dialog for note.
 
 ### Fixes in v2.0.0
 
@@ -40,22 +41,5 @@
 ### Bug already have known in v2.0.0
 
 1. Cannot post the post;
-2. Editor supportion is not good when `dark` mode.
-
-<!-- Update. -->
-
-## v1.0.2
-
-### Features in v1.0.2
-
-1. The member [tree](https://staging.element-plus.org/zh-CN/component/tree.html);
-2. File [upload](https://staging.element-plus.org/zh-CN/component/upload.html) in chat;
-3. Speech and clipboard for messages;
-4. Image auto insertion and upload;
-5. Delete flatten part for members;
-6. Use 100% size in the drawer of message page;
-7. Add keydown event for logining;
-
-::: danger
-Update to private repo.
-:::
+2. Editor supportion is not good when `dark` mode;
+3. We need to refresh the page after deete a file.

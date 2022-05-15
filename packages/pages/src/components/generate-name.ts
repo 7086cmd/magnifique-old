@@ -14,9 +14,9 @@ export default async (
   const { t } = useI18n();
   if (type != undefined) {
     if (type.value == "class") {
-      return t("class-expression", {
-        grade: t("class.grades." + gradeid?.value),
-        class: classid?.value,
+      return t("class.expression", {
+        grade: t("class.grade." + gradeid?.value),
+        number: classid?.value,
       });
     } else if (type.value == "member") {
       return (await axios(`${baseurl}member/getinfo/${numb?.value}/`)).data

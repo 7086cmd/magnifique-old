@@ -5,13 +5,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import baseurl from "../../modules/baseurl";
-import {
-  HomeFilled as Home,
-  List,
-  Back,
-  PieChart,
-  Box,
-} from "@element-plus/icons-vue";
+import { HomeFilled as Home, List, Back, Box } from "@element-plus/icons-vue";
 import ControlsPage from "../../components/controls-page.vue";
 
 let heightClient = ref(window.innerHeight);
@@ -81,12 +75,6 @@ axios(`${baseurl}class/${gradeid}/${classid}/login?password=${password}`).then(
               <List />
             </el-icon>
             <template #title>列表</template>
-          </el-menu-item>
-          <el-menu-item index="/class/chart/">
-            <el-icon>
-              <PieChart />
-            </el-icon>
-            <template #title>绘图</template>
           </el-menu-item>
           <el-menu-item index="/class/message/">
             <el-icon>

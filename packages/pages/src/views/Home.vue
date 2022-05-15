@@ -9,7 +9,6 @@ import { useRouter, useRoute } from "vue-router";
 import AdminLogin from "./Admin/Login.vue";
 import { useWebNotification } from "@vueuse/core";
 import { ElMessageBox } from "element-plus";
-import InsertDialog from "../modules/updates/show.vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -55,7 +54,6 @@ if (!supportment) {
         <el-aside width="30%"></el-aside>
         <el-main style="padding-top: 2%">
           <h3>{{ t("login.title") }}</h3>
-          <insert-dialog />
           <el-card shadow="never">
             <el-tabs v-model="choice">
               <el-tab-pane name="class" :label="t('login.methods.class')">

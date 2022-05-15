@@ -12,6 +12,7 @@ import { hideWindow, minWindow, maxWindow } from "../tauri";
 import { Moon, Sunny } from "@element-plus/icons-vue";
 import { useDark } from "@vueuse/core";
 import { useToggle } from "@vueuse/shared";
+import InsertDialog from "../modules/updates/show.vue";
 
 const router = useRouter();
 
@@ -126,6 +127,7 @@ const isDark = useDark();
       </el-dropdown>
       <el-divider direction="vertical"></el-divider>
       Magnifique v2.0.0
+      <insert-dialog />
       <el-divider v-if="isInTauri" direction="vertical" />
       <el-button
         v-if="isInTauri"

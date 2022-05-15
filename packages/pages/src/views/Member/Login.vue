@@ -10,6 +10,14 @@ import baseurl from "../../modules/baseurl";
 import { encode } from "../../components/record-data";
 import failfuc from "../../modules/failfuc";
 import { useI18n } from "vue-i18n";
+import { uniq } from "lodash";
+
+if (!("memberSuggestions" in localStorage)) {
+  localStorage.setItem("memberSuggestions", JSON.stringify([]));
+}
+
+let suggestions =
+  JSON.parse(localStorage.getItem("memberSuggestions") ?? "[]") ?? [];
 
 const { t } = useI18n();
 
@@ -40,6 +48,14 @@ const login = () => {
     )}`
   ).then((response) => {
     if (response.data.status == "ok") {
+      if (!("memberSuggestions" in localStorage)) {
+        localStorage.setItem("memberSuggestions", JSON.stringify([]));
+      }
+      let item = localStorage.getItem("memberSuggestions") as string;
+      let item_json = JSON.parse(item) as { value: string }[];
+      item_json.push({ value: String(number.value) });
+      item_json = uniq(item_json);
+      localStorage.setItem("memberSuggestions", JSON.stringify(item_json));
       router.push(redr?.value ?? "/member/");
       sessionStorage.setItem(
         "memberLoginInfo",
@@ -59,7 +75,12 @@ const login = () => {
 <template>
   <el-form>
     <el-form-item :label="t('login.number')">
-      <el-input v-model="number" :disabled="numberDef !== undefined" />
+      <el-autocomplete
+        v-model="number"
+        style="width: 100%"
+        :fetch-suggestions="suggestions"
+        :disabled="numberDef !== undefined"
+      />
     </el-form-item>
     <el-form-item :label="t('login.name')">
       <el-tree-select

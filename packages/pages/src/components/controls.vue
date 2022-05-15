@@ -7,6 +7,7 @@ import { hideWindow, minWindow, maxWindow } from "../tauri";
 import { Moon, Sunny } from "@element-plus/icons-vue";
 import { useDark } from "@vueuse/core";
 import { useToggle } from "@vueuse/shared";
+import InsertDialog from "../modules/updates/show.vue";
 const isDark = useDark();
 
 let isClient = ref(false);
@@ -45,6 +46,7 @@ const isInTauri = ref("__TAURI_IPC__" in window || isClient.value);
       />
       <el-divider direction="vertical"></el-divider>
       Magnifique v2.0.0
+      <insert-dialog />
       <el-divider direction="vertical"></el-divider>
       <el-button
         v-if="isInTauri"
