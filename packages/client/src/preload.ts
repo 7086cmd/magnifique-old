@@ -1,6 +1,8 @@
 /** @format */
 
 import { contextBridge, ipcRenderer } from "electron";
+import type { AxiosRequestConfig, AxiosResponse } from "axios";
+import { readConfig } from "./modules/config/generate";
 
 contextBridge.exposeInMainWorld("magnifique", {
   closeServer() {
@@ -13,14 +15,16 @@ contextBridge.exposeInMainWorld("magnifique", {
     ipcRenderer.send("maximize-main-window");
   },
   isElectron: true,
-  describeNotification(gradeid: number, classid: number) {
-    ipcRenderer.send("describe-notif", {
-      classid,
-      gradeid,
+  request(uri: string, config: AxiosRequestConfig): Promise<AxiosResponse> {
+    return new Promise((resolve) => {
+      ipcRenderer.send("request-start", {
+        url: uri,
+        ...config,
+      } as AxiosRequestConfig);
+      ipcRenderer.on("request-end", (_evt, data: string) => {
+        resolve(JSON.parse(data) as AxiosResponse["data"]);
+      });
     });
   },
-});
-
-ipcRenderer.on("reload-page", () => {
-  window.location.reload();
+  config: readConfig(),
 });

@@ -1,74 +1,47 @@
 <!-- @format -->
 
 <script lang="ts" setup>
-import { ref, inject } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios";
-import baseurl from "../../modules/baseurl";
-import { List, Back, Box, HomeFilled } from "@element-plus/icons-vue";
+import { ref } from "vue";
+import { List, Box, HomeFilled } from "@element-plus/icons-vue";
 import ControlsPage from "../../components/controls-page.vue";
-const router = useRouter();
-const leftDrawerOpen = ref(true);
-let pageSelected = ref("1");
+import Controls from "../../components/controls-with-back.vue";
 
-if (localStorage.getItem("adminLoginInfo") == undefined) {
-  if (inject("adminLoginInfo") == undefined) {
-    router.push("/");
-  }
-}
-try {
-  window.atob(String(localStorage.getItem("adminLoginInfo")));
-} catch (e) {
-  router.push("/");
-  localStorage.removeItem("adminLoginInfo");
-}
-
-const { password } = JSON.parse(
-  window.atob(String(localStorage.getItem("adminLoginInfo")))
-);
-
-axios({
-  url: `${baseurl}admin/login?password=${password}`,
-  data: {
-    password: password,
-  },
-  method: "get",
-}).then((response) => {
-  if (response.data.status !== "ok") {
-    localStorage.removeItem("adminLoginInfo");
-    router.push("/admin/login");
-  }
-});
+let pth = ref(new URL(location.href).pathname);
+let heightClient = ref(window.innerHeight);
 </script>
 <template>
   <el-container>
-    <el-aside width="12%">
-      <el-menu
-        v-model="pageSelected"
-        default-active="/admin/"
-        :collapse="leftDrawerOpen"
-        style="min-height: 1024px; padding-top: 2em"
-        collapse-transition
-        router
-      >
-        <el-menu-item index="/">
-          <el-icon>
-            <Back />
-          </el-icon>
-          <template #title> 返回主页 </template>
-        </el-menu-item>
+    <el-aside width="15%">
+      <el-menu :default-active="pth" router style="height: 100%">
+        <controls-page :style="{ paddingBottom: '1em' }" type="admin" />
         <el-menu-item index="/admin/">
           <el-icon>
             <HomeFilled />
           </el-icon>
           <template #title> 主页 </template>
         </el-menu-item>
-        <el-menu-item index="/admin/data/">
-          <el-icon>
-            <List />
-          </el-icon>
-          <template #title> 数据管理 </template>
-        </el-menu-item>
+        <el-sub-menu index="/admin/data/">
+          <template #title>
+            <el-icon>
+              <List />
+            </el-icon>
+            <span>数据管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="/admin/data/member">
+              <template #title> 成员 </template>
+            </el-menu-item>
+            <el-menu-item index="/admin/data/volunteer">
+              <template #title> 义工 </template>
+            </el-menu-item>
+            <el-menu-item index="/admin/data/deduction">
+              <template #title> 扣分 </template>
+            </el-menu-item>
+            <el-menu-item index="/admin/data/post">
+              <template #title> 投稿 </template>
+            </el-menu-item>
+          </el-menu-item-group>
+        </el-sub-menu>
         <el-menu-item index="/admin/message/">
           <el-icon>
             <Box />
@@ -79,14 +52,12 @@ axios({
     </el-aside>
     <el-container>
       <el-header style="text-align: right">
-        <controls-page type="admin" />
+        <controls />
       </el-header>
       <el-main>
-        <router-view v-slot="{ Component }">
-          <transition name="fade">
-            <component :is="Component" />
-          </transition>
-        </router-view>
+        <el-scrollbar :height="Math.floor((heightClient * 8) / 9)">
+          <router-view> </router-view>
+        </el-scrollbar>
       </el-main>
     </el-container>
   </el-container>

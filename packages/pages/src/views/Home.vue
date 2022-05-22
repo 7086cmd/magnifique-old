@@ -2,7 +2,7 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue";
-import controls from "../components/controls.vue";
+import controls from "../components/controls-with-back.vue";
 import MemberLogin from "./Member/Login.vue";
 import ClassLogin from "./Class/ClassLogin.vue";
 import { useRouter, useRoute } from "vue-router";
@@ -45,7 +45,7 @@ if (!supportment) {
 </script>
 
 <template>
-  <div className="background_must_be_gray">
+  <div>
     <el-container>
       <el-header style="text-align: right; height: 10%">
         <controls />
@@ -53,47 +53,45 @@ if (!supportment) {
       <el-container>
         <el-aside width="30%"></el-aside>
         <el-main style="padding-top: 2%">
-          <h3>{{ t("login.title") }}</h3>
-          <el-card shadow="never">
-            <el-tabs v-model="choice">
-              <el-tab-pane name="class" :label="t('login.methods.class')">
-                <class-login></class-login>
-                <el-button
-                  style="width: 100%"
-                  text
-                  bg
-                  round
-                  :disabled="!classEntranceAble"
-                  @click="toTag('class')"
-                  v-text="t('login.entrance')"
-                />
-              </el-tab-pane>
-              <el-tab-pane name="member" :label="t('login.methods.member')">
-                <member-login></member-login>
-                <el-button
-                  style="width: 100%"
-                  text
-                  bg
-                  round
-                  :disabled="!memberEntranceAble"
-                  @click="toTag('member')"
-                  v-text="t('login.entrance')"
-                />
-              </el-tab-pane>
-              <el-tab-pane name="admin" :label="t('login.methods.admin')">
-                <admin-login></admin-login>
-                <el-button
-                  style="width: 100%"
-                  text
-                  bg
-                  round
-                  :disabled="!adminEntranceAble"
-                  @click="toTag('admin')"
-                  v-text="t('login.entrance')"
-                />
-              </el-tab-pane>
-            </el-tabs>
-          </el-card>
+          <h3>Magnifique</h3>
+          <el-tabs v-model="choice">
+            <el-tab-pane name="member" :label="t('login.methods.member')">
+              <member-login></member-login>
+              <el-button
+                style="width: 100%"
+                text
+                bg
+                round
+                :disabled="!memberEntranceAble"
+                @click="toTag('member')"
+                v-text="t('login.entrance')"
+              />
+            </el-tab-pane>
+            <el-tab-pane name="class" :label="t('login.methods.class')">
+              <class-login></class-login>
+              <el-button
+                style="width: 100%"
+                text
+                bg
+                round
+                :disabled="!classEntranceAble"
+                @click="toTag('class')"
+                v-text="t('login.entrance')"
+              />
+            </el-tab-pane>
+            <el-tab-pane name="admin" :label="t('login.methods.admin')">
+              <admin-login></admin-login>
+              <el-button
+                style="width: 100%"
+                text
+                bg
+                round
+                :disabled="!adminEntranceAble"
+                @click="toTag('admin')"
+                v-text="t('login.entrance')"
+              />
+            </el-tab-pane>
+          </el-tabs>
         </el-main>
         <el-aside width="30%"> </el-aside>
       </el-container>

@@ -43,7 +43,6 @@ import * as volunteerActions from "./modules/powers/volunteer";
 import * as utils from "./modules/utils";
 import * as connectionActions from "./modules/im";
 import getEmailConfig from "./modules/database/get-email-config";
-import getOrigin from "./modules/database/get-origin";
 import { loginModule } from "./modules/im";
 import { lookup } from "mime-types";
 import * as API from "./apis";
@@ -66,8 +65,7 @@ let fileTokens: Record<string, { content: Buffer; mime: string }> = {};
 type context = Koa.ParameterizedContext<
   Koa.DefaultState,
   Koa.DefaultContext &
-    KoaRouter.RouterParamContext<Koa.DefaultState, Koa.DefaultContext>,
-  any
+    KoaRouter.RouterParamContext<Koa.DefaultState, Koa.DefaultContext>
 >;
 
 // Initializate Server.
@@ -128,7 +126,7 @@ const uploader = koaMulter({
     },
   }),
   limits: {
-    fileSize: 80 * 1024 * 1024, // 80MB for limit.
+    fileSize: 1 * 1024 * 1024 * 1024, // 1 GiB for limit.
     files: 1,
   },
 });
@@ -2151,9 +2149,7 @@ app.whenReady().then(() => {
   if (process.env.NODE_ENV === "development") {
     mainWindow.loadURL("http://localhost:3000/server");
   } else {
-    const originer = new URL(getOrigin());
-    originer.href = "/server";
-    mainWindow.loadURL(originer.toString());
+    mainWindow.loadURL("https://localhost/server");
   }
   // mainWindow.loadURL(process.env.NODE_ENV === 'development' ? 'http://localhost:3000/server' : originer.toString())
   ipcMain.on("close-main-window", () => mainWindow.hide());

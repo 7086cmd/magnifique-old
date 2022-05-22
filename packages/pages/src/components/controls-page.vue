@@ -3,16 +3,11 @@
 <script lang="ts" setup>
 /* eslint-disable vue/require-default-prop */
 import { defineProps, ref, toRefs, reactive } from "vue";
-import { Close, Minus, Plus } from "@element-plus/icons-vue";
+import { Close } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
 import generateName from "./generate-name";
 import resetPassword from "./reset-password";
 import { useRouter } from "vue-router";
-import { hideWindow, minWindow, maxWindow } from "../tauri";
-import { Moon, Sunny } from "@element-plus/icons-vue";
-import { useDark } from "@vueuse/core";
-import { useToggle } from "@vueuse/shared";
-import InsertDialog from "../modules/updates/show.vue";
 
 const router = useRouter();
 
@@ -71,39 +66,14 @@ try {
   }
   // eslint-disable-next-line no-empty
 } catch (_e) {}
-
-const closeServer = () => {
-  isClient.value && window.magnifique.closeServer();
-  hideWindow();
-};
-const minServerWindow = () => {
-  isClient.value && window.magnifique.minServerWindow();
-  minWindow();
-};
-const maxServerWindow = () => {
-  isClient.value && window.magnifique.maxServerWindow();
-  maxWindow();
-};
 const openPassword = () => {
   reset_password.value = true;
 };
-const isInTauri = ref("__TAURI_IPC__" in window || isClient.value);
-const isDark = useDark();
 </script>
 <template>
-  <div style="text-align: center">
-    <div style="text-align: right">
-      <el-switch
-        v-model="isDark"
-        inline-prompt
-        :active-icon="Moon"
-        active-color="#2c2c2c"
-        :inactive-icon="Sunny"
-        inactive-color="#f2f2f2"
-        @change="useToggle(isDark)"
-      />
-      <el-divider direction="vertical"></el-divider>
-      <el-dropdown split-button plain>
+  <div :style="{ textAlign: 'center' }">
+    <div>
+      <el-dropdown plain trigger="click">
         <el-icon>
           <User />
         </el-icon>
@@ -125,44 +95,11 @@ const isDark = useDark();
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <el-divider direction="vertical"></el-divider>
-      Magnifique v2.0.0
-      <insert-dialog />
-      <el-divider v-if="isInTauri" direction="vertical" />
-      <el-button
-        v-if="isInTauri"
-        style="text-align: right"
-        :icon="Minus"
-        type="warning"
-        text
-        @click="minServerWindow()"
-      >
-      </el-button>
-      <el-button
-        v-if="isInTauri"
-        style="text-align: right"
-        :icon="Plus"
-        type="success"
-        text
-        @click="maxServerWindow()"
-      >
-      </el-button>
-      <el-button
-        v-if="isInTauri"
-        style="text-align: right"
-        :icon="Close"
-        type="danger"
-        text
-        @click="closeServer()"
-      >
-      </el-button>
     </div>
-    <el-drawer
+    <el-dialog
       v-model="reset_password"
       :title="t('title.edit-password.title')"
-      direction="rtl"
-      size="40%"
-      style="text-align: center"
+      width="60%"
     >
       <el-form v-model="newpwd">
         <el-form-item :label="t('title.edit-password.dialog.old')">
@@ -175,12 +112,14 @@ const isDark = useDark();
           <el-input v-model="newpwd.newpwd2" type="password" />
         </el-form-item>
         <el-form-item>
-          <el-button plain @click="reset_password = false">
+          <el-button text bg round @click="reset_password = false">
             {{ t("methods.cancel") }}
           </el-button>
           <el-button
             type="primary"
-            plain
+            text
+            bg
+            round
             :loading="isSubmitingPassword"
             @click="npd"
           >
@@ -188,6 +127,6 @@ const isDark = useDark();
           </el-button>
         </el-form-item>
       </el-form>
-    </el-drawer>
+    </el-dialog>
   </div>
 </template>

@@ -50,6 +50,15 @@ import "@kangc/v-md-editor/lib/style/preview.css";
 import "./tauri";
 import "animate.css";
 import { ElCollapseTransition } from "element-plus";
+import reqwest from "@magnifique/axios";
+
+reqwest("member/admin/member", {
+  params: {
+    number: 20201108,
+  },
+}).then((resp) => {
+  console.log(resp);
+});
 
 const app = createApp(App);
 

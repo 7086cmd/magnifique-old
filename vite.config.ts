@@ -1,58 +1,74 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueJsx from '@vitejs/plugin-vue-jsx'
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver, VantResolver } from 'unplugin-vue-components/resolvers'
+/** @format */
+
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import vueJsx from "@vitejs/plugin-vue-jsx";
+import AutoImport from "unplugin-auto-import/vite";
+import Components from "unplugin-vue-components/vite";
+import Icons from "unplugin-icons/vite";
+import IconsResolver from "unplugin-icons/resolver";
+import {
+  ElementPlusResolver,
+  VantResolver,
+} from "unplugin-vue-components/resolvers";
 // import styleImport from 'vite-plugin-style-import'
-import lagacy from '@vitejs/plugin-legacy'
-import { VitePWA as pwa } from 'vite-plugin-pwa'
-import { resolve } from 'path'
-import prismjs from 'vite-plugin-prismjs'
-import monacoEditor from 'vite-plugin-monaco-editor'
+import lagacy from "@vitejs/plugin-legacy";
+import { VitePWA as pwa } from "vite-plugin-pwa";
+import { resolve } from "path";
+import prismjs from "vite-plugin-prismjs";
+import monacoEditor from "vite-plugin-monaco-editor";
 
 export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
     AutoImport({
-      resolvers: [ElementPlusResolver(), VantResolver()],
+      resolvers: [ElementPlusResolver(), VantResolver(), IconsResolver()],
     }),
     Components({
-      resolvers: [ElementPlusResolver(), VantResolver()],
+      resolvers: [ElementPlusResolver(), VantResolver(), IconsResolver()],
+    }),
+    Icons({
+      autoInstall: true,
+      compiler: "vue3",
     }),
     lagacy({
-      targets: ['defaults'],
-      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      targets: ["defaults"],
+      additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
     }),
     pwa({
-      includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
-      registerType: 'autoUpdate',
+      includeAssets: [
+        "favicon.svg",
+        "favicon.ico",
+        "robots.txt",
+        "apple-touch-icon.png",
+      ],
+      registerType: "autoUpdate",
       devOptions: {
         enabled: true,
         /* other options */
       },
       manifest: {
-        name: 'Magnifique',
-        short_name: 'Magn.',
-        description: 'A great management platform.',
-        theme_color: '#ffffff',
+        name: "Magnifique",
+        short_name: "Magn.",
+        description: "A great management platform.",
+        theme_color: "#ffffff",
         icons: [
           {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
+            src: "pwa-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
           },
           {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
           },
           {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable',
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
           },
         ],
       },
@@ -61,9 +77,24 @@ export default defineConfig({
       },
     }),
     prismjs({
-      languages: ['javascript', 'css', 'cpp', 'c', 'html', 'typescript', 'java', 'rust', 'go', 'python', 'json', 'yaml', 'graphql', 'markdown'],
-      plugins: ['line-numbers', 'copy-to-clipboard'],
-      theme: 'default',
+      languages: [
+        "javascript",
+        "css",
+        "cpp",
+        "c",
+        "html",
+        "typescript",
+        "java",
+        "rust",
+        "go",
+        "python",
+        "json",
+        "yaml",
+        "graphql",
+        "markdown",
+      ],
+      plugins: ["line-numbers", "copy-to-clipboard"],
+      theme: "default",
       css: true,
     }),
     monacoEditor(),
@@ -73,26 +104,26 @@ export default defineConfig({
       strict: false,
     },
     proxy: {
-      '/api': 'http://locahost/api',
+      "/api": "http://locahost/api",
     },
   },
   build: {
-    outDir: './dist/pages',
+    outDir: "./dist/pages",
   },
   resolve: {
     alias: {
-      '@': resolve('src'),
+      "@": resolve("src"),
     },
   },
   css: {
     postcss: {
       plugins: [
         {
-          postcssPlugin: 'internal:charset-removal',
+          postcssPlugin: "internal:charset-removal",
           AtRule: {
-            charset: atRule => {
-              if (atRule.name === 'charset') {
-                atRule.remove()
+            charset: (atRule) => {
+              if (atRule.name === "charset") {
+                atRule.remove();
               }
             },
           },
@@ -100,4 +131,4 @@ export default defineConfig({
       ],
     },
   },
-})
+});

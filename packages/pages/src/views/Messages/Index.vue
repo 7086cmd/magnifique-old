@@ -534,7 +534,6 @@ const handleUploadImage = async (
               @click.stop
             />
           </template>
-          <template #title> <sub style="font-size: 14px">返回</sub> </template>
         </el-page-header>
       </template>
       <el-scrollbar

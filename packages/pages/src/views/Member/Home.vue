@@ -1,20 +1,19 @@
 <!-- @format -->
 
 <script lang="ts" setup>
+/* global member */
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import baseurl from "../../modules/baseurl";
-import { List, Back, Box, Odometer, Magnet } from "@element-plus/icons-vue";
+import { List, Box, Odometer, Magnet } from "@element-plus/icons-vue";
+import ControlsWithBack from "../../components/controls-with-back.vue";
 import ControlsPage from "../../components/controls-page.vue";
-import { useI18n } from "vue-i18n";
-
-const { t } = useI18n();
+import personExample from "../../../examples/person";
 
 let heightClient = ref(window.innerHeight);
 
 const router = useRouter();
-let pageSelected = ref("1");
 let name = ref("");
 try {
   window.atob(String(sessionStorage.getItem("memberLoginInfo")));
@@ -26,9 +25,11 @@ try {
 const { number, password } = JSON.parse(
   window.atob(String(sessionStorage.getItem("memberLoginInfo")))
 );
-
-axios(`${baseurl}member/getinfo/${number}/`).then((response) => {
-  name.value = response.data.details.name;
+let me = ref<member>(personExample());
+let fetched = ref(false);
+axios(`${baseurl}member/getinfo/${number}/raw`).then((response) => {
+  me.value = response.data.details as member;
+  fetched.value = true;
 });
 
 axios(`${baseurl}member/${number}/login?password=${password}`).then(
@@ -39,42 +40,95 @@ axios(`${baseurl}member/${number}/login?password=${password}`).then(
     }
   }
 );
+let pth = ref(new URL(location.href).pathname);
 </script>
 <template>
   <el-container>
-    <el-aside width="12%">
-      <el-menu
-        v-model="pageSelected"
-        default-active="/member/"
-        :collapse="true"
-        style="min-height: 1024px; padding-top: 2em"
-        collapse-transition
-        router
-      >
-        <el-menu-item index="/">
-          <el-icon>
-            <Back />
-          </el-icon>
-          <template #title> 返回主页 </template>
-        </el-menu-item>
+    <el-aside width="15%">
+      <el-menu :default-active="pth" router style="height: 100%">
+        <controls-page
+          :style="{ paddingBottom: '1em', paddingTop: '0' }"
+          type="member"
+          :number="number"
+          :name="name"
+        />
         <el-menu-item index="/member/">
           <el-icon>
             <Odometer />
           </el-icon>
           <template #title> 仪表盘 </template>
         </el-menu-item>
-        <el-menu-item index="/member/department/">
-          <el-icon>
-            <List />
-          </el-icon>
-          <template #title> 数据处理 </template>
-        </el-menu-item>
-        <el-menu-item index="/member/admin/">
-          <el-icon>
-            <Magnet />
-          </el-icon>
-          <template #title> 管理 </template>
-        </el-menu-item>
+        <el-sub-menu index="/member/department/">
+          <template #title>
+            <el-icon>
+              <List />
+            </el-icon>
+            <span>数据处理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="/member/department/volunteer">
+              <template #title> 义工 </template>
+            </el-menu-item>
+            <el-menu-item
+              v-if="
+                me.union.duty.includes('deduction') &&
+                me.union.position !== 'register'
+              "
+              index="/member/department/deduction"
+            >
+              <template #title> 扣分 </template>
+            </el-menu-item>
+            <el-menu-item index="/member/department/post">
+              <template #title> 投稿 </template>
+            </el-menu-item>
+          </el-menu-item-group>
+        </el-sub-menu>
+        <el-sub-menu
+          v-if="
+            me.union.position.includes('minister') ||
+            me.union.position.includes('chairman')
+          "
+          index="/member/admin/"
+        >
+          <template #title>
+            <el-icon>
+              <Magnet />
+            </el-icon>
+            <span>管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="/member/admin/member">
+              <template #title> 成员 </template>
+            </el-menu-item>
+            <el-menu-item
+              v-if="
+                ['vice-minister', 'minister'].includes(me.union.position) ||
+                me.union.admin.includes('member-volunteer')
+              "
+              index="/member/admin/member-volunteer"
+            >
+              <template #title> 成员义工 </template>
+            </el-menu-item>
+            <el-menu-item
+              v-if="me.union.admin.includes('volunteer')"
+              index="/member/admin/volunteer"
+            >
+              <template #title> 义工 </template>
+            </el-menu-item>
+            <el-menu-item
+              v-if="me.union.admin.includes('deduction')"
+              index="/member/admin/deduction"
+            >
+              <template #title> 扣分 </template>
+            </el-menu-item>
+            <el-menu-item
+              v-if="me.union.admin.includes('post')"
+              index="/member/admin/post"
+            >
+              <template #title> 投稿 </template>
+            </el-menu-item>
+          </el-menu-item-group>
+        </el-sub-menu>
         <el-menu-item index="/member/message/">
           <el-icon>
             <Box />
@@ -85,22 +139,12 @@ axios(`${baseurl}member/${number}/login?password=${password}`).then(
     </el-aside>
     <el-container>
       <el-header style="text-align: right">
-        <el-affix :offset="20">
-          <controls-page type="member" :number="number" :name="name" />
-        </el-affix>
+        <controls-with-back :style="{ textAlign: 'right' }" />
       </el-header>
 
       <el-main>
-        <el-scrollbar always :height="Math.floor((heightClient * 4) / 5)">
-          <router-view v-slot="{ Component }">
-            <el-scrollbar always>
-              <transition name="fade">
-                <el-scrollbar always>
-                  <component :is="Component" />
-                </el-scrollbar>
-              </transition>
-            </el-scrollbar>
-          </router-view>
+        <el-scrollbar :height="Math.floor((heightClient * 8) / 9)">
+          <router-view />
         </el-scrollbar>
       </el-main>
     </el-container>

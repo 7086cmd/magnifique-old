@@ -6,6 +6,7 @@ declare interface department {
     {
       name: string;
       duty: Array<"deduction" | "post" | "volunteer">;
+      desc: string;
       classes?: {
         reason: string;
         deduction: number;

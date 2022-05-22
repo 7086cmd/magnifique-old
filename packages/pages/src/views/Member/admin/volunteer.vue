@@ -306,7 +306,8 @@ const startPassing = (props: { row: VolunteerQueryResult }) => {
                     color: var(--el-text-color-secondary);
                     font-size: 13px;
                   "
-                  >{{ item.volunteer }}小时义工时间</span>
+                  >{{ item.volunteer }}小时义工时间</span
+                >
               </el-option>
             </el-select>
           </el-form-item>

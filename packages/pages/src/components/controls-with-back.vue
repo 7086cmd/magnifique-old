@@ -2,7 +2,7 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { Close, Minus, Plus, ArrowLeftBold } from "@element-plus/icons-vue";
+import { Close, Minus, Plus, ArrowLeft } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 import { hideWindow, minWindow, maxWindow } from "../tauri";
 import { Moon, Sunny } from "@element-plus/icons-vue";
@@ -36,59 +36,57 @@ const toHome = () => {
 const isInTauri = ref("__TAURI_IPC__" in window || isClient.value);
 </script>
 <template>
-  <div>
-    <div style="text-align: right">
-      <el-switch
-        v-model="isDark"
-        inline-prompt
-        :active-icon="Moon"
-        active-color="#2c2c2c"
-        :inactive-icon="Sunny"
-        inactive-color="#f2f2f2"
-        @change="useToggle(isDark)"
-      />
-      <el-divider direction="vertical"></el-divider>
-      Magnifique v2.0.0
-      <el-divider direction="vertical"></el-divider>
-      <el-button
-        style="text-align: right"
-        :icon="ArrowLeftBold"
-        type="primary"
-        text
-        circle
-        @click="toHome()"
-      >
-      </el-button>
-      <el-button
-        v-if="isInTauri"
-        style="text-align: right"
-        :icon="Minus"
-        type="warning"
-        text
-        circle
-        @click="minServerWindow()"
-      >
-      </el-button>
-      <el-button
-        v-if="isInTauri"
-        style="text-align: right"
-        :icon="Plus"
-        type="success"
-        text
-        circle
-        @click="maxServerWindow()"
-      >
-      </el-button>
-      <el-button
-        v-if="isInTauri"
-        style="text-align: right"
-        :icon="Close"
-        type="danger"
-        text
-        circle
-        @click="closeServer()"
-      >
-      </el-button>
-    </div>
+  <div :style="{ textAlign: 'right' }">
+    <el-switch
+      v-model="isDark"
+      inline-prompt
+      :active-icon="Moon"
+      active-color="#2c2c2c"
+      :inactive-icon="Sunny"
+      inactive-color="#f2f2f2"
+      @change="useToggle(isDark)"
+    />
+    <el-divider direction="vertical"></el-divider>
+    <span style="-webkit-app-region: drag">Magnifique</span>
+    <el-divider direction="vertical"></el-divider>
+    <el-button
+      :icon="ArrowLeft"
+      type="primary"
+      text
+      bg
+      circle
+      @click="toHome()"
+    >
+    </el-button>
+    <el-button
+      v-if="isInTauri"
+      :icon="Minus"
+      type="warning"
+      text
+      bg
+      circle
+      @click="minServerWindow()"
+    >
+    </el-button>
+    <el-button
+      v-if="isInTauri"
+      :icon="Plus"
+      type="success"
+      text
+      bg
+      circle
+      @click="maxServerWindow()"
+    >
+    </el-button>
+    <el-button
+      v-if="isInTauri"
+      :icon="Close"
+      type="danger"
+      text
+      bg
+      circle
+      @click="closeServer()"
+    >
+    </el-button>
   </div>
 </template>

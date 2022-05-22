@@ -176,6 +176,6 @@ A --> C
 
 - [x] Use `tree` instead of `table`.
 - [x] Use the `RESTful` api.
-- [ ] Fixes for `Member Admin` and `Class`
+- [x] Fixes for `Member Admin` and `Class`
 - [x] Use `dialog` in order to "bounce" the details.
-- [ ] Quickly choose the person in order that the user can send the message to him/her directly.
+- [x] Quickly choose the person in order that the user can send the message to him/her directly.

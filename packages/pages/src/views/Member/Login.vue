@@ -54,7 +54,9 @@ const login = () => {
       let item = localStorage.getItem("memberSuggestions") as string;
       let item_json = JSON.parse(item) as { value: string }[];
       item_json.push({ value: String(number.value) });
-      item_json = uniq(item_json);
+      item_json = uniq(item_json.map((item) => item.value)).map((x) => ({
+        value: x,
+      }));
       localStorage.setItem("memberSuggestions", JSON.stringify(item_json));
       router.push(redr?.value ?? "/member/");
       sessionStorage.setItem(

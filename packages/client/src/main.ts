@@ -1,59 +1,49 @@
-/**
- * /* eslint-disable @typescript-eslint/no-explicit-any
- *
- * @format
- */
+/** @format */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { resolve } from "path";
-import { URL } from "url";
-import analyzePerson from "./modules/utils/analyze-person";
-import transformDate from "./modules/utils/transform-date";
-import io from "socket.io-client";
+import { AxiosRequestConfig } from "axios";
+/** @format */
 import {
-  BrowserWindow,
   app,
+  BrowserWindow,
+  screen,
+  protocol,
+  ipcMain,
   Tray,
   Menu,
-  screen,
-  ipcMain,
-  Notification,
-  dialog,
-  shell,
 } from "electron";
-import update from "./modules/update";
+import { join } from "path";
+import axios from "axios";
+import { defineConfig, readConfig } from "./modules/config/generate";
 
-if (process.env.NODE_ENV !== "development") {
-  update();
+defineConfig();
+
+function calc_screen_size(): { width: number; height: number } {
+  return {
+    width: Math.floor((screen.getPrimaryDisplay().workAreaSize.width * 2) / 3),
+    height: Math.floor(
+      (screen.getPrimaryDisplay().workAreaSize.height * 2) / 3
+    ),
+  };
 }
-let socket: any;
-let connected = false;
 
-app.setAppUserModelId("Magnifique");
+let tray: Tray | undefined = undefined;
 
-let tray: Tray;
-
-app.setLoginItemSettings({
-  openAtLogin: process.env.NODE_ENV === "production",
-});
+protocol.registerSchemesAsPrivileged([
+  { scheme: "magnifique", privileges: { bypassCSP: true, stream: true } },
+]);
 
 app.whenReady().then(() => {
   tray = new Tray(
     process.env.NODE_ENV === "development"
-      ? resolve(__dirname, "../../icons/client.ico")
-      : resolve(__dirname, "../icons/client.ico")
+      ? join(__dirname, "../../../icons/client.ico")
+      : join(__dirname, "../icons/client.ico")
   );
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-  const calc = (num: number) => {
-    return Math.floor((num * 5) / 6);
-  };
-  const mainWindow = new BrowserWindow({
-    width: calc(width),
-    height: calc(height),
-    frame: false,
+  let mainWindow = new BrowserWindow({
+    ...calc_screen_size(),
     show: false,
+    frame: false,
     webPreferences: {
-      preload: resolve(
+      preload: join(
         __dirname,
         process.env.NODE_ENV == "development"
           ? "./preload.js"
@@ -61,16 +51,6 @@ app.whenReady().then(() => {
       ),
     },
   });
-  mainWindow.on("ready-to-show", () => {
-    mainWindow.show();
-  });
-  mainWindow.loadURL(
-    process.env.NODE_ENV == "development"
-      ? "http://localhost:3000/"
-      : "https://xxxxxxxxx/"
-  );
-  process.env.NODE_ENV == "development" &&
-    mainWindow.webContents.openDevTools();
   tray.setContextMenu(
     Menu.buildFromTemplate([
       {
@@ -90,91 +70,29 @@ app.whenReady().then(() => {
     ])
   );
   tray.on("double-click", () => mainWindow.show());
-  ipcMain.on("describe-notif", (_event, data) => {
-    const dt = data;
-    const iourl = new URL(
-      `ws://` +
-        (process.env.NODE_ENV === "development" ? "localhost" : "10.49.8.4") +
-        `?gradeid=${transformDate(data.gradeid)}&classid=${
-          data.classid
-        }&from=class`
-    );
-    if (!connected) {
-      socket = io(iourl.href);
-      connected = true;
-    }
-    socket.on("quit-app", () => {
-      dialog.showMessageBoxSync(mainWindow, {
-        title: "已经有其他人使用本账号在别处登录",
-        message: "现在将要登出。若不是您已确认的操作，请及时修改密码。",
-      });
-      mainWindow.destroy();
-      app.quit();
-    });
-    socket.on("connect-successfully", () => {
-      new Notification({
-        title: "已连接",
-        body: "已成功连接服务器，如果有消息会第一时间通知",
-      }).show();
-    });
-    socket.on("new-deduc", (data: string) => {
-      const d = JSON.parse(data);
-      if (
-        analyzePerson(d.person).gradeid == transformDate(dt.gradeid) &&
-        analyzePerson(d.person).classid == dt.classid
-      ) {
-        new Notification({
-          title: "有新扣分",
-          body: `${d.person}在${d.place}因${d.reason}被扣${d.deduction}分`,
-        }).show();
-      }
-    });
-    socket.on("del-deduc", (data: string) => {
-      const d = JSON.parse(data);
-      if (
-        analyzePerson(d.person).gradeid == transformDate(dt.gradeid) &&
-        analyzePerson(d.person).classid == dt.classid
-      ) {
-        new Notification({
-          title: "扣分被删除",
-          body: `${d.person}的${d.id}扣分被删除`,
-        }).show();
-      }
-    });
-    socket.on("turnd-deduc", (data: string) => {
-      const d = JSON.parse(data);
-      if (
-        analyzePerson(d.person).gradeid == transformDate(dt.gradeid) &&
-        analyzePerson(d.person).classid == dt.classid
-      ) {
-        new Notification({
-          title: "扣分申诉被驳回",
-          body: `${d.person}的${d.id}扣分申诉被驳回`,
-        }).show();
-      }
-    });
-  });
-  mainWindow.on("resized", () => {
-    mainWindow.webContents.send("reload-page");
-  });
-  ipcMain.on("close-main-window", () => {
+  mainWindow.loadURL(
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000"
+      : join("magnifique://", __dirname, "../pages/index.html")
+  );
+  mainWindow.on("close", (ev) => {
     mainWindow.hide();
+    ev.preventDefault();
   });
-  ipcMain.on("minimize-main-window", () => {
-    mainWindow.minimize();
-  });
-  ipcMain.on("maximize-main-window", () => {
-    mainWindow.webContents.send("reload-page");
-    mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize();
-  });
-  mainWindow.on("close", (event) => {
-    mainWindow.hide();
-    event.preventDefault();
+  process.env.NODE_ENV === "development" ??
+    mainWindow.webContents.openDevTools();
+  mainWindow.once("ready-to-show", () => mainWindow.show());
+  ipcMain.on("close-main-window", () => mainWindow.close());
+  ipcMain.on("minimize-main-window", () => mainWindow.minimize());
+  ipcMain.on("maximize-main-window", () =>
+    mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize()
+  );
+  ipcMain.on("request-start", (_evt, data: AxiosRequestConfig) => {
+    let uri = new URL(data.url as string);
+    uri.host = readConfig().server.host;
+    uri.port = readConfig().server.port;
+    axios(data).then((resp) => {
+      mainWindow.webContents.send("request-end", resp.data);
+    });
   });
 });
-
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require("electron-reloader")(module);
-  // eslint-disable-next-line no-empty
-} catch (_e) {}

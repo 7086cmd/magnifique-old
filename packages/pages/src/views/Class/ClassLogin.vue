@@ -43,18 +43,23 @@ async function login() {
 <template>
   <transition name="el-zoom-in-top" appear>
     <el-form @submit="login">
-      <el-form-item :label="t('login.grade')">
-        <el-select v-model="gradeid" outlined style="width: 100%">
-          <el-option
-            v-for="item in grades"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
       <el-form-item :label="t('login.class')">
-        <el-input v-model="classid" outlined style="width: 100%" />
+        <el-input v-model="classid" outlined style="width: 100%">
+          <template #prepend>
+            <el-select
+              v-model="gradeid"
+              outlined
+              :style="{ backgroundColor: 'var(--el-fill-color-blank)' }"
+            >
+              <el-option
+                v-for="item in grades"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </template>
+        </el-input>
       </el-form-item>
       <el-form-item :label="t('login.password')">
         <el-input

@@ -2,80 +2,57 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios";
-import baseurl from "../../modules/baseurl";
-import { HomeFilled as Home, List, Back, Box } from "@element-plus/icons-vue";
+import { HomeFilled as Home, List, Box } from "@element-plus/icons-vue";
 import ControlsPage from "../../components/controls-page.vue";
+import ControlsWithBack from "../../components/controls-with-back.vue";
 
 let heightClient = ref(window.innerHeight);
 
-setInterval(() => {
-  heightClient.value = window.innerHeight;
-}, 200);
-
-let isClient = ref(false);
-const router = useRouter();
-const leftDrawerOpen = ref(true);
-let pageSelected = ref("1");
-
-try {
-  if (window.magnifique.isElectron === true) {
-    isClient.value = true;
-  }
-  // eslint-disable-next-line no-empty
-} catch (_e) {}
-
-if (
-  localStorage.getItem("classLoginInfo") == undefined ||
-  localStorage.getItem("classLoginInfo") == null
-) {
-  router.push("/");
-}
-
-const { gradeid, classid, password } = JSON.parse(
+const { gradeid, classid } = JSON.parse(
   window.atob(String(localStorage.getItem("classLoginInfo")))
 );
 
-axios(`${baseurl}class/${gradeid}/${classid}/login?password=${password}`).then(
-  (response) => {
-    if (response.data.status !== "ok") {
-      localStorage.removeItem("classLoginInfo");
-      router.push("/");
-    }
-  }
-);
+let pth = ref(new URL(location.href).pathname);
 </script>
 <template>
   <el-container>
     <el-container>
-      <el-aside width="12%">
-        <el-menu
-          v-model="pageSelected"
-          default-active="/class/"
-          :collapse="leftDrawerOpen"
-          collapse-transition
-          router
-          :style="'padding-top: 2em; height: ' + String(heightClient) + 'px'"
-        >
-          <el-menu-item index="/">
-            <el-icon>
-              <Back />
-            </el-icon>
-            <template #title>返回</template>
-          </el-menu-item>
+      <el-aside width="15%">
+        <el-menu :default-active="pth" router style="height: 100%">
+          <controls-page
+            :style="{ paddingBottom: '1em', paddingTop: '0' }"
+            type="class"
+            :gradeid="gradeid"
+            :classid="classid"
+          />
           <el-menu-item index="/class/">
             <el-icon>
               <Home />
             </el-icon>
             <template #title>主页</template>
           </el-menu-item>
-          <el-menu-item index="/class/list/">
-            <el-icon>
-              <List />
-            </el-icon>
-            <template #title>列表</template>
-          </el-menu-item>
+          <el-sub-menu index="/class/list/">
+            <template #title>
+              <el-icon>
+                <List />
+              </el-icon>
+              <span>数据管理</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="/class/list/member">
+                <template #title> 成员 </template>
+              </el-menu-item>
+              <el-menu-item index="/class/list/volunteer">
+                <template #title> 义工 </template>
+              </el-menu-item>
+              <el-menu-item index="/class/list/deduction">
+                <template #title> 扣分 </template>
+              </el-menu-item>
+              <el-menu-item index="/class/list/post">
+                <template #title> 投稿 </template>
+              </el-menu-item>
+            </el-menu-item-group>
+          </el-sub-menu>
           <el-menu-item index="/class/message/">
             <el-icon>
               <Box />
@@ -85,25 +62,12 @@ axios(`${baseurl}class/${gradeid}/${classid}/login?password=${password}`).then(
         </el-menu>
       </el-aside>
       <el-container>
-        <el-header
-          reveal
-          bordered
-          class="bg-white text-black"
-          style="text-align: right"
-        >
-          <controls-page type="class" :gradeid="gradeid" :classid="classid" />
+        <el-header>
+          <controls-with-back :style="{ textAlign: 'right' }" />
         </el-header>
         <el-main>
-          <el-scrollbar always :height="Math.floor((heightClient * 4) / 5)">
-            <router-view v-slot="{ Component }">
-              <el-scrollbar always>
-                <transition name="fade">
-                  <el-scrollbar always>
-                    <component :is="Component" />
-                  </el-scrollbar>
-                </transition>
-              </el-scrollbar>
-            </router-view>
+          <el-scrollbar :height="Math.floor((heightClient * 8) / 9)">
+            <router-view> </router-view>
           </el-scrollbar>
         </el-main>
       </el-container>

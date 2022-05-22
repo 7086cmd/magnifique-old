@@ -42,7 +42,7 @@
       "2": "初二",
       "3": "初三"
     },
-    "expression": "{grade}（ {number} 班）",
+    "expression": "{grade}（ {number} ）班",
     "menu": {
       "back": "返回",
       "home": "主页",

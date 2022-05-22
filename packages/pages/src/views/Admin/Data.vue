@@ -8,6 +8,7 @@ import PostDev from "../../components/powers/post/post.vue";
 import Volunteer from "./data/volunteer.vue";
 import MemberDev from "../../components/powers/member/Member.vue";
 import { useRoute, useRouter } from "vue-router";
+import { ArrowRight } from "@element-plus/icons-vue";
 const route = useRoute();
 const router = useRouter();
 let nativeName = ref(route.params.type ?? "");
@@ -24,21 +25,22 @@ watch(nativeName, () => {
 <template>
   <transition name="el-fade-in" appear>
     <div>
-      <el-tabs v-model="nativeName" tab-position="left">
-        <el-tab-pane label="扣分" name="deduction" lazy>
-          <deduction type="admin" :password="password" />
-        </el-tab-pane>
-        <el-tab-pane label="稿件" name="post" lazy>
-          <post-dev type="admin" :password="password" />
-        </el-tab-pane>
-        <el-tab-pane label="义工" name="volunteer" lazy>
-          <volunteer />
-        </el-tab-pane>
-        <el-tab-pane label="成员" name="member" lazy>
-          <!-- <member /> -->
-          <member-dev type="admin" :password="password" />
-        </el-tab-pane>
-      </el-tabs>
+      <deduction
+        v-if="route.params.type === 'deduction'"
+        type="admin"
+        :password="password"
+      />
+      <post-dev
+        v-if="route.params.type === 'post'"
+        type="admin"
+        :password="password"
+      />
+      <volunteer v-if="route.params.type === 'volunteer'" />
+      <member-dev
+        v-if="route.params.type === 'member'"
+        type="admin"
+        :password="password"
+      />
     </div>
   </transition>
 </template>

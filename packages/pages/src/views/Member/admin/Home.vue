@@ -32,73 +32,29 @@ watch(choice, () => {
 </script>
 
 <template>
-  <div v-loading="!got">
-    <el-tabs
-      v-if="
-        (me.union.position.includes('minister') ||
-          me.union.position.includes('chairman')) &&
-        got &&
-        me.union.position !== 'register'
-      "
-      v-model="choice"
-      tab-position="left"
-    >
-      <el-tab-pane label="成员" name="member" lazy>
-        <member-page-dev
-          type="member_admin"
-          :number="number"
-          :password="password"
-        />
-      </el-tab-pane>
-      <el-tab-pane
-        v-if="me.union.admin.includes('deduction')"
-        label="扣分"
-        name="deduction"
-        lazy
-      >
-        <deduction-page
-          type="member_admin"
-          :number="number"
-          :password="password"
-        />
-      </el-tab-pane>
-      <el-tab-pane
-        v-if="me.union.admin.includes('post')"
-        label="稿件"
-        name="post"
-        lazy
-      >
-        <post-page type="member_admin" :number="number" :password="password" />
-      </el-tab-pane>
-      <el-tab-pane
-        v-if="
-          ['vice-minister', 'minister'].includes(me.union.position) ||
-          me.union.admin.includes('member-volunteer')
-        "
-        label="成员义工"
-        name="member-volunteer"
-        lazy
-      >
-        <volunteer-page type="member" />
-      </el-tab-pane>
-      <el-tab-pane
-        v-if="me.union.admin.includes('volunteer')"
-        label="义工"
-        name="volunteer"
-        lazy
-      >
-        <volunteer-page type="volunteer" />
-      </el-tab-pane>
-    </el-tabs>
-    <el-card
-      v-if="
-        !me.union.position.includes('minister') &&
-        !me.union.position.includes('chairman') &&
-        got
-      "
-      shadow="never"
-    >
-      <el-result icon="error" title="不可使用" sub-title="不具有管理权限" />
-    </el-card>
+  <div>
+    <member-page-dev
+      v-if="route.params.type === 'member'"
+      type="member_admin"
+      :number="number"
+      :password="password"
+    />
+    <deduction-page
+      v-if="route.params.type === 'deduction'"
+      type="member_admin"
+      :number="number"
+      :password="password"
+    />
+    <post-page
+      v-if="route.params.type === 'post'"
+      type="member_admin"
+      :number="number"
+      :password="password"
+    />
+    <volunteer-page
+      v-if="route.params.type === 'member-volunteer'"
+      type="member"
+    />
+    <volunteer-page v-if="route.params.type === 'volunteer'" type="volunteer" />
   </div>
 </template>

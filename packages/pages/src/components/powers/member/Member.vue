@@ -272,7 +272,7 @@ watch(isRegistingMember, () => {
 
 <template>
   <div>
-    <el-card>
+    <el-card shadow="never">
       <template #default>
         <el-tooltip
           :content="t('powers.method.refresh')"
