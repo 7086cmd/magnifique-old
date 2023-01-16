@@ -1,18 +1,20 @@
+/** @format */
+
 declare interface DeductionList {
-  id: string
-  person: number
-  reason: string
-  description?: string
-  deduction: number
+  id: string;
+  person: number;
+  reason: string;
+  description?: string;
+  deduction: number;
   deductor: {
-    name: string
-    number: number
-  }
-  time: string | Date
-  place: string
-  status: 'normal' | 'processing' | 'failed'
+    name: string;
+    number: number;
+  };
+  time: string | Date;
+  place: string;
+  status: "normal" | "processing" | "failed";
   msgs: {
-    feedback: string
-    turndown: string
-  }
+    feedback: string;
+    turndown: string;
+  };
 }
