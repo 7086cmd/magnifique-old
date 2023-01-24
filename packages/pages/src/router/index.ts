@@ -5,9 +5,6 @@ import Home from "../views/Home.vue";
 import About from "../views/About.vue";
 import Class from "../views/Class/Class.vue";
 import ClassHome from "../views/Class/Home.vue";
-import ClassChart from "../views/Class/Chart.vue";
-import ClassList from "../views/Class/List.vue";
-import ClassMessage from "../views/Class/Message.vue";
 import NotFound from "../views/NotFound.vue";
 import MemberHome from "../views/Member/Home.vue";
 import MemberDashboard from "../views/Member/Dashboard.vue";
@@ -122,57 +119,15 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: "",
+        path: "/class/home/:page?",
         component: ClassHome,
         meta: {
           transition: "fade",
         },
       },
       {
-        path: "chart",
-        component: ClassChart,
-        meta: {
-          transition: "fade",
-        },
-      },
-      {
-        path: "/class/list",
-        component: ClassList,
-        meta: {
-          transition: "fade",
-        },
-      },
-      {
-        path: "/class/list/:page?",
-        component: ClassList,
-        meta: {
-          transition: "fade",
-        },
-      },
-      {
-        path: "/class/list/member/:status?",
-        component: ClassList,
-        meta: {
-          transition: "fade",
-        },
-      },
-      {
-        path: "message",
-        component: ClassMessage,
-        meta: {
-          transition: "fade",
-        },
-      },
-      {
-        path: "/class/message/room/:id",
-        component: ClassMessage,
-        meta: {
-          transition: "fade",
-        },
-      },
-      {
-        path: "/class/message/:status?",
-        component: ClassMessage,
+        path: "/class/home/member/:status?",
+        component: ClassHome,
         meta: {
           transition: "fade",
         },

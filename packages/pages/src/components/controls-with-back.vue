@@ -37,6 +37,17 @@ const isInTauri = ref("__TAURI_IPC__" in window || isClient.value);
 </script>
 <template>
   <div :style="{ textAlign: 'right' }">
+    <el-button
+      :icon="ArrowLeft"
+      type="primary"
+      text
+      bg
+      circle
+      @click="toHome()"
+    />
+    <el-divider direction="vertical"></el-divider>
+    <span style="-webkit-app-region: drag">Magnifique</span>
+    <el-divider direction="vertical"></el-divider>
     <el-switch
       v-model="isDark"
       inline-prompt
@@ -46,47 +57,5 @@ const isInTauri = ref("__TAURI_IPC__" in window || isClient.value);
       inactive-color="#f2f2f2"
       @change="useToggle(isDark)"
     />
-    <el-divider direction="vertical"></el-divider>
-    <span style="-webkit-app-region: drag">Magnifique</span>
-    <el-divider direction="vertical"></el-divider>
-    <el-button
-      :icon="ArrowLeft"
-      type="primary"
-      text
-      bg
-      circle
-      @click="toHome()"
-    >
-    </el-button>
-    <el-button
-      v-if="isInTauri"
-      :icon="Minus"
-      type="warning"
-      text
-      bg
-      circle
-      @click="minServerWindow()"
-    >
-    </el-button>
-    <el-button
-      v-if="isInTauri"
-      :icon="Plus"
-      type="success"
-      text
-      bg
-      circle
-      @click="maxServerWindow()"
-    >
-    </el-button>
-    <el-button
-      v-if="isInTauri"
-      :icon="Close"
-      type="danger"
-      text
-      bg
-      circle
-      @click="closeServer()"
-    >
-    </el-button>
   </div>
 </template>

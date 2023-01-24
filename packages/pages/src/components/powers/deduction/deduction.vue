@@ -261,6 +261,7 @@ fetching();
 <template>
   <div>
     <el-card v-loading="isFetching" shadow="never">
+      <span style="font-size: 20px">扣分情况</span><br /><br />
       <el-table
         :data="data"
         max-height="640px"
