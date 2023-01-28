@@ -18,7 +18,7 @@ importers:
       '@types/jest': ^27.4.1
       '@types/js-url': 1.8.29
       '@types/koa': 2.13.4
-      '@types/koa-bodyparser': 4.3.5
+      '@types/koa-bodyparser': 4.3.10
       '@types/koa-sslify': 4.0.3
       '@types/koa-static': 4.0.2
       '@types/koa__cors': 3.1.1
@@ -188,7 +188,7 @@ importers:
       '@types/jest': 27.4.1
       '@types/js-url': 1.8.29
       '@types/koa': 2.13.4
-      '@types/koa-bodyparser': 4.3.5
+      '@types/koa-bodyparser': 4.3.10
       '@types/koa-sslify': 4.0.3
       '@types/koa-static': 4.0.2
       '@types/koa__cors': 3.1.1
@@ -2837,8 +2837,8 @@ packages:
       '@types/node': 17.0.17
     dev: true
 
-  /@types/koa-bodyparser/4.3.5:
-    resolution: {integrity: sha512-NRqqoTtt7cfdDk/KNo+EwCIKRuzPAu/wsaZ7tgIvSIBtNfxuZHYueaLoWdxX3ZftWavQv07NE46TcpyoZGqpgQ==}
+  /@types/koa-bodyparser/4.3.10:
+    resolution: {integrity: sha512-6ae05pjhmrmGhUR8GYD5qr5p9LTEMEGfGXCsK8VaSL+totwigm8+H/7MHW7K4854CMeuwRAubT8qcc/EagaeIA==}
     dependencies:
       '@types/koa': 2.13.4
     dev: true
@@ -3489,7 +3489,7 @@ packages:
       '@vueuse/metadata': 8.4.2
       '@vueuse/shared': 8.4.2_vue@3.2.33
       vue: 3.2.33
-      vue-demi: 0.12.5_vue@3.2.33
+      vue-demi: 0.13.11_vue@3.2.33
     dev: true
 
   /@vueuse/metadata/8.2.0:
