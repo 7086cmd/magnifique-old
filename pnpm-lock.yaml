@@ -24,7 +24,7 @@ importers:
       '@types/koa__cors': 3.1.1
       '@types/koa__multer': 2.0.4
       '@types/koa__router': 8.0.11
-      '@types/lodash': 4.14.178
+      '@types/lodash': 4.14.191
       '@types/mailparser': ^3.4.0
       '@types/markdown-it': 12.2.3
       '@types/mime-types': ^2.1.1
@@ -194,7 +194,7 @@ importers:
       '@types/koa__cors': 3.1.1
       '@types/koa__multer': 2.0.4
       '@types/koa__router': 8.0.11
-      '@types/lodash': 4.14.178
+      '@types/lodash': 4.14.191
       '@types/mailparser': 3.4.0
       '@types/markdown-it': 12.2.3
       '@types/mime-types': 2.1.1
@@ -2906,15 +2906,15 @@ packages:
   /@types/lodash-es/4.17.6:
     resolution: {integrity: sha512-R+zTeVUKDdfoRxpAryaQNRKk3105Rrgx2CFRClIgRGaqDTdjsm8h6IYA8ir584W3ePzkZfst5xIgDwYrlh9HLg==}
     dependencies:
-      '@types/lodash': 4.14.182
-    dev: true
-
-  /@types/lodash/4.14.178:
-    resolution: {integrity: sha512-0d5Wd09ItQWH1qFbEyQ7oTQ3GZrMfth5JkbN3EvTKLXcHLRDSXeLnlvlOn0wvxVIwK5o2M8JzP/OWz7T3NRsbw==}
+      '@types/lodash': 4.14.191
     dev: true
 
   /@types/lodash/4.14.182:
     resolution: {integrity: sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==}
+    dev: true
+
+  /@types/lodash/4.14.191:
+    resolution: {integrity: sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==}
     dev: true
 
   /@types/mailparser/3.4.0:
@@ -3489,7 +3489,7 @@ packages:
       '@vueuse/metadata': 8.4.2
       '@vueuse/shared': 8.4.2_vue@3.2.33
       vue: 3.2.33
-      vue-demi: 0.12.5_vue@3.2.33
+      vue-demi: 0.13.11_vue@3.2.33
     dev: true
 
   /@vueuse/metadata/8.2.0:
