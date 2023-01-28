@@ -8,14 +8,12 @@ import ClassHome from "../views/Class/Home.vue";
 import NotFound from "../views/NotFound.vue";
 import MemberHome from "../views/Member/Home.vue";
 import MemberDashboard from "../views/Member/Dashboard.vue";
-import MemberMessage from "../views/Member/Message.vue";
 import MemberDepartment from "../views/Member/Department.vue";
 import MemberAdminHome from "../views/Member/admin/Home.vue";
 import AdminHome from "../views/Admin/Home.vue";
 import AdminData from "../views/Admin/Data.vue";
-import AdminMessage from "../views/Admin/Message.vue";
+import AdminDepartments from "../views/Admin/DepartmentView.vue";
 import Server from "../views/Server.vue";
-import MessagesHome from "../views/Messages/Index.vue";
 import loginPortableVue from "../views/Member/login_portable.vue";
 
 const routes: Array<RouteRecordRaw> = [
@@ -58,27 +56,6 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/member/department/:type?",
         component: MemberDepartment,
-        meta: {
-          transition: "fade",
-        },
-      },
-      {
-        path: "message",
-        component: MemberMessage,
-        meta: {
-          transition: "fade",
-        },
-      },
-      {
-        path: "/member/message/room/:id",
-        component: MemberMessage,
-        meta: {
-          transition: "fade",
-        },
-      },
-      {
-        path: "/member/message/:status?",
-        component: MemberMessage,
         meta: {
           transition: "fade",
         },
@@ -165,25 +142,7 @@ const routes: Array<RouteRecordRaw> = [
           },
         ],
       },
-      {
-        path: "/admin/message/:status?",
-        component: AdminMessage,
-        meta: {
-          transition: "fade",
-        },
-      },
-      {
-        path: "/admin/message/room/:id",
-        component: AdminMessage,
-        meta: {
-          transition: "fade",
-        },
-      },
     ],
-  },
-  {
-    path: "/messages",
-    component: MessagesHome,
   },
 ];
 

@@ -1,21 +1,15 @@
 /** @format */
 
-import { tmpdir } from "os";
-import { resolve } from "path";
-import { createSdbdataParser } from "../utils";
-
 export default () => {
   return {
     status: "ok",
-    details: createSdbdataParser(
-      resolve(tmpdir(), "..", "magnifique", "power.sdbdata")
-    ) as {
-      power: Record<
-        string,
-        {
-          name: string;
-        }
-      >;
+    details: {
+      power: {
+        deduction: "扣分",
+        post: "投稿",
+        volunteer: "义工",
+        member: "成员",
+      },
     },
   };
 };

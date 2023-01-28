@@ -12,7 +12,6 @@ import Koa from "koa";
 import koaBodyparser from "koa-bodyparser";
 import koaStatic from "koa-static";
 import { resolve } from "path";
-import { Server } from "socket.io";
 import { URLSearchParams } from "url";
 import { v4 } from "uuid";
 // import admin productions
@@ -21,7 +20,7 @@ import editPassword from "./modules/class/edit-password";
 // import class productions
 import loginClass from "./modules/class/login-class";
 import allowPowers from "./modules/database/allow-powers";
-import { readData, writeData } from "./modules/database/config";
+import { writeData } from "./modules/database/config";
 // import data
 import dbCreate from "./modules/database/db-create";
 import getDepartmentData from "./modules/database/get-department-data";
@@ -34,7 +33,6 @@ import * as deductionActions from "./modules/powers/deduction";
 import * as memberActions from "./modules/powers/member";
 // Refactor: import uses
 import * as utils from "./modules/utils";
-import { loginModule } from "./modules/im";
 import * as API from "./apis";
 
 let tray: Tray;
@@ -49,7 +47,9 @@ type context = Koa.ParameterizedContext<
 
 // Initializate Server.
 const server = new Koa();
+const downloadServer = new Koa();
 const router = new KoaRouter();
+const downloadRouter = new KoaRouter();
 let callBacks =
   process.env.NODE_ENV === "production"
     ? new Koa()
@@ -61,14 +61,6 @@ let callBacks =
         .callback()
     : server.callback();
 const httpServer = createHttpServer(callBacks);
-const io = new Server(httpServer, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["magnifique"],
-    credentials: true,
-  },
-});
 server.use(koaBodyparser());
 
 // Generate a get-password way for `get-method`
@@ -99,7 +91,7 @@ if (process.env.NODE_ENV === "production") {
   // For safety, we don't allow to use `koaCors` in production.
   server.use(koaCors({}));
 }
-router.get("/api/admin/export/download/:token", async (ctx) => {
+downloadRouter.get("/api/admin/export/download/:token", async (ctx) => {
   if (csvTokens[ctx.params.token] === undefined) {
     ctx.response.type = "html";
     ctx.response.body = "<p>未找到</p>";
@@ -110,7 +102,7 @@ router.get("/api/admin/export/download/:token", async (ctx) => {
     delete csvTokens[ctx.params.token];
   }
 });
-router.get("/api/admin/export/download/:token", async (ctx) => {
+downloadRouter.get("/api/admin/export/download/:token", async (ctx) => {
   if (csvTokens[ctx.params.token] === undefined) {
     ctx.response.type = "html";
     ctx.response.body = "<p>未找到</p>";
@@ -121,6 +113,7 @@ router.get("/api/admin/export/download/:token", async (ctx) => {
     delete csvTokens[ctx.params.token];
   }
 });
+
 router.get("/api/auth/member/list", async (ctx) => {
   ctx.response.body = {
     status: "ok",
@@ -370,19 +363,12 @@ router.patch("/api/admin/member", API.Powers.Member.Admin.Patch);
 router.post("/api/admin/member", API.Powers.Member.Admin.Post);
 router.delete("/api/admin/member", API.Powers.Member.Admin.Delete);
 
+router.get("/api/admin/departments", API.Powers.Departments.Admin.GET);
+router.post("/api/admin/departments", API.Powers.Departments.Admin.POST);
+router.put("/api/admin/departments", API.Powers.Departments.Admin.PUT);
+router.delete("/api/admin/departments", API.Powers.Departments.Admin.DELETE);
+
 // All APIs
-router.post("/api/feed/back", async (ctx) => {
-  // Here, it is no use to check the password
-  try {
-    ctx.response.body = utils.createFeedback(ctx.request.body);
-  } catch (e) {
-    ctx.response.body = {
-      status: "error",
-      reason: "type-error",
-      text: new Error(<string>e).message,
-    };
-  }
-});
 router.get("/api/department/", async (ctx) => {
   ctx.response.body = getDepartmentData() as status;
 });
@@ -414,17 +400,13 @@ router.get("/api/power/list", async (ctx) => {
 router.get("/api/power", async (ctx) => {
   ctx.response.body = getPublicPower();
 });
-router.get("/config", async (ctx) => {
-  ctx.response.body = readData();
-});
-
-router.get("/update", (ctx) => {
-  ctx.response.body = API.ChangeLog.latest();
-});
 
 // Use routes to register APIs.
 server.use(router.routes());
 server.use(router.allowedMethods());
+
+downloadServer.use(downloadRouter.routes());
+downloadServer.use(downloadRouter.allowedMethods());
 
 // Redirect 404 pages(route)
 server.use(async (ctx) => {
@@ -439,20 +421,6 @@ server.use(async (ctx) => {
         "Sorry, we do not have index page in <b>Development</b> server.";
     }
   }
-});
-
-// Socket.io Chat Product
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-io.on("connection", (socket) => {
-  // ...
-  let query = socket.handshake.query.username as string;
-  if (
-    (loginModule(
-      socket.handshake.query.username as string,
-      socket.handshake.query.password as string
-    ).status as string) == "ok"
-  )
-    socket.join(query);
 });
 
 app.setLoginItemSettings({

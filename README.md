@@ -1,16 +1,15 @@
-# Magnifique
+# [维系者](https://github.com/7086cmd/magnifique-old)正在死去，[创造者](https://github.com/Zhihui-Platform/)尚未到来。
 
-[![Build App](https://github.com/7086cmd/magnifique/actions/workflows/auto-build.yml/badge.svg?branch=main)](https://github.com/7086cmd/magnifique/actions/workflows/auto-build.yml)
-[![CodeQL](https://github.com/7086cmd/magnifique/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/7086cmd/magnifique/actions/workflows/codeql-analysis.yml)
-[![Auto Tests](https://github.com/7086cmd/magnifique/actions/workflows/auto-unit-test.yml/badge.svg)](https://github.com/7086cmd/magnifique/actions/workflows/auto-unit-test.yml)
-[![wakatime](https://wakatime.com/badge/user/f005f537-7f3b-4b5f-b0e3-81fad655b929.svg)](https://wakatime.com/@f005f537-7f3b-4b5f-b0e3-81fad655b929)
+## 维系者
 
-It is a repo for a great platform we use. Here, you can see what you can do to use this app.
+~~用于终结「人之子」的僭越~~
 
-1. Prepare a server runned `Windows 11` or `Windows Server 2022`. This app must have the latest system due to run `electron 17`
-2. Keep 8GB RAM and 16GB SSD. The database is in `${os.tmpdir()}/../magnifique`, and you must have storage to save the data.
-3. Prepare a domain, and get the `SSL` cert to enfore `https`. The domain should arrow to your ip.
-4. Save `SSL` cert to `${os.tmpdir()}/../magnifique/ssl/`, including `key` file and `pem` file.
-5. Be a sponsor and install the app from `GitHub`
-6. Wait for complete, and run it.
-7. It will show your ip and you can visit it in `LAN` via domain(`https`)
+该平台系维系者，已出了重大修改需求外不做更新。
+
+前后端使用 TypeScript 但是没有统一开发，导致后期维护成本大。
+
+## 创造者
+
+~~爷~~
+
+前后端统一接口开发，前端使用 Vue.js 为框架，后端使用 Go/Beego 。

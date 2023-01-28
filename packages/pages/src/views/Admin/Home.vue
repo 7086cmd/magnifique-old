@@ -31,23 +31,14 @@ let heightClient = ref(window.innerHeight);
             <el-menu-item index="/admin/data/member">
               <template #title> 成员 </template>
             </el-menu-item>
-            <el-menu-item index="/admin/data/volunteer">
-              <template #title> 义工 </template>
-            </el-menu-item>
             <el-menu-item index="/admin/data/deduction">
               <template #title> 扣分 </template>
             </el-menu-item>
-            <el-menu-item index="/admin/data/post">
-              <template #title> 投稿 </template>
+            <el-menu-item index="/admin/data/departments">
+              <template #title> 部门 </template>
             </el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
-        <el-menu-item index="/admin/message/">
-          <el-icon>
-            <Box />
-          </el-icon>
-          <template #title> 消息中心 </template>
-        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
