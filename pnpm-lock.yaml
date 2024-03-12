@@ -24,7 +24,7 @@ importers:
       '@types/koa__cors': 3.1.1
       '@types/koa__multer': 2.0.4
       '@types/koa__router': 8.0.11
-      '@types/lodash': 4.14.178
+      '@types/lodash': 4.17.0
       '@types/mailparser': ^3.4.0
       '@types/markdown-it': 12.2.3
       '@types/mime-types': ^2.1.1
@@ -194,7 +194,7 @@ importers:
       '@types/koa__cors': 3.1.1
       '@types/koa__multer': 2.0.4
       '@types/koa__router': 8.0.11
-      '@types/lodash': 4.14.178
+      '@types/lodash': 4.17.0
       '@types/mailparser': 3.4.0
       '@types/markdown-it': 12.2.3
       '@types/mime-types': 2.1.1
@@ -2906,15 +2906,15 @@ packages:
   /@types/lodash-es/4.17.6:
     resolution: {integrity: sha512-R+zTeVUKDdfoRxpAryaQNRKk3105Rrgx2CFRClIgRGaqDTdjsm8h6IYA8ir584W3ePzkZfst5xIgDwYrlh9HLg==}
     dependencies:
-      '@types/lodash': 4.14.182
-    dev: true
-
-  /@types/lodash/4.14.178:
-    resolution: {integrity: sha512-0d5Wd09ItQWH1qFbEyQ7oTQ3GZrMfth5JkbN3EvTKLXcHLRDSXeLnlvlOn0wvxVIwK5o2M8JzP/OWz7T3NRsbw==}
+      '@types/lodash': 4.17.0
     dev: true
 
   /@types/lodash/4.14.182:
     resolution: {integrity: sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==}
+    dev: true
+
+  /@types/lodash/4.17.0:
+    resolution: {integrity: sha512-t7dhREVv6dbNj0q17X12j7yDG4bD/DHYX7o5/DbDxobP0HnGPgpRz2Ej77aL7TZT3DSw13fqUTj8J4mMnqa7WA==}
     dev: true
 
   /@types/mailparser/3.4.0:
@@ -3489,7 +3489,7 @@ packages:
       '@vueuse/metadata': 8.4.2
       '@vueuse/shared': 8.4.2_vue@3.2.33
       vue: 3.2.33
-      vue-demi: 0.12.5_vue@3.2.33
+      vue-demi: 0.13.11_vue@3.2.33
     dev: true
 
   /@vueuse/metadata/8.2.0:
@@ -3549,7 +3549,7 @@ packages:
     resolution: {integrity: sha512-rn4uIeEz9SqZ82KroFQ4OGXRIZ8cLlvfk/CxfZBBkjfRjE1VpanzKYCAoN3dD716dBfLPsAa6Aq7VV6TpZCpVw==}
     dependencies:
       howler: 2.2.3
-      vue-demi: 0.13.11_no2piftga5hlwfu6qjspucnwam
+      vue-demi: 0.14.7_no2piftga5hlwfu6qjspucnwam
     optionalDependencies:
       '@vue/composition-api': 1.6.1_vue@3.2.33
     transitivePeerDependencies:
@@ -8150,7 +8150,7 @@ packages:
     resolution: {integrity: sha512-oWb1Z6mkHIskLzEJ/XWX0srkpkTQ7vaopMQkyaEIoq0fmtFVxOthb8cCxeT+p3ynTdkk/RZwbgG4brR5BeWECw==}
     engines: {node: '>= 4.0'}
     os: [darwin]
-    deprecated: fsevents 1 will break on node v14+ and could be using insecure binaries. Upgrade to fsevents 2.
+    deprecated: The v1 package contains DANGEROUS / INSECURE binaries. Upgrade to safe fsevents v2
     requiresBuild: true
     dependencies:
       bindings: 1.5.0
@@ -15054,22 +15054,6 @@ packages:
     dependencies:
       vue: 3.2.33
 
-  /vue-demi/0.13.11_no2piftga5hlwfu6qjspucnwam:
-    resolution: {integrity: sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==}
-    engines: {node: '>=12'}
-    hasBin: true
-    requiresBuild: true
-    peerDependencies:
-      '@vue/composition-api': ^1.0.0-rc.1
-      vue: ^3.0.0-0 || ^2.6.0
-    peerDependenciesMeta:
-      '@vue/composition-api':
-        optional: true
-    dependencies:
-      '@vue/composition-api': 1.6.1_vue@3.2.33
-      vue: 3.2.33
-    dev: true
-
   /vue-demi/0.13.11_vue@3.2.33:
     resolution: {integrity: sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==}
     engines: {node: '>=12'}
@@ -15082,6 +15066,22 @@ packages:
       '@vue/composition-api':
         optional: true
     dependencies:
+      vue: 3.2.33
+    dev: true
+
+  /vue-demi/0.14.7_no2piftga5hlwfu6qjspucnwam:
+    resolution: {integrity: sha512-EOG8KXDQNwkJILkx/gPcoL/7vH+hORoBaKgGe+6W7VFMvCYJfmF2dGbvgDroVnI8LU7/kTu8mbjRZGBU1z9NTA==}
+    engines: {node: '>=12'}
+    hasBin: true
+    requiresBuild: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+    dependencies:
+      '@vue/composition-api': 1.6.1_vue@3.2.33
       vue: 3.2.33
     dev: true
 
